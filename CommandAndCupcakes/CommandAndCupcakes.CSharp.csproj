@@ -225,6 +225,7 @@
     <Compile Include="Assets\AirConsole\scripts\DebugLevel.cs" />
     <Compile Include="Assets\AirConsole\scripts\Settings.cs" />
     <Compile Include="Assets\AirConsole\scripts\WebsocketListener.cs" />
+    <Compile Include="Assets\Scripts\Turns.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\AirConsole\README.txt" />
