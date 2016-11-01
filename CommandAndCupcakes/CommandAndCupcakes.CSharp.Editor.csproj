@@ -91,6 +91,9 @@
     <Reference Include="websocket-sharp">
       <HintPath>Assets\AirConsole\plugins\websocket-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="Assembly-UnityScript">
+      <HintPath>Library\ScriptAssemblies\Assembly-UnityScript.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="CommandAndCupcakes.CSharp.csproj">
