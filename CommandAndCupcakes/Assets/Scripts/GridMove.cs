@@ -22,25 +22,47 @@ class GridMove : MonoBehaviour
 
     public void Update()
     {
+
         if (!isMoving)
         {
-            input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")); //sets the controls
-            if (!allowDiagonals) 
+            input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            if (!allowDiagonals)
             {
-                if (Mathf.Abs(input.x) > Mathf.Abs(input.y)) //checks if the absolute value of x is larger than the absolute value of y. 
+                if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
                 {
-                    input.y = 0; //if x is larger then y = 0;
+                    input.y = 0;
                 }
                 else
                 {
-                    input.x = 0; //if y is larger then x = 0;
+                    input.x = 0;
                 }
             }
 
-            if (input != Vector2.zero) //Returns false if Vector2.zero is equal to input
+            if (input != Vector2.zero)
             {
-                StartCoroutine(move(transform)); //Start the move function. 
+                StartCoroutine(move(transform));
             }
+        }
+
+        //code to control what way the character is facing. 
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            transform.localEulerAngles = new Vector3(0, 45, 0);     
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            transform.localEulerAngles = new Vector3(0, -45, 0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            transform.localEulerAngles = new Vector3(0, 90, 0);
         }
     }
 
@@ -50,13 +72,13 @@ class GridMove : MonoBehaviour
         startPosition = transform.position;
         t = 0;
 
-        if (gridOrientation == Orientation.Horizontal) //checks if the gridOrientation is equal to orientation.Horizontal
-        { //if it is uses Vector movement where y is static. 
+        if (gridOrientation == Orientation.Horizontal)
+        {
             endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
                 startPosition.y, startPosition.z + System.Math.Sign(input.y) * gridSize);
         }
         else
-        {//else it uses Vector movement where z is static. 
+        {
             endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
                 startPosition.y + System.Math.Sign(input.y) * gridSize, startPosition.z);
         }
@@ -70,41 +92,52 @@ class GridMove : MonoBehaviour
             factor = 1f;
         }
 
-        while (t < 1f) //as long as t is smaller than 1f run this code.
+        while (t < 1f)
         {
-            t += Time.deltaTime * (moveSpeed / gridSize) * factor; //t adds and becomes a new t.
-            transform.position = Vector3.Lerp(startPosition, endPosition, t); //moves the player to the interpol between start and end position with t being the distance. 
+            t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+            transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            foreach (Transform child in transform)
+            {
+                child.position = transform.position; //takes the position of all children of the object at set the postion to the same as the parent. 
+            }
             yield return null;
         }
 
         isMoving = false;
         yield return 0;
     }
-    public void OnTriggerStay(Collider other) //triggers as long as it stays on the trigger
-    {
-        if (other.gameObject.CompareTag("interactable") && Input.GetKeyDown(KeyCode.E)) //checks if the player using the script is touching another gameobject with the tag "interactable" and if you have given it an input.
-        { 
-            gameObject.tag = "test"; //changes the players tag to "test"
-            moveSpeed = 3f; //sets the moveSpeed to 3f;
-        }
 
-        if (other.gameObject.CompareTag("Ground") || other.gameObject.CompareTag("interactable")) //checks if it is off the ground and moves it back with negative move speed. (find a way to get positive move speed back)
+    public void OnTriggerStay (Collider other) //Runs code as long as the object is touching the trigger
+    {
+        if (other.gameObject.CompareTag("interactable") && Input.GetKeyDown(KeyCode.E)) //checks if the game object being touched is tagged "interactable" and if the E key is pressed down
+        { //checks the object that is hit what the objects tag is. if it in this case is untagged it decreasse the speed by 5
+            gameObject.tag = "test";
+        }
+    }
+    
+    public void OnTriggerExit (Collider other) //Runs the code when the colider exits.
+    {//Checks if the game object which is being touched is tagged ""
+
+        if (other.gameObject.CompareTag("sea")) 
         {
-            moveSpeed = 3f; //sets the moveSpeed to 3f;
-            gameObject.tag = "Untagged"; //changes the players tag to "Untagged"
+            endPosition = startPosition;
+        }
+        if (other.gameObject.CompareTag("interactable"))
+        { //checks the object that is hit what the objects tag is.
+            gameObject.tag = "Untagged";
+        }
+        if (other.gameObject.CompareTag("Player2"))
+        {
+            gameObject.tag = "Untagged";
         }
     }
 
-    public void OnTriggerExit(Collider other) //Trigger when the player leaves the object. 
+    public void OnTriggerEnter (Collider other) //Runs code when the colider enters.
     {
-        if (gameObject.CompareTag("test")) //checks if the player is tagged "test"
-        {
-            gameObject.tag = "Untagged"; //assign the player with the "Untagged" tag
-        }
 
-        if (other.gameObject.CompareTag("sea")) //checks if the players leaves the area tagged "PlayArea"
+        if (other.gameObject.CompareTag("Player2"))
         {
-            endPosition = startPosition; //moves the player back to where they moved from.
+            gameObject.tag = "battle";
         }
     }
 }
