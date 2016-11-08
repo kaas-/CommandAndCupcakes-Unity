@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NDream.AirConsole;
+using Newtonsoft.Json.Linq;
 
 public class GameManager : MonoBehaviour {
 
@@ -26,15 +28,29 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to a list 
-        currentPlayer = 0;
-	    
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        AirConsole.instance.onMessage += OnMessage;
+        AirConsole.instance.onConnect += OnConnect;
+        AirConsole.instance.onDisconnect += OnDisconnect;
 
-	}
+        playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to the array
+        currentPlayer = 0;
+
+    }
+
+    private void action(playerActions action)
+    {
+        
+
+        switch(action)
+        {
+            case playerActions.attack:
+                    
+           
+        }
+            
+
+
+    }
 
     private void nextTurn()
     {
@@ -47,16 +63,26 @@ public class GameManager : MonoBehaviour {
         //send message to controller of next player
     }
 
-    private void sendMoveMessage()
-    {
+    // Update is called once per frame
+    void Update () {
 
-        
-        //send message to appropriate player object
+	}
+
+    void OnMessage(int device_id, JToken data)
+    {
+        Debug.Log(data);
 
     }
 
+    void OnConnect(int device_id)
+    {
 
+    }
 
-    
+    void OnDisconnect(int device_id)
+    {
+
+    }
+
 
 }
