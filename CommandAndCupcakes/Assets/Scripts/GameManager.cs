@@ -9,8 +9,9 @@ public class GameManager : MonoBehaviour {
 
     [Range(2, 4)][SerializeField] int playerCount = 4;
 
-    static GameObject[] playerObjects = new GameObject[4];
+    //static GameObject[] playerObjects = new GameObject[4];
 
+    private AirConsole airconsole = AirConsole.instance;
     private int currentPlayer;
     public bool moving;
     private enum playerActions
@@ -28,26 +29,27 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        AirConsole.instance.onMessage += OnMessage;
-        AirConsole.instance.onConnect += OnConnect;
-        AirConsole.instance.onDisconnect += OnDisconnect;
+        airconsole.onMessage += OnMessage;
+        airconsole.onConnect += OnConnect;
+        airconsole.onDisconnect += OnDisconnect;
+        airconsole.SetActivePlayers(playerCount);
 
-        playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to the array
+        //playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to the array
         currentPlayer = 0;
 
     }
 
-    private void action(playerActions action)
+    private void action(string action)
     {
         
 
-        switch(action)
+        /*switch(action)
         {
             case playerActions.attack:
                     
            
         }
-            
+           */ 
 
 
     }
@@ -61,6 +63,7 @@ public class GameManager : MonoBehaviour {
             currentPlayer++;
 
         //send message to controller of next player
+        airconsole.Message(airconsole.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
     // Update is called once per frame
@@ -71,6 +74,8 @@ public class GameManager : MonoBehaviour {
     void OnMessage(int device_id, JToken data)
     {
         Debug.Log(data);
+
+
 
     }
 
@@ -84,5 +89,9 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    void onActivePlayersChange(int device_id)
+    {
+
+    }
 
 }
