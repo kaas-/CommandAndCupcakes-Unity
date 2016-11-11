@@ -10,6 +10,16 @@ class GridMove : MonoBehaviour
         Horizontal,
         Vertical
     };
+    private enum Actions
+    {
+        move_left,
+        move_right,
+        move_down,
+        move_up,
+        attack,
+        dig,
+        interact
+    };
     private Orientation gridOrientation = Orientation.Horizontal;
     private bool allowDiagonals = false;
     private bool correctDiagonalSpeed = true;
@@ -19,11 +29,46 @@ class GridMove : MonoBehaviour
     private Vector3 endPosition;
     private float t;
     private float factor;
+    private int actionIterator = 2;
+    private Actions[] actions;
 
     public void Update()
     {
 
-        if (!isMoving)
+        if (actionIterator != 2 && !isMoving)
+        {
+            switch (actions[actionIterator])
+            {
+                case Actions.move_left:
+                    input = new Vector2(1, 0);
+                    break;
+                case Actions.move_right:
+                    input = new Vector2(-1, 0);
+                    break;
+                case Actions.move_up:
+                    input = new Vector2(0, 1);
+                    break;
+                case Actions.move_down:
+                    input = new Vector2(0, -1);
+                    break;
+                case Actions.attack:
+                    break;
+                case Actions.interact:
+                    break;
+                case Actions.dig:
+                    break;
+                default:
+                    break;
+            }
+
+            StartCoroutine(move(transform));
+            actionIterator++;
+        }
+
+        
+        //REAL-TIME CONTROLLER CODE FOR TESTING ONLY
+
+       /* if (!isMoving)
         {
             input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             if (!allowDiagonals)
@@ -42,7 +87,9 @@ class GridMove : MonoBehaviour
             {
                 StartCoroutine(move(transform));
             }
-        }
+        } 
+
+        */
 
         //code to control what way the character is facing. 
         if (Input.GetKeyDown(KeyCode.D))
@@ -64,6 +111,7 @@ class GridMove : MonoBehaviour
         {
             transform.localEulerAngles = new Vector3(0, 90, 0);
         }
+        
     }
 
     public IEnumerator move(Transform transform)
@@ -104,7 +152,15 @@ class GridMove : MonoBehaviour
         }
 
         isMoving = false;
+        GameObject.FindGameObjectWithTag("GameManager").SendMessage("OnPlayerFinishedMoving");
+
         yield return 0;
+    }
+
+    void Action(Actions[] actions)
+    {
+        actionIterator = 0;
+        this.actions = actions;
     }
 
     public void OnTriggerStay (Collider other) //Runs code as long as the object is touching the trigger
