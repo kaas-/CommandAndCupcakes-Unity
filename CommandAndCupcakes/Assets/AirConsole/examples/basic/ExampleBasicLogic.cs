@@ -31,6 +31,8 @@ public class ExampleBasicLogic : MonoBehaviour {
 		AirConsole.instance.onGameEnd += OnGameEnd;
 		AirConsole.instance.onHighScores += OnHighScores;
 		AirConsole.instance.onHighScoreStored += OnHighScoreStored;
+		AirConsole.instance.onPersistentDataStored += OnPersistentDataStored;
+		AirConsole.instance.onPersistentDataLoaded += OnPersistentDataLoaded;
 		logWindow.text = "Connecting... \n \n";
 	}
 
@@ -129,6 +131,16 @@ public class ExampleBasicLogic : MonoBehaviour {
 		}		
 	}
 
+	void OnPersistentDataStored (string uid) {
+		//Log to on-screen Console
+		logWindow.text = logWindow.text.Insert (0, "Stored persistentData for uid " + uid + " \n \n");
+	}
+
+	void OnPersistentDataLoaded (JToken data) {
+		//Log to on-screen Console
+		logWindow.text = logWindow.text.Insert (0, "Loaded persistentData: " + data + " \n \n");
+	}
+
 	void Update () {
 		//If any controller is pressing a 'Rotate' button, rotate the AirConsole Logo in the scene
 		if (turnLeft) {
@@ -207,6 +219,7 @@ public class ExampleBasicLogic : MonoBehaviour {
 		int idOfFirstController = AirConsole.instance.GetControllerDeviceIds () [0];
 	
 		string urlOfProfilePic = AirConsole.instance.GetProfilePicture (idOfFirstController, 512);
+
 		//Log url to on-screen Console
 		logWindow.text = logWindow.text.Insert (0, "URL of Profile Picture of first Controller: " + urlOfProfilePic + "\n \n");
 		StartCoroutine (DisplayUrlPicture (urlOfProfilePic));
@@ -301,8 +314,13 @@ public class ExampleBasicLogic : MonoBehaviour {
 		//Set the currently connected devices as the active players (assigning them a player number)
 		AirConsole.instance.SetActivePlayers ();
 
+		string activePlayerIds = "";
+		foreach (int id in AirConsole.instance.GetActivePlayerDeviceIds) {
+			activePlayerIds += id + "\n";
+		}
+
 		//Log to on-screen Console
-		logWindow.text = logWindow.text.Insert (0, "Active Players were set \n \n");
+		logWindow.text = logWindow.text.Insert (0, "Active Players were set to:\n" + activePlayerIds + " \n \n");
 	}
 
 	public void DisplayDeviceIDOfPlayerOne () {
@@ -378,19 +396,48 @@ public class ExampleBasicLogic : MonoBehaviour {
 	}
 
 	public void ResetScore () {
-		//increase current score and show on ui
+		//reset current score and show on ui
 		highScore = 0;
 		highScoreDisplay.text = "Current Score: " + highScore;
 	}
 
 	public void RequestHighScores () {
-		AirConsole.instance.RequestHighScores ("Basic Example", "v1.0");
+		List <string> ranks = new List<string> ();
+		ranks.Add ("world");
+		AirConsole.instance.RequestHighScores ("Basic Example", "v1.0", null, ranks, 5, 3);
 	}
 
 	public void StoreHighScore () {
 		JObject testData = new JObject();
 		testData.Add ("test", "data");
 		AirConsole.instance.StoreHighScore ("Basic Example", "v1.0", highScore, AirConsole.instance.GetUID(AirConsole.instance.GetMasterControllerDeviceId()), testData);
+	}
+
+	public void StoreTeamHighScore () {
+		List<string> connectedUids = new List<string> ();
+		List<int> deviceIds = AirConsole.instance.GetControllerDeviceIds();
+
+		for (int i = 0; i < deviceIds.Count; i++) {
+			connectedUids.Add (AirConsole.instance.GetUID(deviceIds[i]));
+		}
+		AirConsole.instance.StoreHighScore ("Basic Example", "v1.0", highScore, connectedUids);
+	}
+
+	public void StorePersistentData () {
+		//Store test data for the master controller
+		JObject testData = new JObject();
+		testData.Add ("test", "data");
+		AirConsole.instance.StorePersistentData("custom_data", testData, AirConsole.instance.GetUID(AirConsole.instance.GetMasterControllerDeviceId()));
+	}
+
+	public void RequestPersistentData () {
+		List<string> connectedUids = new List<string> ();
+		List<int> deviceIds = AirConsole.instance.GetControllerDeviceIds();
+		
+		for (int i = 0; i < deviceIds.Count; i++) {
+			connectedUids.Add (AirConsole.instance.GetUID(deviceIds[i]));
+		}
+		AirConsole.instance.RequestPersistentData (connectedUids);
 	}
 
 	void OnDestroy () {
@@ -408,6 +455,8 @@ public class ExampleBasicLogic : MonoBehaviour {
 			AirConsole.instance.onGameEnd -= OnGameEnd;
 			AirConsole.instance.onHighScores += OnHighScores;
 			AirConsole.instance.onHighScoreStored += OnHighScoreStored;
+			AirConsole.instance.onPersistentDataStored += OnPersistentDataStored;
+			AirConsole.instance.onPersistentDataLoaded += OnPersistentDataLoaded;
 		}
 	}
 #endif

@@ -45,6 +45,10 @@ namespace NDream.AirConsole {
 	public delegate void OnHighScores (JToken highscores);
 	
 	public delegate void OnHighScoreStored (JToken highscore);
+
+	public delegate void OnPersistentDataStored (string uid);
+	
+	public delegate void OnPersistentDataLoaded (JToken data);
    
 	public class AirConsole : MonoBehaviour {
 		#if !DISABLE_AIRCONSOLE
@@ -129,8 +133,8 @@ namespace NDream.AirConsole {
 
 		/// <summary>
 		/// Gets called when an advertisement is finished or no advertisement was shown.
-		/// <param name="ad_was_shown">True if an ad was shown and onAdShow was called.</param>
 		/// </summary>
+		/// <param name="ad_was_shown">True if an ad was shown and onAdShow was called.</param>
 		public event OnAdComplete onAdComplete;
 
 		/// <summary>
@@ -147,9 +151,21 @@ namespace NDream.AirConsole {
 
 		/// <summary>
 		/// Gets called when a high score was successfully stored.
-		/// <param name="highscore">The stored high score if it is a new best for the user or else null.</param>
 		/// </summary>
+		/// <param name="highscore">The stored high score if it is a new best for the user or else null.</param>
 		public event OnHighScoreStored onHighScoreStored;
+
+		/// <summary>
+		/// Gets called when persistent data was stored from StorePersistentData().
+		/// </summary>
+		/// <param name="uid">The uid for which the data was stored.</param>
+		public event OnPersistentDataStored onPersistentDataStored;
+
+		/// <summary>
+		/// Gets called when persistent data was loaded from RequestPersistentData().
+		/// </summary>
+		/// <param name="data">An object mapping uids to all key value pairs.</param>
+		public event OnPersistentDataLoaded onPersistentDataLoaded;
 
 		/// <summary>
 		/// Determines whether the AirConsole Unity Plugin is ready. Use onReady event instead if possible.
@@ -395,7 +411,16 @@ namespace NDream.AirConsole {
 			}
 			
 		}
-		
+
+		/// <summary>
+		/// Returns the url to a profile picture of a user.
+		/// </summary>
+		/// <param name="uid">The uid for which you want a profile picture. Screens don't have profile pictures.</param>
+		/// <param name="size">The size of in pixels of the picture. Default is 64.</param>
+		public string GetProfilePicture (String uid, int size = 64) {
+			return Settings.AIRCONSOLE_PROFILE_PICTURE_URL + uid + "&size=" + size;
+		}
+
 		/// <summary>
 		/// Returns the url to a profile picture of a user.
 		/// </summary>
@@ -652,18 +677,20 @@ namespace NDream.AirConsole {
 		/// <summary>
 		/// Requests high score data of players (including global high scores and friends). 
 		/// Will call onHighScores when data was received.
+		/// </summary>
 		/// <param name="level_name">The name of the level.</param>
 		/// <param name="level_version">The version of the level.</param>
-		/// </summary>
-		public void RequestHighScores (string level_name, string level_version, List<string> uids = null) {
+		/// <param name="uids">An array of UIDs of the users should be included in the result. Default is all connected controllers.</param>
+		/// <param name="ranks">An array of high score rank types. High score rank types can include data from across the world, only a specific area or a users friends. Valid array entries are "world",  "country",  "region", "city", "friends". Default is ["world"].</param>
+		/// <param name="total">Amount of high scores to return per rank type. Default is 8.</param>
+		/// <param name="top">Amount of top high scores to return per rank type. top is part of total. Default is 5.</param>
+		public void RequestHighScores (string level_name, string level_version, List<string> uids = null, List<string> ranks = null, int total = -1, int top = -1) {
 			
 			if (!IsAirConsoleUnityPluginReady ()) {
 				
 				throw new NotReadyException ();
 				
 			}
-
-
 			
 			JObject msg = new JObject ();
 			msg.Add ("action", "requestHighScores");
@@ -679,6 +706,24 @@ namespace NDream.AirConsole {
 				}
 				msg.Add ("uids", uidsJArray);
 			}
+
+			JArray ranksJArray = null;
+
+			if (ranks != null) {
+				ranksJArray = new JArray();
+				foreach (string rank in ranks){
+					ranksJArray.Add(rank);
+				}
+				msg.Add ("ranks", ranksJArray);
+			}
+
+			if (total != -1) {
+				msg.Add ("total", total);
+			}
+
+			if (top != -1) {
+				msg.Add ("top", top);
+			}
 			
 			wsListener.Message (msg);
 		}
@@ -690,11 +735,28 @@ namespace NDream.AirConsole {
 		/// <param name="level_name">The name of the level the user was playing. This should be a human readable string because it appears in the high score sharing image. You can also just pass an empty string.</param>
 		/// <param name="level_version">The version of the level the user was playing. This is for your internal use.</param>
 		/// <param name="score">The score the user has achieved</param>
-		/// <param name="uid">The UID of the user that achieved the high score. Default is null.</param>
+		/// <param name="uid">The UID of the user that achieved the high score.</param>
 		/// <param name="data">Custom high score data (e.g. can be used to implement Ghost modes or include data to verify that it is not a fake high score).</param>
 		/// <param name="score_string">A short human readable representation of the score. (e.g. "4 points in 3s"). Defaults to "X points" where x is the score converted to an integer.</param>
 		/// </summary>
-		public void StoreHighScore (string level_name, string level_version, float score, string uid = null, JObject data = null, string score_string = null) {
+		public void StoreHighScore (string level_name, string level_version, float score, string uid, JObject data = null, string score_string = null) {
+			List<String> uids = new List<String> ();
+			uids.Add (uid);
+			StoreHighScore (level_name, level_version, score, uids, data, score_string);
+		}
+
+		/// <summary>
+		/// Stores a high score of the current user on the AirConsole servers. 
+		/// High scores may be returned to anyone. Do not include sensitive data. Only updates the high score if it was a higher or same score. 
+		/// Calls onHighScoreStored when the request is done.
+		/// <param name="level_name">The name of the level the user was playing. This should be a human readable string because it appears in the high score sharing image. You can also just pass an empty string.</param>
+		/// <param name="level_version">The version of the level the user was playing. This is for your internal use.</param>
+		/// <param name="score">The score the user has achieved</param>
+		/// <param name="uids">The UIDs of the users that achieved the high score.</param>
+		/// <param name="data">Custom high score data (e.g. can be used to implement Ghost modes or include data to verify that it is not a fake high score).</param>
+		/// <param name="score_string">A short human readable representation of the score. (e.g. "4 points in 3s"). Defaults to "X points" where x is the score converted to an integer.</param>
+		/// </summary>
+		public void StoreHighScore (string level_name, string level_version, float score, List<string> uids, JObject data = null, string score_string = null) {
 
 			if (!IsAirConsoleUnityPluginReady ()) {
 				
@@ -708,9 +770,13 @@ namespace NDream.AirConsole {
 			msg.Add ("level_version", level_version);
 			msg.Add ("score", score);
 
-			if (uid != null) {
-				msg.Add ("uid", uid);
+
+			JArray uidJArray = new JArray();
+			foreach (string uid in uids){
+				uidJArray.Add(uid);
 			}
+			msg.Add ("uid", uidJArray);
+
 			if (data != null) {
 				msg.Add ("data", data);
 			}
@@ -729,6 +795,62 @@ namespace NDream.AirConsole {
 			}
 		}
 
+		/// <summary>
+		/// Requests persistent data from the servers.
+		/// Will call onPersistentDataLoaded when data was received.
+		/// </summary>
+		/// <param name="uids">The uids for which you would like to request the persistent data. Default is this device.</param>
+		public void RequestPersistentData (List<string> uids = null) { 
+			
+			if (!IsAirConsoleUnityPluginReady ()) {
+				
+				throw new NotReadyException ();
+				
+			}
+
+			JObject msg = new JObject ();
+			msg.Add ("action", "requestPersistentData");
+
+			if (uids != null) {
+				JArray uidJArray = new JArray();
+				foreach (string uid in uids){
+					uidJArray.Add(uid);
+				}
+				
+				msg.Add ("uids", uidJArray);
+			}
+
+			
+			wsListener.Message (msg);
+		}
+
+		/// <summary>
+		/// Stores a key-value pair persistently on the AirConsole servers.
+		/// Storage is per game. Total storage can not exceed 1 MB per game and uid.
+		/// Will call onPersistentDataStored when the request is done.
+		/// </summary>
+		/// <param name="key">The key of the data entry.</param>
+		/// <param name="value">The value of the data entry.</param>
+		/// <param name="uid">The uid for which the data should be stored. Default is this device.</param>
+		public void StorePersistentData (string key, JToken value, string uid = null) {
+			
+			if (!IsAirConsoleUnityPluginReady ()) {
+				
+				throw new NotReadyException ();
+				
+			}
+			
+			JObject msg = new JObject ();
+			msg.Add ("action", "storePersistentData");
+			msg.Add ("key", key);
+			msg.Add ("value", value);
+
+			if (uid != null) {
+				msg.Add ("uid", uid);
+			}
+			
+			wsListener.Message (msg);
+		}
 
 		#endregion
 		#endif
@@ -794,6 +916,8 @@ namespace NDream.AirConsole {
 			wsListener.onGameEnd += OnGameEnd;
 			wsListener.onHighScores += OnHighScores;
 			wsListener.onHighScoreStored += OnHighScoreStored;
+			wsListener.onPersistentDataStored += OnPersistentDataStored;
+			wsListener.onPersistentDataLoaded += OnPersistentDataLoaded;
 
 
 			// check if game is running in webgl build
@@ -1125,6 +1249,48 @@ namespace NDream.AirConsole {
 			}
 		}
 
+		void OnPersistentDataStored (JObject msg) {
+			try {
+				
+				string uid = (string)msg ["uid"];
+
+				if (this.onPersistentDataStored != null) {
+					eventQueue.Enqueue (() => this.onPersistentDataStored (uid));
+				}
+				
+				if (Settings.debug.info) {
+					Debug.Log ("AirConsole: OnPersistentDataStored");
+				}
+				
+			} catch (Exception e) {
+				
+				if (Settings.debug.error) {
+					Debug.LogError (e.Message);
+				}
+			}
+		}
+
+		void OnPersistentDataLoaded (JObject msg) {
+			try {
+				
+				JToken data = msg ["data"];
+				
+				if (this.onPersistentDataLoaded != null) {
+					eventQueue.Enqueue (() => this.onPersistentDataLoaded (data));
+				}
+				
+				if (Settings.debug.info) {
+					Debug.Log ("AirConsole: OnPersistentDataLoaded");
+				}
+				
+			} catch (Exception e) {
+				
+				if (Settings.debug.error) {
+					Debug.LogError (e.Message);
+				}
+			}
+		}
+
 		[Obsolete("Please use GetServerTime(). This method will be removed in the next version.")]
 		public int server_time_offset {
 			get { return _server_time_offset; }
@@ -1243,8 +1409,9 @@ namespace NDream.AirConsole {
                     webViewObject.LoadURL(url);
 
 					//Display loading Screen
-
 					webViewLoadingCanvas = (new GameObject("WebViewLoadingCanvas")).AddComponent<Canvas>();
+					
+					
 #if !UNITY_EDITOR
 					webViewLoadingCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
 					webViewLoadingBG = (new GameObject("WebViewLoadingBG")).AddComponent<UnityEngine.UI.Image>();
