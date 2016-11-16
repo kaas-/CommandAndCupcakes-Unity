@@ -1,0 +1,1183 @@
+
+
+<html>
+<head>
+    <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.3.0.js"></script>
+    <script type="text/javascript" src="airconsole-view-manager.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+    <script type="text/javascript">
+
+    var airconsole;
+    var vm;
+
+    var tutImg = [];
+    var actImg = [
+        'act0.png',
+        'act1.png',
+        'act2.png',
+        'act3.png'
+    ];
+    var dirImg = [
+        'ar3.png',
+        'ar4.png',
+        'ar1.png',
+        'ar2.png',
+        'arDefault.png'
+    ];
+
+    var tutInd = 0;
+    var abtInd = 0;
+
+    var tutTxt = [
+        'Welcome to the tutorial of Castle Hustle.<br>Click on the arrows to learn how to play.',
+        'You are a group of peasants who have to defend the castle from angry giants until the king returns.',
+        'At the beginning of each turn, giants advance and the players plan 4 actions in response. Each giant attacks the castle after 5 turns.',
+        'Move through the castle, pick up and carry items to the catapults and fire them at the giants.',
+        'Choose the leg icon and one of the 4 given directions to move onto an other field.',
+        'But pay attention to other players\' planned actions or you might crash into each other.',
+        'Choose the hand icon to pick up an item that\'s on the same field as you or to put it back down.<br>Stones deal 2 damage, all other items deal 1.',
+        'If you are next to a catapult, choose the toss icon and the direction of the catapult to fire an item with it. Giants can take 3 damage.',
+        'You can toss items at each other. Choose the toss icon and the direction of an other player to throw. Items fly as far as 3 fields.',
+        'The receiving player must choose the hand icon to catch the item or he will get knocked out.',
+        'If time runs out or all players are ready, the actions are carried out and chaos ensues once more.'
+    ];
+    var abtTxt = [
+        '<b>Julie Baechtold - Xavier Heimgartner - Nicolas Matter</b><br>Art & Animation - Programming - Rules & Sound',
+        'Castle Hustle was created by a team of three students as part of their bachelor studies at Zurich University of the Arts in 2015.',
+        '<b>Tutors</b><br>Max Moswitzer - Rene Bauer - Reto Spoerri<br>Christoph Polus - Margarete Jahrmann<br>All rights belong to ZHdK.',
+        'Follow us on social media!<br><b>Facebook: castlehustle.game<br>Twitter: @castlehustle</b>'
+    ];
+    var actTxt = [
+        'no action',
+        'move',
+        'pick up/drop/catch',
+        'throw/catapult'
+    ]
+
+    var btn0 = 0;
+    var btn1 = 0;
+    var btn2 = 0;
+    var btn3 = 0;
+    var btn4 = 4;
+    var btn5 = 4;
+    var btn6 = 4;
+    var btn7 = 4;
+
+    var button = [0,0,0,0,4,4,4,4];
+
+    var state = 0;
+
+    var timer;
+    var getData = false;
+    var ready = false;
+    var gameMenu = false;
+    var noSM = false;
+    var pause = false;
+
+    var enemies = [0,0,0,0];
+    var attack = false;
+
+    var lanesDivs = [];
+    var threatDivs = [];
+    var threatDivsSetup = false;
+
+    var customdata;
+
+    var analytics_tutorial_read = false; // tracks if user has read the entire tutorial
+
+    // Setup Controller. Gets called at the very beginning
+    function setup() {
+        console.log("Controller: Setup");
+
+        // Initialzize customdata
+        customdata = {
+            started: false,
+            onReady: false,
+            state: 0,
+            player: -1,
+            players: 0,
+            nick: ' ',
+            drawTime: 45
+        };
+
+        // Setup AirConsole
+        airconsole = new AirConsole({"orientation": "landscape"});
+
+        // Load Tutorial Images
+        initImages();
+
+        // AirConsole OnReady Event
+        airconsole.onReady = function() {
+            console.log("AirConsole: OnReady");
+            vm = new AirConsoleViewManager(airconsole);
+
+            if(analytics_tutorial_read)
+                analytics_tutorial();
+
+            ready = true;
+        }
+
+        // AirConsole OnConnect Event
+        airconsole.onConnect = function() {
+            console.log("AirConsole: OnConnect");
+
+            // Change Text on StartScreen and opacity of NewGame button
+            waitingForPlayers();
+            newGameButtonStyle();
+
+            // CustumData Initialize
+            if(!getData)
+                customDataInit();
+
+            if(!noSM)
+                statemachine();
+        }
+
+        // AirConsole OnDisConnect Event
+        airconsole.onDisconnect = function() {
+            console.log("AirConsole: OnDisconnect");
+
+            // Change Text on StartScreen and opacity of NewGame button
+            waitingForPlayers();
+            newGameButtonStyle();
+
+            if(!noSM)
+                statemachine();
+        }
+
+        // AirConsole OnMessage Event
+        airconsole.onMessage = function(from, data) {
+
+            if(!getData)
+                customDataInit();
+
+            if(!getData)
+                return;
+
+            if(data['playerInfo'])
+            {
+                customdata.player = data['playerInfo']['player'];
+                customdata.nick = data['playerInfo']['nick'];
+
+                document.getElementById("ready").getElementsByClassName("title")[0].innerHTML = customdata.nick;
+                document.getElementById("gM0").innerHTML = customdata.nick;
+
+                document.getElementById("ready").getElementsByClassName("player")[0].style.backgroundColor = customdata.colors[customdata.player];
+                document.getElementById("gameMenu").getElementsByClassName("player")[0].style.backgroundColor = customdata.colors[customdata.player];
+            }
+            if(data['timer'])
+            {
+                timer = data.timer;
+                countdown();
+            }
+            if(data['output'])
+            {
+                button = new Array(8);
+
+                for(i = 0; i < 8; i++)
+                {
+                    button[i] = parseInt(data['output'].charAt(i));
+                    if(i < 4)
+                        dirStyle(i);
+                    else
+                        document.getElementById("dir"+(i-4).toString()).style.backgroundImage = "url('" + dirImg[button[i]] + "')";
+                }
+            }
+            if(data['enemies'])
+            {
+                enemies = new Array(data['enemies'].length);
+
+                for(i = 0; i < data['enemies'].length; i++)
+                {
+                    enemies[i] = parseInt(data['enemies'].charAt(i));
+                }
+
+                enemyScreen();
+            }
+            if(data === "attack")
+            {
+                attack = true;
+            }
+            if(data === "reset")
+            {
+                customdata.player = -1;
+                customdata.nick = '';
+                reset();
+
+                if(lanesDivs.length > 0 && threatDivs.lenght > 0)
+                {
+                    for (var i = 0; i < lanesDivs.length; ++i) {
+                        lanesDivs[i].parentNode.removeChild( lanesDivs[i] );
+                    }
+                    for (var i = 0; i < threatDivs.length; ++i) {
+                        threatDivs[i].parentNode.removeChild( threatDivs[i] );
+                    }
+
+                    enemies = [];
+                    threatDivsSetup = false;
+                }
+            }
+        }
+
+        // AirConsole OnCustomDeviceStateChange Event
+        airconsole.onCustomDeviceStateChange = function(device_id, data) {
+
+            // console.log('CustomDeviceStateChange: ID: ' + device_id);
+            // console.log(data);
+
+            if(!getData)
+                customDataInit();
+
+            if(device_id === 0 && getData)
+            {
+                state = data.state;
+                // console.log("Set local state to state from screen "+state+' Player: '+customdata.player);
+                customdata.drawTime = data.drawTime;
+                customdata.started = data.started;
+
+                statemachine();
+            }
+        }
+
+        // Setup CSS of specific elements
+        document.getElementById("tutorial-text").innerHTML = tutTxt[tutInd];
+
+        // Setup Mouse Controll for input
+        if (!("ontouchstart" in document.createElement("div"))) {
+            var elements = document.getElementsByTagName("*");
+            for (var i = 0; i < elements.length; ++i) {
+                var element = elements[i];
+                var ontouchstart = element.getAttribute("ontouchstart");
+                if (ontouchstart) {
+                element.setAttribute("onmousedown", ontouchstart);
+                }
+                var ontouchend = element.getAttribute("ontouchend");
+                if (ontouchend) {
+                    element.setAttribute("onmouseup", ontouchend);
+                }
+            }
+        }
+
+        console.log("AirConsole is ready");
+
+        statemachine();
+    }
+
+    function customDataInit() {
+
+        // Fetch data from screen
+        var data = airconsole.getCustomDeviceState(0);
+
+        // Check if data is not undefined
+        if(typeof data == "undefined")  // Should work with Chrome
+        {
+            console.log("data was undefined. Return.");
+            return;
+        }
+        else if(data == undefined)  // Possibly doesn't work with Chrome
+        {
+            console.log("data was undefined. Return.");
+            return;
+        }
+
+        // If data is defined, check if it has the right properties. --> if it was already set by unity
+        if(data.hasOwnProperty("started")){
+            console.log("CustomDeviceState of Screen was found. Customdata was initialized.");
+            customdata = airconsole.getCustomDeviceState(0);
+            getData = true;
+            statemachine();
+        }
+        // If unity hasn't yet set the data --> write to console.
+        else{
+            console.log("CustomDeviceState of Screen was found, but did NOT have the right values. Customdata was NOT initialized.");
+        }
+    }
+
+    function statemachine()
+    {
+        if(customdata == undefined)
+        {
+            console.log("customdata is undefined");
+            return;
+        }
+
+        if(ready)
+        {
+            // console.log("Controller: StateMachine");
+
+            if(customdata.started && customdata.player === -1)
+            {
+                if(state === 6)
+                    vm.show('disconnect');
+                else
+                    vm.show('waiting');
+            }
+
+            else if(getData){
+                // console.log('state: '+state + ' player: '+customdata.player);
+                switch(state)
+                {
+                    // New Game
+                    // This is negative since it does derive from an actual state from the playengine.
+                    // It is triggered by AirConsoleInput.cs before playengine is even loaded.
+                    // It is negative so that it doesn't intervene with the (int)Enum value of the states.
+                    case -1:
+                        vm.show('newGame');
+                        break;
+
+                    case 0: // Waiting For Player
+                        if(noSM)
+                            break;
+
+                        var id = airconsole.getDeviceId();
+                        var ids = airconsole.getControllerDeviceIds();
+
+                        if(ids[0] === id)
+                        {
+                            vm.show('start-select');
+                            //vm.show('loading');
+                        }
+
+                        else
+                            vm.show('start');
+                        break;
+
+                    case 1: // New Game
+                        vm.show('ready');
+                        gameMenu = false;
+                        pause = false;
+                        break;
+
+                    case 2: // Threat
+                        vm.show('threat');
+
+                        break;
+
+                    case 3: // Planning
+                        countdown();
+
+                        if(gameMenu)
+                        {
+                            gameMenuStyle();
+                            vm.show('gameMenu');
+                        }
+                        else
+                            vm.show('planning');
+
+                        attack = false;
+                        break;
+
+                    case 4: // OutCome
+                        vm.show('outcome');
+                        reset();
+                        break;
+
+                    case 5: // Pause
+                        pause = true;
+
+                        gameMenuStyle();
+                        vm.show('gameMenu');
+                        break;
+
+                    case 6: // PlayerDisconnect
+                        vm.show('disconnect');
+                        break;
+
+                    case 7: // Win
+                        vm.show('win');
+                        break;
+                    case 8: // Loose
+                        vm.show('loose');
+                        break;
+                    case 9: // Loose
+                        vm.show('info');
+                        break;
+                }
+            }
+            else{
+                if(!noSM)
+                    vm.show('loading');
+            }
+        }
+    }
+
+    function reset() {
+        timer = 0;
+        gameMenu = false;
+        pause = false;
+    }
+
+    function buttonPress(id) {
+        var message;
+
+        if(id < 4) {
+            if(button[id] < 5){
+                button[id] = clamp(button[id],3);
+
+                if(button[id] === 0 | button[id] === 2 | button[id] === 4)
+                    button[id+4] = 4;
+                else
+                    button[id+4] = 2;
+
+                dirStyle(id);
+                sendData();
+            }
+        }
+        else if(id >3 && id < 8) {
+            if (button[id-4] === 1 | button[id-4] === 3) {
+                button[id] = clamp(button[id],3);
+                document.getElementById("dir"+(id-4).toString()).style.backgroundImage = "url('" + dirImg[button[id]] + "')";
+                sendData();
+            }
+        }
+        else if(id === 8)
+        {
+            vm.show('outcome');
+
+            message = {'finish': true };
+            airconsole.message(AirConsole.device_id, message);
+        }
+        else if(id === 9)
+        {
+            pause = !pause;
+
+            message = {'pause': pause };
+            airconsole.message(AirConsole.device_id, message);
+
+            if(pause)
+                gameMenuStyle();
+        }
+        else if(id === 10)
+        {
+            message = {'quit': true };
+            airconsole.message(AirConsole.device_id, message);
+        }
+    }
+
+    function showGameMenu () {
+        if(state === 3 || state === 4)
+        {
+            gameMenu = !gameMenu
+
+            gameMenuStyle();
+
+            if(gameMenu)
+                vm.controllersShow('gameMenu');
+            else
+                statemachine();
+        }
+    }
+    function gameMenuStyle()
+    {
+        if(!pause)
+        {
+            document.getElementById("mB1").innerHTML = 'pause game';
+            document.getElementById("mB1").style.fontWeight = "normal";
+            document.getElementById("gameMenuTitle").innerHTML = "";
+            document.getElementById("gameMenuButton").style.display = "block";
+            vm.controllersShow('gameMenu');
+        }
+        else
+        {
+            document.getElementById("mB1").innerHTML = 'unpause';
+            document.getElementById("mB1").style.fontWeight = "bold";
+            document.getElementById("gameMenuTitle").innerHTML = "Game paused";
+            document.getElementById("gameMenuButton").style.display = "none";
+            vm.controllersShow('gameMenu');
+        }
+    }
+
+    function dirStyle(id) //id,btn,dir
+    {
+        // Style planning buttons
+        if(button[id] != 5)
+        {
+            document.getElementById("back" + id.toString()).style.backgroundColor = "rgba(0, 0, 0, 0.05)";
+            document.getElementById("button" + id.toString()).style.backgroundImage = "url('" + actImg[button[id]] + "')";
+            document.getElementById("label" + id.toString()).innerHTML = actTxt[button[id]];
+
+            if (button[id] === 0 | button[id] === 2 | button[id] === 4)
+            {
+                document.getElementById("dir"+id.toString()).style.backgroundColor = "transparent";
+                document.getElementById("dir"+id.toString()).style.backgroundImage = "url('" + dirImg[4] + "')";
+            }
+            else
+            {
+                document.getElementById("dir"+id.toString()).style.backgroundColor = customdata.colors[customdata.player];
+                document.getElementById("dir"+id.toString()).style.backgroundImage = "url('" + dirImg[2] + "')";
+            }
+        }
+        // Insert Stunned actions
+        else
+        {
+            document.getElementById("back" + id.toString()).style.backgroundColor = "transparent";
+            document.getElementById("button" + id.toString()).style.backgroundImage = "url('act5.png')";
+            document.getElementById("label" + id.toString()).innerHTML = "Player stunned";
+
+            document.getElementById("dir"+id.toString()).style.backgroundColor = "transparent";
+            document.getElementById("dir"+id.toString()).style.backgroundImage = "url('" + dirImg[4] + "')";
+        }
+    }
+
+    function clamp(int, max) {
+        int = int + 1;
+
+        if (int > max) {
+            int = 0;
+        }
+
+        return int;
+    }
+
+    function countdown() {
+
+        var percent = 13+(74/customdata.drawTime)*timer;
+
+        if(timer <= customdata.drawTime)
+            document.getElementById("timer").style.right = percent.toString() + "%";
+    }
+
+    function sendData() {
+
+        if(state === 3)
+        {
+            var s = "";
+
+            for(var i = 0; i < 8; i++)
+            {
+                s += button[i].toString();
+            }
+
+            var message = { 'input': s };
+            airconsole.message(0, message);
+        }
+    }
+
+    function startGame(gameMode){
+
+        if(airconsole.getControllerDeviceIds().length >= 2)
+        {
+            var message = {'newGame': gameMode};
+            airconsole.message(0, message);
+        }
+    }
+    function newGameButtonStyle()
+    {
+        if(airconsole.getControllerDeviceIds().length >= 2)
+            document.getElementById("newGameButton").style.opacity = "1.0";
+        else
+            document.getElementById("newGameButton").style.opacity = "0.4";
+    }
+
+    function enemyScreen(){
+
+        if(enemies.lenght != 0 && threatDivsSetup === false)
+        {
+            lanesDivs = new Array(enemies.lenght);
+            threatDivs = new Array(enemies.lenght);
+
+            for(i = 0; i < enemies.length; i ++)
+            {
+                var div = document.createElement('div');
+                document.getElementById('threat').appendChild(div);
+                div.className = 'enemy-background';
+                div.id = 'enemyBack'+i.toString();
+                div.style.left = ((100/(enemies.length+1)*(i+1))-5).toString()+'%';
+
+                lanesDivs[i] = div;
+
+                var div2 = document.createElement('div');
+                div.appendChild(div2);
+                div2.className = 'enemy';
+                div2.id = 'enemy'+i.toString();
+                div2.innerHTML = enemies[i].toString();
+
+                threatDivs[i] = div2;
+            }
+            threatDivsSetup = true;
+        }
+        if(threatDivsSetup === true)
+        {
+            for(i = 0; i < enemies.length; i ++)
+            {
+                threatDivs[i].innerHTML = enemies[i].toString();
+
+                if(enemies[i] === 0)
+                {
+                    lanesDivs[i].style.backgroundColor = '#4f3d3d';
+                    threatDivs[i].style.color = 'navajowhite';
+                }
+                else if(enemies[i] === 1)
+                {
+                    threatDivs[i].style.color = 'black';
+                    lanesDivs[i].style.backgroundColor = 'orange';
+                }
+                else if(enemies[i] === 2)
+                {
+                    threatDivs[i].style.color = 'black';
+                    lanesDivs[i].style.backgroundColor = 'darkorange';
+                }
+                else if(enemies[i] === 3)
+                {
+                    threatDivs[i].style.color = 'white';
+                    lanesDivs[i].style.backgroundColor = 'red';
+                }
+            }
+
+            if(attack === true)
+                document.getElementById('attack').innerHTML = 'ATTACK';
+            else
+                document.getElementById('attack').innerHTML = '   ';
+        }
+
+    }
+
+    function initImages()
+    {
+        // push tutorial images to the array
+        for(i = 1; i < 12; i ++)
+        {
+            tutImg.push('tu_'+i.toString()+'.png');
+        }
+    }
+
+    function tutorial(i)
+    {
+        tutInd += i;
+
+        if(tutInd > 10)
+        {
+            tutInd = 0;
+            noSM = false;
+
+            // Analytics
+            analytics_tutorial_read = true;
+            analytics_tutorial();
+
+            statemachine();
+        }
+        if(tutInd < 0)
+        {
+            tutInd = 0;
+            noSM = false;
+            statemachine();
+        }
+
+        document.getElementById("tutorial-picture").style.backgroundImage = "url('" + tutImg[tutInd] + "')";
+        document.getElementById("tutorial-text").innerHTML = tutTxt[tutInd];
+
+    }
+    function about(i)
+    {
+        abtInd += i;
+
+        if(abtInd > 3 | abtInd < 0)
+        {
+            abtInd = 0;
+            noSM = false;
+            statemachine();
+        }
+
+        switch (abtInd)
+        {
+            case 0:
+                document.getElementById("about-text").style.width = "90%";
+                document.getElementById("about-text").style.left = "5%";
+                document.getElementById("about-text").style.top = "73%";
+                document.getElementById("about-text").style.height = "27%";
+                document.getElementById("about-picture").style.display = "block";
+                break;
+
+            case 1:
+                document.getElementById("about-text").style.width = "70%";
+                document.getElementById("about-text").style.left = "15%";
+                document.getElementById("about-text").style.top = "40%";
+                document.getElementById("about-text").style.height = "33%";
+                document.getElementById("about-picture").style.display = "none";
+                break;
+            case 2:
+                document.getElementById("about-text").style.top = "37%";
+                break;
+            case 3:
+                document.getElementById("about-text").style.top = "43%";
+                break;
+        }
+
+        //document.getElementById("about-picture").style.backgroundImage = "url('" + abtImg[abtInd].src + "')";
+        document.getElementById("about-text").innerHTML = abtTxt[abtInd];
+
+    }
+
+    function waitingForPlayers()
+    {
+        var ids = airconsole.getControllerDeviceIds();
+        if(ids.length < 2)
+        {
+            document.getElementById("start-select").getElementsByClassName("title")[0].innerHTML = '1 Player connected: Waiting for more.';
+        }
+        else
+        {
+            document.getElementById("start-select").getElementsByClassName("title")[0].innerHTML = ids.length.toString()+' Players connected: The game is now ready!';
+        }
+    }
+
+    function analytics_tutorial()
+    {
+        if (ready)
+        {
+            message = {'tutorial': analytics_tutorial_read };
+            airconsole.message(AirConsole.device_id, message);
+
+            analytics_tutorial_read = false;
+        }
+    }
+
+    </script>
+    <style type="text/css">
+        html, body {
+            font-family: 'Roboto Slab', serif;
+            text-align: center;
+        }
+
+        .view {
+            position: absolute;
+            display: block;
+            background-image: url(background.jpg);
+            background-color: navajowhite;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .title {
+            position: absolute;
+            top: 40%;
+            left: 20px;
+            right: 20px;
+            padding: 20px;
+            resize: vertical;
+            color: #4f3d3d;
+            font-size: 4vw;
+            font-weight: bold;
+        }
+
+        .text {
+            position: absolute;
+            overflow: auto;
+            width: 70%;
+            height: 27%;
+            left: 15%;
+            top: 70%;
+            font-size: 3vw;
+            color: #4f3d3d;
+        }
+
+        .picture {
+            position: absolute;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .dir {
+            display: block;
+            background-color: "transparent";
+            background-image: url('arDefault.png');
+            background-blend-mode: multiply;
+            background-size: contain;
+            background-repeat: no-repeat;
+            border-radius: 50%;
+            height: 15vw;
+            width: 15vw;
+            margin: 12% auto;
+        }
+
+        .act {
+            display: block;
+            position: absolute;
+            width: 20vw;
+            height: 20vw;
+            bottom: 0%;
+        }
+
+        .button {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 55%;
+            top: 45%;
+        }
+
+        .button_label {
+            position: absolute;
+            font-size: 9vw;
+            font-weight: bold;
+            color: #4f3d3d;
+            width: 100%;
+            top: 40%;
+        }
+
+        .button-background {
+            position: absolute;
+            display: block;
+            background-color: rgba(0, 0, 0, 0.05);
+            width: 20%;
+            height: 70%;
+            top: 15%;
+        }
+
+        .gameButton {
+            position: absolute;
+            top: 37%;
+            background-image: url(button_menu.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 15vw;
+            width: 7.5vw;
+        }
+
+        .menuButton {
+            position: absolute;
+            display: block;
+            background-image: url(button.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 35%;
+            height: 15%;
+            left: 10%;
+        }
+
+        .menuButtonLabel {
+            position: absolute;
+            text-align: center;
+            font-size: 3.5vw;
+            color: #4f3d3d;
+            top: 12px;
+            left: 0%;
+            width: 100%;
+        }
+
+        .tutorialButton {
+            position: absolute;
+            display: block;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 12%;
+            height: 40%;
+            top: 30%;
+        }
+
+        #timer {
+            position: absolute;
+            display: inline-block;
+            background-color: orange;
+            height: 6.5%;
+            left: 13%;
+            right: 13%;
+            bottom: 6%;
+        }
+
+        .enemy-background {
+            position: absolute;
+            background-color: green;
+            background-size: contain;
+            background-repeat: no-repeat;
+            border-radius: 50%;
+            height: 10vw;
+            width: 10vw;
+            bottom: 12%;
+        }
+
+        .enemy {
+            position: absolute;
+            font-size: 5vw;
+            font-weight: bold;
+            width: 100%;
+            top: 1.5vw;
+        }
+
+        .player {
+            position: absolute;
+            border-radius: 50%;
+            height: 30vw;
+            width: 30vw;
+            top: 22%;
+            left: 35%;
+            background-color: white;
+        }
+
+        .playerImage {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-size: 50%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url('avatar.png');
+        }
+
+        #attack {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            padding: 20px;
+            resize: vertical;
+            font-size: 5vw;
+            font-weight: bold;
+        }
+
+        .preload-img {
+            display: none;
+        }
+    </style>
+</head>
+<body onload="setup()">
+
+    <div id="default" class="view default-view" style="background-image: none;">
+        <div class="title" style="top: 35%">Castle Hustle is downloading.</div>
+        <div class="text" style="top: 55%">Hold on, this takes less than 30 seconds.</div>
+    </div>
+
+    <div id="loading" class="view">
+        <div class="title" style="top: 35%">Castle Hustle is downloading.</div>
+        <div class="text" style="top: 55%">Hold on, this takes less than 30 seconds.</div>
+        <div class="menuButton" style="top: 70%; left: 32.5%;" ontouchstart="vm.show('tutorial'); noSM = true;">
+            <div class="menuButtonLabel">tutorial</div>
+        </div>
+    </div>
+
+    <div id="start-select" class="view">
+        <div id="titlescreen" class="picture" style="background-image: url('titlescreen.png'); height: 40vw; width: 40vw; top: 15%; left: 50%;"></div>
+        <div class="menuButton" style="top: 26.5%;" ontouchstart="if(airconsole.getControllerDeviceIds().length >= 2){ vm.show('start-gameMode') };">
+            <div id="newGameButton" class="menuButtonLabel">new Game</div>
+        </div>
+        <div class="menuButton" style="top: 43%;" ontouchstart="vm.show('tutorial'); noSM = true; analytics_tutorial();">
+            <div class="menuButtonLabel">tutorial</div>
+        </div>
+        <div class="menuButton" style="top: 59.5%;" ontouchstart="vm.show('about'); noSM = true;">
+            <div class="menuButtonLabel">about</div>
+        </div>
+        <div class="title" style="top: 80%; font-size: 2.5vw;">Castle Hustle is for 2-5 Players.</div>
+    </div>
+
+    <div id="start-gameMode" class="view">
+        <div id="gameMenuButton" class="gameButton" style="left: 0%;" ontouchstart="vm.show('start-select')"></div>
+        <div class="menuButton" style="top: 18%" ontouchstart="startGame(0)">
+            <div class="menuButtonLabel">novice</div>
+        </div>
+        <div class="menuButton" style="top: 34.5%" ontouchstart="startGame(1)">
+            <div class="menuButtonLabel">advanced</div>
+        </div>
+        <div class="menuButton" style="top: 51%" ontouchstart="startGame(2)">
+            <div class="menuButtonLabel">experienced</div>
+        </div>
+        <div class="menuButton" style="top: 67.5%" ontouchstart="">
+            <!--startGame(3)-->
+            <div class="menuButtonLabel" style="opacity : 0.4;">endless</div>
+        </div>
+        <div class="title" style="padding: 0%;top: 22%; left: 50%; font-size: 2.7vw; font-weight: normal; text-align: left;">For new players</div>
+        <div class="title" style="padding: 0%;top: 38.5%; left: 50%; font-size: 2.7vw; font-weight: normal; text-align: left;">For returning players</div>
+        <div class="title" style="padding: 0%;top: 55%; left: 50%; font-size: 2.7vw; font-weight: normal; text-align: left;">For skilled players</div>
+        <div class="title" style="padding: 0%;top: 71.5%; left: 50%; font-size: 2.7vw; font-weight: normal; text-align: left;">Comming this summer</div><!--How many turns can you survive?-->
+    </div>
+
+    <div id="start" class="view">
+        <div id="titlescreen" class="picture" style="background-image: url('titlescreen.png'); height: 40vw; width: 40vw; top: 15%; left: 50%;"></div>
+        <div class="menuButton" style="top: 33%;" ontouchstart="vm.show('tutorial'); noSM = true;">
+            <div class="menuButtonLabel">tutorial</div>
+        </div>
+        <div class="menuButton" style="top: 52%;" ontouchstart="vm.show('about'); noSM = true;">
+            <div class="menuButtonLabel">about</div>
+        </div>
+    </div>
+
+    <div id="newGame" class="view">
+        <div class="picture" style="background-image: url('outcome.png'); height: 45%; width: 80%; left: 10%; top: 20%;"></div>
+        <div class="title" style="top: 65%;">NEW GAME</div>
+    </div>
+
+    <div id="ready" class="view">
+        <div class="player">
+            <div class="playerImage"></div>
+        </div>
+        <div class="title" style="top: 75%;"></div>
+    </div>
+
+    <div id="info" class="view">
+        <div class="picture" style="background-image: url('about.png'); height: 50%; width: 70%; top:15%; left: 15%;"></div>
+        <div class="text" style="width: 80%; top: 65%; left: 10%;"><b>Castle Hustle is still in development.</b><br>It was created in 3 months by game design students.<br>The full game will be released this summer.</div>
+    </div>
+
+    <div id="tutorial" class="view">
+        <div id="tutorial-text" class="text">Move through the castle, pick up and carry items to the catapults and fire them at the giants.</div>
+        <div id="tutorial-picture" class="picture" style="background-image: url(tu_1.png); height: 85%; width: 75%; left: 13%; top: 8%;"></div>
+        <div class="tutorialButton" style="background-image: url('arLeft.png'); left: 1%;" ontouchstart="tutorial(-1)"></div>
+        <div class="tutorialButton" style="background-image: url('arRight.png'); right: 1%;" ontouchstart="tutorial(1)"></div>
+    </div>
+
+    <div id="about" class="view">
+        <div id="about-picture" class="picture" style="background-image: url('about.png'); height: 50%; width: 70%; top:25%; left: 15%;"></div>
+        <div id="about-text" class="text" style="width: 90%; left: 5%;"><b>Julie Baechtold - Xavier Heimgartner - Nicolas Matter</b><br>Art & Animation - Programming - Rules & Sound</div>
+        <div class="title" style="top: 12%;">About the team</div>
+        <div class="tutorialButton" style="background-image: url('arLeft.png'); left: 1%;" ontouchstart="about(-1);"></div>
+        <div class="tutorialButton" style="background-image: url('arRight.png'); right: 1%;" ontouchstart="about(1);"></div>
+    </div>
+
+    <div id="threat" class="view">
+        <div class="picture" style="background-image: url('threat.png'); height: 37%; width: 80%; left: 10%; top: 15%;"></div>
+        <div class="title" style="top: 49%;">Enemies are approaching</div>
+        <div id="attack"></div>
+    </div>
+
+    <div id="outcome" class="view">
+        <div class="picture" style="background-image: url('outcome.png'); height: 45%; width: 80%; left: 10%; top: 20%;"></div>
+        <div class="title" style="top: 65%;">See your actions on the screen.</div>
+    </div>
+
+    <div id="gameMenu" class="view">
+        <div id="gameMenuButton" class="gameButton" style="left: 0%;" ontouchstart="showGameMenu()"></div>
+        <div id="gameMenuTitle" class="title" style="top: 75%; right: 50%; font-size: 3vw;"></div>
+
+        <div class="menuButton" style="top: 26.5%;" ontouchstart="vm.show('tutorial'); analytics_tutorial();">
+            <div class="menuButtonLabel">tutorial</div>
+        </div>
+        <div class="menuButton" style="top: 43%;" ontouchstart="buttonPress(9);">
+            <div id="mB1" class="menuButtonLabel">pause game</div>
+        </div>
+        <div class="menuButton" style="top: 59.5%;" ontouchstart="vm.show('quitgame');">
+            <div class="menuButtonLabel">quit game</div>
+        </div>
+
+        <div id='gM0' class="title" style="top: 75%; left: 45%;">Player</div>
+        <div class="player" style="left: 55%;">
+            <div class="playerImage"></div>
+        </div>
+    </div>
+
+    <div id="finishturn" class="view">
+        <div class="title" style="top: 20%;">Finish this turn for all Players?</div>
+        <div id="tutorial-text" class="text" style="top: 68%">The remaining time will be skipped and your planned actions will be carried out immediately.</div>
+        <div class="menuButton" style="top: 43%; left: 13%" ontouchstart="buttonPress(8);">
+            <div class="menuButtonLabel">yes</div>
+        </div>
+        <div class="menuButton" style="top: 43%; left: 52%" ontouchstart="statemachine();">
+            <div class="menuButtonLabel">no</div>
+        </div>
+    </div>
+
+    <div id="quitgame" class="view">
+        <div class="title" style="top: 20%;">Quit this game session?</div>
+        <div id="tutorial-text" class="text" style="top: 68%">You will lose this match<br>and go back to the main menu.</div>
+        <div class="menuButton" style="top: 43%; left: 13%" ontouchstart="buttonPress(10);">
+            <div class="menuButtonLabel">yes</div>
+        </div>
+        <div class="menuButton" style="top: 43%; left: 52%" ontouchstart="statemachine();">
+            <div class="menuButtonLabel">no</div>
+        </div>
+    </div>
+
+    <div id="disconnect" class="view">
+        <div class="title" style="top: 20%;">Did you lose a teammate?</div>
+        <div id="tutorial-text" class="text" style="top: 43%">Your friend&#39s phone lost connection to AirConsole. The game will resume when everyone is back online.</div>
+        <div class="menuButton" style="top: 70%; left: 33%;" ontouchstart="vm.show('quitgame');">
+            <div class="menuButtonLabel">quit game</div>
+        </div>
+    </div>
+
+    <div id="waiting" class="view">
+        <div class="title" style="top: 35%">Wait, you're one too many!</div>
+        <div class="text" style="top: 55%">You may take part in the game shortly.</div>
+    </div>
+
+    <div id="win" class="view">
+        <div class="picture" style="background-image: url('win.png'); height: 50%; width: 80%; left: 10%; top:20%;"></div>
+        <div class="title" style="top: 65%; font-size: 8vw;">YOU WIN!</div>
+    </div>
+
+    <div id="loose" class="view">
+        <div class="picture" style="background-image: url('loose.png'); height: 50%; width: 80%; left: 10%; top:17%;"></div>
+        <div class="title" style="top: 65%; font-size: 8vw;">YOU LOSE!</div>
+    </div>
+
+    <div id="planning" class="view">
+        <div id="back0" class="button-background" style="left: 9%">
+            <div id="dir0" class="dir" ontouchstart="buttonPress(4)"></div>
+            <div class="button" ontouchstart="buttonPress(0)">
+                <div class="act">
+                    <div id="button0" class="dir" style="background-image: url(act0.png); border-radius: 0;"></div>
+                </div>
+                <div id="label0" class="button_label" style="font-size: 1.5vw; top: 5%">no action</div>
+            </div>
+        </div>
+
+        <div id="back1" class="button-background" style="left: 30%">
+            <div id="dir1" class="dir" ontouchstart="buttonPress(5)"></div>
+            <div class="button" ontouchstart="buttonPress(1)">
+                <div class="act">
+                    <div id="button1" class="dir" style="background-image: url(act0.png); border-radius: 0;"></div>
+                </div>
+                <div id="label1" class="button_label" style="font-size: 1.5vw; top: 5%">no action</div>
+            </div>
+        </div>
+
+        <div id="back2" class="button-background" style="left: 51%">
+            <div id="dir2" class="dir" ontouchstart="buttonPress(6)"></div>
+            <div class="button" ontouchstart="buttonPress(2)">
+                <div class="act">
+                    <div id="button2" class="dir" style="background-image: url(act0.png); border-radius: 0;"></div>
+                </div>
+                <div id="label2" class="button_label" style="font-size: 1.5vw; top: 5%">no action</div>
+            </div>
+        </div>
+
+        <div id="back3" class="button-background" style="left: 72%">
+            <div id="dir3" class="dir" ontouchstart="buttonPress(7)"></div>
+            <div class="button" ontouchstart="buttonPress(3)">
+                <div class="act">
+                    <div id="button3" class="dir" style="background-image: url(act0.png); border-radius: 0;"></div>
+                </div>
+                <div id="label3" class="button_label" style="font-size: 1.5vw; top: 5%">no action</div>
+            </div>
+        </div>
+
+        <div id="timer"></div>
+
+        <div class="title" style="transform: rotate(270deg); top: 65%; left: -3%; right: 0px; padding: 0px; font-size: 2.5vw; width: 15%">open</div>
+        <div class="title" style="transform: rotate(270deg); top: 29%; left: -3%; right: 0px; padding: 0px; font-size: 2.5vw; width: 15%">menu</div>
+        <div class="gameButton" style="left: 0%;" ontouchstart="showGameMenu()"></div>
+
+        <div class="title" style="transform: rotate(270deg); top: 65%; left: 87.5%; padding: 0px; font-size: 2.5vw; width: 15%">finish</div>
+        <div class="title" style="transform: rotate(270deg); top: 29%; left: 87.5%; padding: 0px; font-size: 2.5vw; width: 15%">turn</div>
+        <div class="gameButton" style="right: 0%; background-image: url(button_finishturn.png);" ontouchstart="vm.show('finishturn');"></div>
+
+    </div>
+
+    <div class="preload-img" style="background-image: url(ar1.png)"></div>
+    <div class="preload-img" style="background-image: url(ar2.png)"></div>
+    <div class="preload-img" style="background-image: url(ar3.png)"></div>
+    <div class="preload-img" style="background-image: url(ar4.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_2.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_3.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_4.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_5.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_6.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_7.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_8.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_9.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_10.png)"></div>
+    <div class="preload-img" style="background-image: url(tu_11.png)"></div>
+    <div class="preload-img" style="background-image: url(act1.png)"></div>
+    <div class="preload-img" style="background-image: url(act2.png)"></div>
+    <div class="preload-img" style="background-image: url(act3.png)"></div>
+</body>
+</html>
