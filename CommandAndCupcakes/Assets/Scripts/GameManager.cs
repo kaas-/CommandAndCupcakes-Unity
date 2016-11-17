@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Awake () {
+	void Start () {
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour {
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
         currentPlayer = 0;
 
+        Debug.Log("Start log");
+
     }
 
     //Gets called to start the game
@@ -44,6 +46,7 @@ public class GameManager : MonoBehaviour {
         //Start the game with a certain amount of players. playerCount defines the amount of players.
         //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
         AirConsole.instance.SetActivePlayers(playerCount);
+        isStarted = true;
     }
 
     private void Action(int player, string[] actions)
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour {
         //isMoving == false, means active player is not moving,
         //isWaiting == false, means active player has executed their turn
         //isPaused == false, because we don't want to continue if paused
-        if (!isMoving && !isWaiting && !isPaused)
+        if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
             nextTurn();
             isWaiting = true;
@@ -127,6 +130,7 @@ public class GameManager : MonoBehaviour {
     //When a device connects to the game
     void OnConnect(int device_id)
     {
+        Debug.Log("Device no. " + device_id + " connected");
         //If the game has started (SetActivePlayers(int) sets this number to a non-zero value. Thus, if it is 0, the game has not started
         if (AirConsole.instance.GetActivePlayerDeviceIds.Count == 0)
         {
@@ -152,6 +156,7 @@ public class GameManager : MonoBehaviour {
     {
         //pause
         isPaused = true;
+        Debug.Log("Device no " + device_id + " disconnected");
     }
 
     //do we need this? probably not. Not sure under what circumstances this would be called.

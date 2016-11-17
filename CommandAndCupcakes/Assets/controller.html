@@ -13,12 +13,12 @@
         }    </style>    <h1>CONTROLLER TEST</h1>    <button onclick="vm.show('start')">Start</button>
     <button onclick="vm.show('waiting')">Waiting</button>       
     <div id="start" class="view default-view">
-        <div class="button" onclick="vm.show('waiting')">
+        <div id="geemubutton" class="button">
             GEEMU!
         </div>
     </div>
     <div id="waiting" class="view">
-        <div class="button" onclick="vm.show('start')">
+        <div id="nooobutton" class="button">
             NOOO
         </div>
     </div>
@@ -32,6 +32,17 @@
 
         var airconsole = new AirConsole({"orientation":"landscape"});
         var vm = null;
+
+        var geemubutton = document.getElementById("geemubutton");
+        var nooobutton = document.getElementById("nooobutton");
+
+        geemubutton.addEventListener('touchstart', function () {
+            vm.show('waiting');
+        });
+
+        nooobutton.addEventListener('touchstart', function () {
+            vm.show('start');
+        });
 
         airconsole.onReady = function () {
             vm = new AirConsoleViewManager(airconsole);
