@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using NDream.AirConsole;
+using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
 
 
 public class MapPiece : MonoBehaviour
@@ -11,8 +15,8 @@ public class MapPiece : MonoBehaviour
     long num_tiles = 4;
     bool[,] board;
     System.Random rnd;
-    public GameObject pirate;
-
+    public GameObject[] pirate/* = new GameObject[4]*/;
+    List<int> device_ids = new List<int>();
     // Use this for initialization
     void Start()
     {
@@ -21,13 +25,56 @@ public class MapPiece : MonoBehaviour
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
         RandomiseTiles();
+        
+
+        AirConsole.instance.onMessage += OnMessage;
+        AirConsole.instance.onConnect += OnConnect;
+    }
+
+    GameObject getPirateFromDeviceId(int device_id)
+    {
+        int player_index = device_ids.IndexOf(device_id);
+        //Console.Out.WriteLine("Device ids " + device_ids.ToString());
+        Debug.Log("Device ids total" + device_ids.Count);
+        foreach (int id in device_ids)
+        {
+            Debug.Log("Device id in list: " + id);
+        }
+        Debug.Log("Player Index: " + player_index);
+        return pirate[player_index];
+    }
+
+    void OnConnect(int device_id)
+    {
+        Debug.Log("Device id connected: " + device_id);
+        Debug.Log("Device ids size: " + device_ids.Count);
+
+        if (!device_ids.Contains(device_id))
+        {
+            device_ids.Add(device_id);
+        }
+    }
+
+   
+    void OnMessage(int from, JToken data)
+    {
+        //TODO determine which pirate it is
+        GameObject sendingPirate = getPirateFromDeviceId(from); 
+        string action = (string)data["action"];
+        if (action == "inspect")
+        {
+            int[] tile = CalculateTile(sendingPirate);
+            if (HasMapPiece(tile[0], tile[1]))
+            {
+                SendMapPiece(from);
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        int[] tile = CalculateTile(pirate);
-        GetMapPiece(tile[0], tile[1]);
+        
     }
 
     /// <summary>
@@ -38,7 +85,7 @@ public class MapPiece : MonoBehaviour
         int i = 0;
 
         //defines what percent of tiles contains a map piece
-        float percentage = 0.25f;
+        float percentage = 1.0f;
 
         //number of tiles with a map piece/pieces 
         int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
@@ -107,15 +154,30 @@ public class MapPiece : MonoBehaviour
     /// </summary>
     /// <param name="tile_x"> the tile in the x direction the player is in </param>
     /// <param name="tile_z"> the tile in the z direction the player is in </param>
-    void GetMapPiece(int tile_x, int tile_z)
+    bool HasMapPiece(int tile_x, int tile_z)
     {
         //check if the player is on the tile that contains a map piece
         if (board[tile_x, tile_z])
         {
-            Debug.Log("Success");
-            //send the map piece to the phone
+            return true;
         }
+        else
+        {
+            return false;
+        }
+    }
 
+    void SendMapPiece(int device_id)
+    {
+        Debug.Log("Sending Mappiece, device id " + device_id);
+        //send the map piece to the phone
+        var message = new
+        {
+
+            action = "mapPieceFound"
+        };
+
+        AirConsole.instance.Message(device_id, message);
     }
 }
 
