@@ -40,19 +40,34 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+
+        //isMoving == false, means active player is not moving,
+        //isWaiting == false, means active player has executed their turn
+        //isPaused == false, because we don't want to continue if paused
+        if (!isMoving && !isWaiting && !isPaused && isStarted)
+        {
+            //nextTurn();
+            isWaiting = true;
+        }
+    }
+
     //Gets called to start the game
     void StartGame()
     {
         //Start the game with a certain amount of players. playerCount defines the amount of players.
         //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
+        Debug.Log("Game started");
+        playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
-    }
 
-    private void Action(int player, string[] actions)
-    {
-        //Actions to be executed are sent to the appropriate player object.
-        playerObjects[currentPlayer].SendMessage("Action", actions);
+        Debug.Log("Player count: " + playerCount);
+
+        Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+        AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
     private void nextTurn()
@@ -63,24 +78,18 @@ public class GameManager : MonoBehaviour {
         else
             currentPlayer++;
 
-        var message = new { turn = true };
-
         //send message to controller of next player
-        AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), message);
+        Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+        AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
-    // Update is called once per frame
-    void Update () {
-        
-        //isMoving == false, means active player is not moving,
-        //isWaiting == false, means active player has executed their turn
-        //isPaused == false, because we don't want to continue if paused
-        if (!isMoving && !isWaiting && !isPaused && isStarted)
-        {
-            nextTurn();
-            isWaiting = true;
-        }
-	}
+    private void Action(int player, string[] actions)
+    {
+        //Actions to be executed are sent to the appropriate player object.
+        Debug.Log("Current player: " + currentPlayer);
+        //playerObjects[currentPlayer].SendMessage("Action", actions);
+    }
+
 
     //handles messages from controllers, gets called whenever a controller does something
     //device_id; the controller that did the thing, data; whatever it did
@@ -99,8 +108,9 @@ public class GameManager : MonoBehaviour {
         }
         else //if the game has started, the message will be actions for turns
         {
+            Debug.Log("Message received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
             //If the controller that sent the message corresponds to active player
-            if (AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) == AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer))
+            if (device_id == AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer))
             {
 
                 //execute turn
@@ -112,7 +122,8 @@ public class GameManager : MonoBehaviour {
                 Action(currentPlayer, actions);
 
                 //so that the game knows the player has executed their turn
-                isWaiting = false;
+                //isWaiting = false;
+                nextTurn();
             }
             else
             {
@@ -138,6 +149,10 @@ public class GameManager : MonoBehaviour {
             if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
             {
                 //too many players
+            }
+            else if(AirConsole.instance.GetControllerDeviceIds().Count == 2)
+            {
+                StartGame();
             }
             else
             {

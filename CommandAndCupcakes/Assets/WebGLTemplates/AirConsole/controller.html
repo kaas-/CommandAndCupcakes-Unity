@@ -9,65 +9,81 @@
     
 </head>
 
-<body>
+<body onload="setup()">
+
     <style type="text/css">
 
         body {
             background-color    : burlywood;
+            text-align          : center;
         }
 
         .view {
-            position    : absolute;
-            height      : 100%;
-            width       : 100%;
-            display     : block;
+            position    		: absolute;
+            display     		: block;
+			background-size		: 100% 100%;
+            background-position	: center;
+            background-repeat	: no-repeat;
+           	height      		: 100%;
+            width       		: 100%;
+			top					: 0px;
+			left				: 0px;
+			max-height			: 100%;
+			max-width			: 100%;
         }
 
         .button {
-            position: absolute;
-            display: block;
-            background-color: rgba(0, 0, 0, 0.05);
-            width: 20%;
-            height: 70%;
-            top: 15%;
+            position            : absolute;
+            display             : block;
+            background-color    : rgba(0, 0, 0, 0.05);
+            background-repeat   : no-repeat;
+            top                 : 7%;
         }
 
         /*START SCREEN*/    
         #start_button {
             padding : 10px, 20px;
             display : block;
-            width   : 60%;
-            height  : 40%;
+            width   : 60vw;
+            height  : 10vw;
         }
 
         /*PLANNING SCREEN*/
         .planning_area {
+            position: absolute;
             width   : 90%;
             height  : 27%;
-            padding : 10%;
         }
 
         #planned_actions_area {
+
             background-color    : aquamarine;
+            top                 : 0%;
         }
 
         #action_button_area {
             background-color    : darkgray;
+            top                 : 33%;
         }
 
         #execute_turn_button_area {
             background-color    : blueviolet;
+            top                 : 67%;
         }
 
         .action_button{
-            width   : 9%;            
+            width           : 7vw;
+            height          : 7vw;
         }
+ 
         .action_indicator{
 
         }
 
         #execute_turn_button{
-            background-image    : url('/img/execute_turn.png');
+            background-image    : url('/img/do_It.png');
+            width               : 50%;
+            height              : 7vw;
              
         }
 
@@ -76,7 +92,7 @@
         }
 
         #move_right_button{
-            background-image    : url('/img/move_righ.png');
+            background-image    : url('/img/move_right.png');
         }
 
         #move_up_button{
@@ -109,43 +125,49 @@
     </div>
 
     <!--PLANNING SCREEN-->
-    <div id="planning" class="view default-view">
-        <div id="planned_actions_area" class="planning_area">
-
+    <div id="planning" class="view">
+        <div id="planned_actions_area" class="planning_area" style="top: 4%">
+			<div id="planned_action_1" class="button action_button" style="left: 9%">
+				ACTION 1
+			</div>
+			<div id="planned_action_2" class="button action_button" style="left: 49%">
+				ACTION 2
+			</div>
         </div>
-        <div id="action_button_area" class="planning_area">
-            <div id="move_down_button" class="button action_button">
+        <div id="action_button_area" class="planning_area" style="top: 31%">
+          
+            <div id="move_down_button" class="button action_button" style="left: 10%">
                 DOWN
             </div>
-            <div id="move_up_button" class="button action_button">
+            <div id="move_up_button" class="button action_button" style="left: 18%">
                 UP
             </div>
-            <div id="move_left_button" class="button action_button">
+            <div id="move_left_button" class="button action_button" style="left: 26%">
                 LEFT
             </div>
-            <div id="move_right_button" class="button action_button">
+            <div id="move_right_button" class="button action_button" style="left: 34%">
                 RIGHT
             </div>
-            <div id="attack_button" class="button action_button">
+            <div id="attack_button" class="button action_button" style="left: 42%">
                 ATTACK
             </div>
-            <div id="dig_button" class="button action_button">
+            <div id="dig_button" class="button action_button" style="left: 50%">
                 DIG
             </div>
-            <div id="interact_button" class="button action_button">
+            <div id="interact_button" class="button action_button" style="left: 58%">
                 INTERACT
             </div>
         </div>
         <div id="execute_turn_button_area" class="planning_area">
-            <div id="execute_turn_button">
-                
+            <div id="execute_turn_button" class="button" style="left: 33%">
+                TURN
             </div>
         </div>
         
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-    <div id="waiting" class="view">
+    <div id="waiting" class="view default-view">
 
     </div>
 
@@ -153,18 +175,15 @@
     
     <script type="text/javascript">
 
-        var airconsole = new AirConsole({"orientation":"landscape"});
-        var vm = null;
+        var airconsole;
+        var vm;
 
-        var actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
-        var action_1, action_2;
+        var possible_actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
+        var actions = [];
+		var action_selector = 0;
 
         //Start menu buttons
         var start_button = document.getElementById("start_button");
-
-        start_button.addEventListener('touchstart', function () {
-            vm.show('planning');
-        });
 
         //Planning phase buttons
         var move_up_button = document.getElementById("move_up_button");
@@ -174,26 +193,60 @@
         var attack_button = document.getElementById("attack_button");
         var interact_button = document.getElementById("interact_button");
         var dig_button = document.getElementById("dig_button");
-        var execut_turn_button = document.getElementById("execute_turn_button");
+		
+		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
+		
+        var execute_turn_button = document.getElementById("execute_turn_button");
 
-        move_up_button.addEventListener('touchstart', function () { });
-        move_down_button.addEventListener('touchstart', function () { });
-        move_left_button.addEventListener('touchstart', function () { });
-        move_right_button.addEventListener('touchstart', function () { });
-        attack_button.addEventListener('touchstart', function () { });
-        interact_button.addEventListener('touchstart', function () { });
-        dig_button.addEventListener('touchstart', function () { });
+		
+		function setup() {
+		
+			airconsole = new AirConsole({"orientation": "landscape"});
+		
+			airconsole.onReady = function () {
+				vm = new AirConsoleViewManager(airconsole);
+			}
 
-        //AirConsole Callbacks
-        airconsole.onReady = function () {
-            vm = new AirConsoleViewManager(airconsole);
-        }
+			airconsole.onMessage = function (device_id, data) {
+			    console.log("Received message: " + data);
+				if (device_id == AirConsole.SCREEN && data == 'turn') {
+					vm.show('planning');
+				};
+			}
+		};
 
-        airconsole.onMessage = function (device_id, data) {
-            if (device_id === AirConsole.SCREEN && data['turn']) {
-                vm.show('planning');
-            };
-        }
+        move_left_button.addEventListener('touchstart', function () { setAction(0, action_selector); });
+        move_right_button.addEventListener('touchstart', function () { setAction(1, action_selector); }); 
+		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
+        move_down_button.addEventListener('touchstart', function () { setAction(3, action_selector); });
+        interact_button.addEventListener('touchstart', function () { setAction(4, action_selector); });
+		attack_button.addEventListener('touchstart', function () { setAction(5, action_selector); });
+		dig_button.addEventListener('touchstart', function () { setAction(6, action_selector); });
+		
+		planned_action_buttons[0].addEventListener('click', function () {
+			action_selector = 0;
+		});
+		planned_action_buttons[1].addEventListener('click', function () { 
+			action_selector = 1;
+		});
+		
+		execute_turn_button.addEventListener('click', function () {
+
+		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
+		    var message = { 
+		        'action_1': actions[0], 
+		        'action_2': actions[1]};
+
+			airconsole.message(AirConsole.SCREEN, message);
+			vm.show('waiting');
+		});
+		
+		function setAction(action, action_selector)
+		{
+		    console.log("Action: " + possible_actions[action] + " Set image to /img/" + possible_actions[action_selector] + ".png");
+			actions[action_selector] = possible_actions[action];
+			planned_action_buttons[action_selector].style.backgroundImage = "url('/img/" + possible_actions[action] + ".png')";
+		};
     </script>
 
 </body>
