@@ -84,6 +84,8 @@
     var customdata;
 
     var analytics_tutorial_read = false; // tracks if user has read the entire tutorial
+	
+	vm.show('gameMenu');
 
     // Setup Controller. Gets called at the very beginning
     function setup() {
@@ -943,7 +945,7 @@
 </head>
 <body onload="setup()">
 
-    <div id="default" class="view default-view" style="background-image: none;">
+    <div id="default" class="view" style="background-image: none;">
         <div class="title" style="top: 35%">Castle Hustle is downloading.</div>
         <div class="text" style="top: 55%">Hold on, this takes less than 30 seconds.</div>
     </div>
@@ -1044,7 +1046,7 @@
         <div class="title" style="top: 65%;">See your actions on the screen.</div>
     </div>
 
-    <div id="gameMenu" class="view">
+    <div id="gameMenu" class="view default-view">
         <div id="gameMenuButton" class="gameButton" style="left: 0%;" ontouchstart="showGameMenu()"></div>
         <div id="gameMenuTitle" class="title" style="top: 75%; right: 50%; font-size: 3vw;"></div>
 
