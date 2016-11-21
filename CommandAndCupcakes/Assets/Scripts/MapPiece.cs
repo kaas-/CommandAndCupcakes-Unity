@@ -9,14 +9,14 @@ using System.Collections.ObjectModel;
 
 public class MapPiece : MonoBehaviour
 {
-
     float plane_length_x;
     float plane_length_z;
     long num_tiles = 4;
     bool[,] board;
     System.Random rnd;
-    public GameObject[] pirate/* = new GameObject[4]*/;
+    public GameObject[] pirate;
     List<int> device_ids = new List<int>();
+
     // Use this for initialization
     void Start()
     {
@@ -25,7 +25,6 @@ public class MapPiece : MonoBehaviour
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
         RandomiseTiles();
-        
 
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
@@ -34,21 +33,12 @@ public class MapPiece : MonoBehaviour
     GameObject getPirateFromDeviceId(int device_id)
     {
         int player_index = device_ids.IndexOf(device_id);
-        //Console.Out.WriteLine("Device ids " + device_ids.ToString());
-        Debug.Log("Device ids total" + device_ids.Count);
-        foreach (int id in device_ids)
-        {
-            Debug.Log("Device id in list: " + id);
-        }
-        Debug.Log("Player Index: " + player_index);
+        
         return pirate[player_index];
     }
 
     void OnConnect(int device_id)
     {
-        Debug.Log("Device id connected: " + device_id);
-        Debug.Log("Device ids size: " + device_ids.Count);
-
         if (!device_ids.Contains(device_id))
         {
             device_ids.Add(device_id);
@@ -58,8 +48,9 @@ public class MapPiece : MonoBehaviour
    
     void OnMessage(int from, JToken data)
     {
-        //TODO determine which pirate it is
+        //determines which pirate "sends the message"
         GameObject sendingPirate = getPirateFromDeviceId(from); 
+
         string action = (string)data["action"];
         if (action == "inspect")
         {
@@ -85,10 +76,18 @@ public class MapPiece : MonoBehaviour
         int i = 0;
 
         //defines what percent of tiles contains a map piece
-        float percentage = 1.0f;
+        float percentage = 0.25f;
 
         //number of tiles with a map piece/pieces 
         int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
+
+        GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("InteractableObject");
+
+        //checks if there is not enough tiles with objects to assign map pieces to
+        if (true_pos > interactable_objects.Length)
+        {
+            true_pos = interactable_objects.Length;
+        }
 
         while (i < true_pos)
         {
@@ -97,24 +96,33 @@ public class MapPiece : MonoBehaviour
 
             //gets the random position for the z direction
             int pos_z = rnd.Next(0, board.GetLength(1));
-
-            //TODO iterate only through those tiles that contain objects
+            
             //the if condition makes sure not to assign a map piece twice
-            if (!board[pos_x, pos_z] /*&& IsObject()*/)
+            // and iterates only through those tiles that contain objects
+            if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
             {
                 board[pos_x, pos_z] = true;
                 i++;
             }
-            //TODO make condition if there is not enough tile to assign "true" to
         }
     }
+
 
     /// <summary>
     /// checks if there is an object on a given tile
     /// </summary>
     /// <returns></returns>
-    bool IsObject()
-    {
+    bool IsObject(int tile_x, int tile_z, GameObject [] int_objects)
+    { 
+        foreach (GameObject inter_obj in int_objects)
+        {
+            int[] obj_tiles = CalculateTile(inter_obj);
+            
+            if (obj_tiles[0] == tile_x && obj_tiles[1] == tile_z)
+            {
+                return true;
+            }
+        }
         return false;
     }
 
