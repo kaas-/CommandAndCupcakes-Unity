@@ -91,6 +91,9 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>Library\UnityAssemblies\SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
+    <Reference Include="websocket-sharp">
+      <HintPath>Assets\AirConsole\plugins\websocket-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="CommandAndCupcakes.CSharp.csproj">
