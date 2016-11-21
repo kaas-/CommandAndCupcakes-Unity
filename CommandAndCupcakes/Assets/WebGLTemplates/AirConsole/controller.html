@@ -1,64 +1,254 @@
-<html><head>    <script type="text/javascript"
-            src="https://www.airconsole.com/api/airconsole-latest.js"></script>    <script type="text/javascript"             src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>    <script type="text/javascript"            src="airconsole-view-manager.js"></script>    </head><body>    <style type="text/css">        .view {
-            position    :   absolute;
-            height      :   100%;
-            width       :   100%;
-        }        .button {
-            position            :   absolute;
-            height              :   50%;
-            width               :   20%;
-            display             :   block;
-            background-color    :   white;
-            float               :   left;
-        }    </style>    <h1>CONTROLLER TEST</h1>    <button onclick="vm.show('start')">Start</button>
-    <button onclick="vm.show('waiting')">Waiting</button>       
-    <div id="start" class="view default-view">
-        <div id="geemubutton" class="button">
-            GEEMU!
+<html>
+<head>
+    <script type="text/javascript"
+            src="https://www.airconsole.com/api/airconsole-latest.js"></script>
+    <script type="text/javascript" 
+            src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="airconsole-view-manager.js"></script>
+    
+</head>
+
+<body onload="setup()">
+
+    <style type="text/css">
+
+        body {
+            background-color    : burlywood;
+            text-align          : center;
+        }
+
+        .view {
+            position    		: absolute;
+            display     		: block;
+			background-size		: 100% 100%;
+            background-position	: center;
+            background-repeat	: no-repeat;
+           	height      		: 100%;
+            width       		: 100%;
+			top					: 0px;
+			left				: 0px;
+			max-height			: 100%;
+			max-width			: 100%;
+        }
+
+        .button {
+            position            : absolute;
+            display             : block;
+            background-color    : rgba(0, 0, 0, 0.05);
+            background-repeat   : no-repeat;
+            top                 : 7%;
+        }
+
+        /*START SCREEN*/    
+        #start_button {
+            padding : 10px, 20px;
+            display : block;
+            width   : 60vw;
+            height  : 10vw;
+        }
+
+        /*PLANNING SCREEN*/
+        .planning_area {
+            position: absolute;
+            width   : 90%;
+            height  : 27%;
+        }
+
+        #planned_actions_area {
+
+            background-color    : aquamarine;
+            top                 : 0%;
+        }
+
+        #action_button_area {
+            background-color    : darkgray;
+            top                 : 33%;
+        }
+
+        #execute_turn_button_area {
+            background-color    : blueviolet;
+            top                 : 67%;
+        }
+
+        .action_button{
+            width           : 7vw;
+            height          : 7vw;
+        }
+ 
+        .action_indicator{
+
+        }
+
+        #execute_turn_button{
+            background-image    : url('/img/do_It.png');
+            width               : 50%;
+            height              : 7vw;
+             
+        }
+
+        #move_left_button{
+            background-image    : url('/img/move_left.png');
+        }
+
+        #move_right_button{
+            background-image    : url('/img/move_right.png');
+        }
+
+        #move_up_button{
+            background-image    : url('/img/move_up.png');
+        }
+
+        #move_down_button {
+            background-image    : url('/img/move_down.png');
+        }
+
+        #interact_button{
+            background-image    : url('/img/interact.png');
+        }
+
+        #attack_button {
+            background-image    : url('/img/attack.png');
+        }
+
+        #dig_button{
+            background-image    : url('/img/dig.png');
+        }
+               
+
+    </style>
+    <!--START GAME SCREEN-->
+    <div id="start" class="view">
+        <div id="start_button" class="startbutton">
+            Start game!
         </div>
     </div>
-    <div id="waiting" class="view">
-        <div id="nooobutton" class="button">
-            NOOO
+
+    <!--PLANNING SCREEN-->
+    <div id="planning" class="view">
+        <div id="planned_actions_area" class="planning_area" style="top: 4%">
+			<div id="planned_action_1" class="button action_button" style="left: 9%">
+				ACTION 1
+			</div>
+			<div id="planned_action_2" class="button action_button" style="left: 49%">
+				ACTION 2
+			</div>
         </div>
+        <div id="action_button_area" class="planning_area" style="top: 31%">
+          
+            <div id="move_down_button" class="button action_button" style="left: 10%">
+                DOWN
+            </div>
+            <div id="move_up_button" class="button action_button" style="left: 18%">
+                UP
+            </div>
+            <div id="move_left_button" class="button action_button" style="left: 26%">
+                LEFT
+            </div>
+            <div id="move_right_button" class="button action_button" style="left: 34%">
+                RIGHT
+            </div>
+            <div id="attack_button" class="button action_button" style="left: 42%">
+                ATTACK
+            </div>
+            <div id="dig_button" class="button action_button" style="left: 50%">
+                DIG
+            </div>
+            <div id="interact_button" class="button action_button" style="left: 58%">
+                INTERACT
+            </div>
+        </div>
+        <div id="execute_turn_button_area" class="planning_area">
+            <div id="execute_turn_button" class="button" style="left: 33%">
+                TURN
+            </div>
+        </div>
+        
     </div>
-    <div id="turn" class="view">
-        :()
+   
+    <!--WAITING FOR TURN SCREEN-->
+    <div id="waiting" class="view default-view">
+
     </div>
 
 
     
     <script type="text/javascript">
 
-        var airconsole = new AirConsole({"orientation":"landscape"});
-        var vm = null;
+        var airconsole;
+        var vm;
 
-        var geemubutton = document.getElementById("geemubutton");
-        var nooobutton = document.getElementById("nooobutton");
+        var possible_actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
+        var actions = [];
+		var action_selector = 0;
 
-        geemubutton.addEventListener('touchstart', function () {
-            vm.show('waiting');
-        });
+        //Start menu buttons
+        var start_button = document.getElementById("start_button");
 
-        nooobutton.addEventListener('touchstart', function () {
-            vm.show('start');
-        });
+        //Planning phase buttons
+        var move_up_button = document.getElementById("move_up_button");
+        var move_down_button = document.getElementById("move_down_button");
+        var move_left_button = document.getElementById("move_left_button");
+        var move_right_button = document.getElementById("move_right_button");
+        var attack_button = document.getElementById("attack_button");
+        var interact_button = document.getElementById("interact_button");
+        var dig_button = document.getElementById("dig_button");
+		
+		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
+		
+        var execute_turn_button = document.getElementById("execute_turn_button");
 
-        airconsole.onReady = function () {
-            vm = new AirConsoleViewManager(airconsole);
-        }
+		
+		function setup() {
+		
+			airconsole = new AirConsole({"orientation": "landscape"});
+		
+			airconsole.onReady = function () {
+				vm = new AirConsoleViewManager(airconsole);
+			}
 
-        airconsole.onMessage = function (device_id, data) {
-            if (device_id === AirConsole.SCREEN && data['turn']) {
-                vm.show('turn');
-            };
-        }
+			airconsole.onMessage = function (device_id, data) {
+			    console.log("Received message: " + data);
+				if (device_id == AirConsole.SCREEN && data == 'turn') {
+					vm.show('planning');
+				};
+			}
+		};
 
-        function button0 () {
-            vm.show('turn');
-        }
+        move_left_button.addEventListener('touchstart', function () { setAction(0, action_selector); });
+        move_right_button.addEventListener('touchstart', function () { setAction(1, action_selector); }); 
+		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
+        move_down_button.addEventListener('touchstart', function () { setAction(3, action_selector); });
+        interact_button.addEventListener('touchstart', function () { setAction(4, action_selector); });
+		attack_button.addEventListener('touchstart', function () { setAction(5, action_selector); });
+		dig_button.addEventListener('touchstart', function () { setAction(6, action_selector); });
+		
+		planned_action_buttons[0].addEventListener('click', function () {
+			action_selector = 0;
+		});
+		planned_action_buttons[1].addEventListener('click', function () { 
+			action_selector = 1;
+		});
+		
+		execute_turn_button.addEventListener('click', function () {
 
-        function button1() {
-            vm.show('start');
-        }
-    </script></body></html>
+		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
+		    var message = { 
+		        'action_1': actions[0], 
+		        'action_2': actions[1]};
+
+			airconsole.message(AirConsole.SCREEN, message);
+			vm.show('waiting');
+		});
+		
+		function setAction(action, action_selector)
+		{
+		    console.log("Action: " + possible_actions[action] + " Set image to /img/" + possible_actions[action_selector] + ".png");
+			actions[action_selector] = possible_actions[action];
+			planned_action_buttons[action_selector].style.backgroundImage = "url('/img/" + possible_actions[action] + ".png')";
+		};
+    </script>
+
+</body>
+
+</html>
