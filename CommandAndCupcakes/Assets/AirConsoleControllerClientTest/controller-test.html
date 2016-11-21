@@ -1,0 +1,35 @@
+<html>
+<head>
+</head>
+<body>
+
+Controller HTML
+
+<script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.6.0.js"></script>
+
+<script>
+var air_console = new AirConsole();
+
+air_console.onMessage = function(from, data) {
+  alert("Received message " + data);
+  alert("Received message as JSON string: " + JSON.stringify(data));
+};
+
+
+function send_message(action){
+	var message = {
+	  'action': action
+	};
+
+	air_console.message(AirConsole.SCREEN, message);
+}
+
+function inspect(){
+	alert("Inspecting tile");
+	send_message("inspect");
+}
+</script>
+
+<input type="button" onclick="inspect()" value="Inspect tile">
+</body>
+</html>
