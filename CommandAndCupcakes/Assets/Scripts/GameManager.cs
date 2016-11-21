@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.onConnect += OnConnect;
         AirConsole.instance.onDisconnect += OnDisconnect;
 
+        Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
         currentPlayer = 0;
 
@@ -60,6 +61,8 @@ public class GameManager : MonoBehaviour {
         //Start the game with a certain amount of players. playerCount defines the amount of players.
         //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
         Debug.Log("Game started");
+        Debug.Log("Player 1: " + playerObjects[0]);
+        Debug.Log("Player 2: " + playerObjects[1]);
         playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
@@ -87,7 +90,7 @@ public class GameManager : MonoBehaviour {
     {
         //Actions to be executed are sent to the appropriate player object.
         Debug.Log("Current player: " + currentPlayer);
-        //playerObjects[currentPlayer].SendMessage("Action", actions);
+        playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
 
