@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class AnimationController : MonoBehaviour {
     Animator anim;
     int idleHash = Animator.StringToHash("idle");
