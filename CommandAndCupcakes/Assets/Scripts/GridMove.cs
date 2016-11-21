@@ -145,7 +145,7 @@ class GridMove : MonoBehaviour
         }
 
         isMoving = false;
-        GameObject.FindGameObjectWithTag("GameManager").SendMessage("OnPlayerFinishedMoving");
+        //GameObject.FindGameObjectWithTag("GameManager").SendMessage("OnPlayerFinishedMoving");
 
         yield return 0;
     }

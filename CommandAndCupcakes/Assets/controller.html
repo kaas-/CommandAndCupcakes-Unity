@@ -217,20 +217,20 @@
 
         move_left_button.addEventListener('touchstart', function () { setAction(0, action_selector); });
         move_right_button.addEventListener('touchstart', function () { setAction(1, action_selector); }); 
-		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
+		move_up_button.addEventListener('touchstart', function () { setAction(2, action_selector); });
         move_down_button.addEventListener('touchstart', function () { setAction(3, action_selector); });
         interact_button.addEventListener('touchstart', function () { setAction(4, action_selector); });
 		attack_button.addEventListener('touchstart', function () { setAction(5, action_selector); });
 		dig_button.addEventListener('touchstart', function () { setAction(6, action_selector); });
 		
-		planned_action_buttons[0].addEventListener('click', function () {
+		planned_action_buttons[0].addEventListener('touchstart', function () {
 			action_selector = 0;
 		});
-		planned_action_buttons[1].addEventListener('click', function () { 
+		planned_action_buttons[1].addEventListener('touchstart', function () { 
 			action_selector = 1;
 		});
 		
-		execute_turn_button.addEventListener('click', function () {
+		execute_turn_button.addEventListener('touchstart', function () {
 
 		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
 		    var message = { 
