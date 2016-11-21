@@ -1,0 +1,2181 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<link href="Iris_Controller.css" rel="stylesheet" type="text/css" media="screen" />
+	<script type="text/javascript" src="Iris_Controller.js"></script>
+    <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.4.0.js"></script>
+    <head>
+        <meta charset="utf-8">
+        <title>Iris Controller</title>
+    </head>
+
+    <!-- init() is called when the page first loads -->
+    <body onload="init()">
+
+        <!-- <div class="temp">
+        
+        </div> -->
+
+        <!-- JOIN UI -->
+        <div id="joinUI">
+
+            <!-- title -->
+            <div class="joinTitle">
+                <img src="Images/iris_title.png" />
+            </div>
+
+            <!-- loading title -->
+            <div id="loadingTitle">
+                <img id="loadingImage" src="Images/Loading/loading_left_01.png"/>
+            </div>
+
+            <!-- join button -->
+            <div class="joinButton buttonElement" id="joinButton"
+                ontouchstart='event.preventDefault(); joinDown()'
+                ontouchend='event.preventDefault(); joinGame()' 
+                ontouchcancel='event.preventDefault(); joinUp()'
+                onmousedown='event.preventDefault(); joinDown()'
+                onmouseup='event.preventDefault(); joinGame()'
+                onmouseout='event.preventDefault(); joinUp()'>
+                <img id="joinImage" src="Images/join.png">
+            </div>
+
+            <!-- help button -->
+            <div class="helpButton buttonElement masterControlElement" id="joinHelpButton"
+                ontouchstart='event.preventDefault(); helpDown()'
+                ontouchend='event.preventDefault(); helpOpen()' 
+                ontouchcancel='event.preventDefault(); helpUp()'
+                onmousedown='event.preventDefault(); helpDown()'
+                onmouseup='event.preventDefault(); helpOpen()'
+                onmouseout='event.preventDefault(); helpUp()'>
+                <img  id="helpImage" src="Images/help_button.png">
+            </div>
+        </div> <!-- JOIN UI END -->
+
+        <!-- CHARACTER SELECT UI -->
+        <div id="characterSelectUI">
+            <!-- options button -->
+            <div class="rectButtonRight optionsButton masterControlElement skew25 buttonElement"
+                ontouchstart='event.preventDefault(); optionsDown()'
+                ontouchend='event.preventDefault(); optionsOpen()' 
+                ontouchcancel='event.preventDefault(); optionsUp()'
+                onmousedown='event.preventDefault(); optionsDown()'
+                onmouseup='event.preventDefault(); optionsOpen()'
+                onmouseout='event.preventDefault(); optionsUp()'>
+                <div class="rectButtonRightText optionsButtonText">
+                    OPTIONS
+                </div>
+            </div>
+
+            <div class="characterSelectTitle">
+                <img src="Images/Player_Select/character_select_title.png">
+            </div>
+
+            <!-- player headers -->
+            <div class="playerSelect" id="playerOneSelect">
+                <div class="rectButtonLeft skewNeg35 playerSelectHeaderShadow playerOneBGColor" id="playerOneSelectShadow">
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerSelectButton0"
+                    ontouchstart='event.preventDefault(); playerSelectDown(0)'
+                    ontouchend='event.preventDefault(); playerSelect(0)' 
+                    ontouchcancel='event.preventDefault(); playerSelectUp(0)'
+                    onmousedown='event.preventDefault(); playerSelectDown(0)'
+                    onmouseup='event.preventDefault(); playerSelect(0)'
+                    onmouseout='event.preventDefault(); playerSelectUp(0)'>
+                    <div class="playerSelectNameText skew35" id="playerSelectText0">
+                        SELECT
+                    </div>
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerBackoutButton0"
+                    ontouchstart='event.preventDefault(); playerBackoutDown(0)'
+                    ontouchend='event.preventDefault(); playerBackout(0)' 
+                    ontouchcancel='event.preventDefault(); playerBackoutUp(0)'
+                    onmousedown='event.preventDefault(); playerBackoutDown(0)'
+                    onmouseup='event.preventDefault(); playerBackout(0)'
+                    onmouseout='event.preventDefault(); playerBackoutUp(0)'>
+                    <div class="playerSelectNameText skew35">
+                        BACK
+                    </div>
+                </div>
+                <div class="playerSelectTriangle" id="playerOneOuterTriangle">
+                    <img src="Images/Player_Select/player_select_outer_triangle.png">
+                </div>
+                <div class="playerSelectTriangle playerOneColor">
+                    <img id="playerOneInnerTriangle" src="Images/Player_Select/player_select_inner_triangle_0.png">
+                </div>
+                <div class="playerSelectHeaderWeaponDescriptionText" id="playerOneDescriptionText">
+                    <b>&nbsp;PISTOL</b>
+                </div>
+                <div class="playerSelectHeaderWeaknessDescriptionText" id="playerOneDescriptionText">
+                    WEAK TO RED VIRUS
+                </div>
+                <div class="playerSelectHead">
+                    <img class="playerHeadImage" src="Images/Player_Head/player_head_0.png">
+                </div>
+                <div class="playerSelectStat playerSelectHealth">
+                    HP
+                    <div class="playerSelectStatValue" id="playerOneSelectStatText0">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectSpeed">
+                    SPD
+                    <div class="playerSelectStatValue" id="playerOneSelectStatText1">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectRange">
+                    RNG
+                    <div class="playerSelectStatValue" id="playerOneSelectStatText2">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAttack">
+                    ABL
+                    <div class="playerSelectStatValue" id="playerOneSelectStatText3">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAbility">
+                    PWR
+                    <div class="playerSelectStatValue" id="playerOneSelectStatText4">
+                        02
+                    </div>
+                </div>
+            </div>
+
+            <div class="playerSelect" id="playerTwoSelect">
+                <div class="rectButtonLeft skewNeg35 playerSelectHeaderShadow playerTwoBGColor" id="playerTwoSelectShadow">
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerSelectButton1"
+                    ontouchstart='event.preventDefault(); playerSelectDown(1)'
+                    ontouchend='event.preventDefault(); playerSelect(1)' 
+                    ontouchcancel='event.preventDefault(); playerSelectUp(1)'
+                    onmousedown='event.preventDefault(); playerSelectDown(1)'
+                    onmouseup='event.preventDefault(); playerSelect(1)'
+                    onmouseout='event.preventDefault(); playerSelectUp(1)'>
+                    <div class="playerSelectNameText skew35" id="playerSelectText1">
+                        SELECT
+                    </div>
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerBackoutButton1"
+                    ontouchstart='event.preventDefault(); playerBackoutDown(1)'
+                    ontouchend='event.preventDefault(); playerBackout(1)' 
+                    ontouchcancel='event.preventDefault(); playerBackoutUp(1)'
+                    onmousedown='event.preventDefault(); playerBackoutDown(1)'
+                    onmouseup='event.preventDefault(); playerBackout(1)'
+                    onmouseout='event.preventDefault(); playerBackoutUp(1)'>
+                    <div class="playerSelectNameText skew35">
+                        BACK
+                    </div>
+                </div>
+                <div class="playerSelectTriangle" id="playerTwoOuterTriangle">
+                    <img src="Images/Player_Select/player_select_outer_triangle.png">
+                </div>
+                <div class="playerSelectTriangle">
+                    <img id="playerTwoInnerTriangle" src="Images/Player_Select/player_select_inner_triangle_1.png">
+                </div>
+                <div class="playerSelectHeaderWeaponDescriptionText" id="playerOneDescriptionText">
+                    <b>&nbsp;SNIPER</b>
+                </div>
+                <div class="playerSelectHeaderWeaknessDescriptionText" id="playerOneDescriptionText">
+                    WEAK TO BLUE VIRUS
+                </div>
+                <div class="playerSelectHead">
+                    <img class="playerHeadImage" src="Images/Player_Head/player_head_1.png">
+                </div>
+                <div class="playerSelectStat playerSelectHealth">
+                    HP
+                    <div class="playerSelectStatValue" id="playerTwoSelectStatText0">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectSpeed">
+                    SPD
+                    <div class="playerSelectStatValue" id="playerTwoSelectStatText1">
+                        02
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectRange">
+                    RNG
+                    <div class="playerSelectStatValue" id="playerTwoSelectStatText2">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAttack">
+                    ABL
+                    <div class="playerSelectStatValue" id="playerTwoSelectStatText3">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAbility">
+                    PWR
+                    <div class="playerSelectStatValue" id="playerTwoSelectStatText4">
+                        01
+                    </div>
+                </div>
+            </div>
+
+            <div class="playerSelect" id="playerThreeSelect">
+                <div class="rectButtonLeft skewNeg35 playerSelectHeaderShadow playerThreeBGColor" id="playerThreeSelectShadow">
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerSelectButton2"
+                    ontouchstart='event.preventDefault(); playerSelectDown(2)'
+                    ontouchend='event.preventDefault(); playerSelect(2)' 
+                    ontouchcancel='event.preventDefault(); playerSelectUp(2)'
+                    onmousedown='event.preventDefault(); playerSelectDown(2)'
+                    onmouseup='event.preventDefault(); playerSelect(2)'
+                    onmouseout='event.preventDefault(); playerSelectUp(2)'>
+                    <div class="playerSelectNameText skew35" id="playerSelectText2">
+                        SELECT
+                    </div>
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerBackoutButton2"
+                    ontouchstart='event.preventDefault(); playerBackoutDown(2)'
+                    ontouchend='event.preventDefault(); playerBackout(2)' 
+                    ontouchcancel='event.preventDefault(); playerBackoutUp(2)'
+                    onmousedown='event.preventDefault(); playerBackoutDown(2)'
+                    onmouseup='event.preventDefault(); playerBackout(2)'
+                    onmouseout='event.preventDefault(); playerBackoutUp(2)'>
+                    <div class="playerSelectNameText skew35">
+                        BACK
+                    </div>
+                </div>
+                <div class="playerSelectTriangle" id="playerThreeOuterTriangle">
+                    <img src="Images/Player_Select/player_select_outer_triangle.png">
+                </div>
+                <div class="playerSelectTriangle">
+                    <img id="playerThreeInnerTriangle" src="Images/Player_Select/player_select_inner_triangle_2.png">
+                </div>
+                <div class="playerSelectHeaderWeaponDescriptionText" id="playerOneDescriptionText">
+                    <b>&nbsp;SHOTGUN</b>
+                </div>
+                <div class="playerSelectHeaderWeaknessDescriptionText" id="playerOneDescriptionText">
+                    WEAK TO GREEN VIRUS
+                </div>
+                <div class="playerSelectHead">
+                    <img class="playerHeadImage" src="Images/Player_Head/player_head_2.png">
+                </div>
+                <div class="playerSelectStat playerSelectHealth">
+                    HP
+                    <div class="playerSelectStatValue" id="playerThreeSelectStatText0">
+                        02
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectSpeed">
+                    SPD
+                    <div class="playerSelectStatValue" id="playerThreeSelectStatText1">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectRange">
+                    RNG
+                    <div class="playerSelectStatValue" id="playerThreeSelectStatText2">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAttack">
+                    ABL
+                    <div class="playerSelectStatValue" id="playerThreeSelectStatText3">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAbility">
+                    PWR
+                    <div class="playerSelectStatValue" id="playerThreeSelectStatText4">
+                        01
+                    </div>
+                </div>
+            </div>
+
+            <div class="playerSelect" id="playerFourSelect">
+                <div class="rectButtonLeft skewNeg35 playerSelectHeaderShadow playerFourBGColor" id="playerFourSelectShadow">
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerSelectButton3"
+                    ontouchstart='event.preventDefault(); playerSelectDown(3)'
+                    ontouchend='event.preventDefault(); playerSelect(3)' 
+                    ontouchcancel='event.preventDefault(); playerSelectUp(3)'
+                    onmousedown='event.preventDefault(); playerSelectDown(3)'
+                    onmouseup='event.preventDefault(); playerSelect(3)'
+                    onmouseout='event.preventDefault(); playerSelectUp(3)'>
+                    <div class="playerSelectNameText skew35" id="playerSelectText3">
+                        SELECT
+                    </div>
+                </div>
+                <div class="rectButtonLeft skewNeg35 playerSelectHeader buttonElement" id="playerBackoutButton3"
+                    ontouchstart='event.preventDefault(); playerBackoutDown(3)'
+                    ontouchend='event.preventDefault(); playerBackout(3)' 
+                    ontouchcancel='event.preventDefault(); playerBackoutUp(3)'
+                    onmousedown='event.preventDefault(); playerBackoutDown(3)'
+                    onmouseup='event.preventDefault(); playerBackout(3)'
+                    onmouseout='event.preventDefault(); playerBackoutUp(3)'>
+                    <div class="playerSelectNameText skew35">
+                        BACK
+                    </div>
+                </div>
+                <div class="playerSelectTriangle" id="playerFourOuterTriangle">
+                    <img src="Images/Player_Select/player_select_outer_triangle.png">
+                </div>
+                <div class="playerSelectTriangle">
+                    <img id="playerFourInnerTriangle" src="Images/Player_Select/player_select_inner_triangle_3.png">
+                </div>
+                <div class="playerSelectHeaderWeaponDescriptionText" id="playerOneDescriptionText">
+                    <b>&nbsp;GRENADES</b>
+                </div>
+                <div class="playerSelectHeaderWeaknessDescriptionText" id="playerOneDescriptionText">
+                    WEAK TO YELLOW VIRUS
+                </div>
+                <div class="playerSelectHead">
+                    <img class="playerHeadImage" src="Images/Player_Head/player_head_3.png">
+                </div>
+                <div class="playerSelectStat playerSelectHealth">
+                    HP
+                    <div class="playerSelectStatValue" id="playerFourSelectStatText0">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectSpeed">
+                    SPD
+                    <div class="playerSelectStatValue" id="playerFourSelectStatText1">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectRange">
+                    RNG
+                    <div class="playerSelectStatValue" id="playerFourSelectStatText2">
+                        01
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAttack">
+                    ABL
+                    <div class="playerSelectStatValue" id="playerFourSelectStatText3">
+                        02
+                    </div>
+                </div>
+                <div class="playerSelectStat playerSelectAbility">
+                    PWR
+                    <div class="playerSelectStatValue" id="playerFourSelectStatText4">
+                        01
+                    </div>
+                </div>
+            </div>
+
+            <!-- ready area -->
+            <div class="readyArea">
+                <div class="readyHeader">
+                    <img id="characterSelectReadyImage" src="Images/Player_Select/player_select_ready.png">
+                </div>
+                <div class="readyInfo">
+                    <div class="readyTriangles">
+                        <div class="readyTriangle readyTriangleOne">
+                            <img class="rotate180" id="playerOneReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleTwo">
+                            <img id="playerTwoReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleThree">
+                            <img class="rotate180" id="playerThreeReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleFour">
+                            <img id="playerFourReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                    </div>
+                    <div class="skew30 masterControlElement buttonElement" id="readyStartButton"
+                        ontouchstart='event.preventDefault(); startGameDown()'
+                        ontouchend='event.preventDefault(); startGame()' 
+                        ontouchcancel='event.preventDefault(); startGameUp()'
+                        onmousedown='event.preventDefault(); startGameDown()'
+                        onmouseup='event.preventDefault(); startGame()'
+                        onmouseout='event.preventDefault(); startGameUp()'>
+                        <div class="readyStartButtonText">
+                            START
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- CHARACTER SELECT UI END -->
+
+        <!-- PREGAME UI -->
+        <div id="pregameUI">   
+            <div class="masterControlElement" id="pregameMasterScreen">
+                <div class="difficultyTitle">
+                    <img src="Images/difficulty_title.png">
+                </div>
+
+                <div class="difficultyImageContainer">
+                    <img id="difficultyImage" src="Images/Difficulty_Icons/difficulty_normal.png">
+                </div>
+
+                <div class="optionsSettingContainer" id="difficultySettingContainer">
+                    <!-- right button -->
+                    <div class="rectButtonRight skewNeg30 optionsRightButton buttonElement" id="difficultySettingPos"
+                        ontouchstart='event.preventDefault(); difficultySettingDown(1)'
+                        ontouchend='event.preventDefault(); difficultySetting(1)' 
+                        ontouchcancel='event.preventDefault(); difficultySettingUp(1)'
+                        onmousedown='event.preventDefault(); difficultySettingDown(1)'
+                        onmouseup='event.preventDefault(); difficultySetting(1)'
+                        onmouseout='event.preventDefault(); difficultySettingUp(1)'>
+                        <div class="optionsRightButtonText">
+                            +
+                        </div>
+                    </div>
+
+                    <div id="difficultySettingText">
+                        NORMAL
+                    </div>
+
+                    <!-- left button -->
+                    <div class="rectButtonLeft skew30 optionsLeftButton buttonElement" id="difficultySettingNeg"
+                        ontouchstart='event.preventDefault(); difficultySettingDown(-1)'
+                        ontouchend='event.preventDefault(); difficultySetting(-1)' 
+                        ontouchcancel='event.preventDefault(); difficultySettingUp(-1)'
+                        onmousedown='event.preventDefault(); difficultySettingDown(-1)'
+                        onmouseup='event.preventDefault(); difficultySetting(-1)'
+                        onmouseout='event.preventDefault(); difficultySettingUp(-1)'>
+                        <div class="optionsLeftButtonText"> </div>
+                    </div>
+                </div>
+
+                <div id="difficultyFloorDescriptionText">
+                    START ON THE <b>1ST FLOOR</b>
+                </div>
+
+                <!-- continue button -->
+                <div class="skew30 masterControlElement buttonElement" id="storyContinueButton"
+                    ontouchstart='event.preventDefault(); storyContinueDown()'
+                    ontouchend='event.preventDefault(); storyContinue()' 
+                    ontouchcancel='event.preventDefault(); storyContinueUp()'
+                    onmousedown='event.preventDefault(); storyContinueDown()'
+                    onmouseup='event.preventDefault(); storyContinue()'
+                    onmouseout='event.preventDefault(); storyContinueUp()'>
+                    <div class="readyStartButtonText">
+                        CONTINUE
+                    </div>
+                </div>
+            </div>
+
+            <div id="pregameSlaveScreen">
+                <div class="waitingContainer">
+
+                    <div class="waitingText" id="waitingHeaderText">
+                        WAITING&nbsp;&nbsp;FOR:
+                    </div>
+                    <div class="waitingText waitingPlayerText">
+                        Guest 420
+                    </div>
+
+                </div>
+            </div>
+        </div> <!-- PREGAME UI END -->
+
+        <!-- ACTION UI -->
+        <div id="actionUI">
+            <!-- options button -->
+            <div class="rectButtonRight optionsButton masterControlElement skew25 buttonElement"
+                ontouchstart='event.preventDefault(); optionsDown()'
+                ontouchend='event.preventDefault(); optionsOpen()' 
+                ontouchcancel='event.preventDefault(); optionsUp()'
+                onmousedown='event.preventDefault(); optionsDown()'
+                onmouseup='event.preventDefault(); optionsOpen()'
+                onmouseout='event.preventDefault(); optionsUp()'>
+                <div class="rectButtonRightText optionsButtonText">
+                    OPTIONS
+                </div>
+            </div>
+
+            <!-- player header -->
+            <div class="rectButtonLeft skewNeg35 elementHeaderCustom">
+                <div class="elementHeaderNameText">
+                    PLAYER NAME
+                </div>
+            </div>
+            <div class="playerHead playerHeadProfilePic">
+                <img class="playerHeadImage playerHeadCustom" src="Images/Player_Head/player_head_0.png">
+            </div>
+
+            <!-- player health bar -->
+            <div class="playerHealthBar">
+                <div class="healthBar">
+                </div>
+
+                <!-- health bar header-->
+                <div class="playerHealthHeader">
+                    HP   
+                </div>
+
+                <!-- player health value -->
+                <div class="healthText">
+                    XX
+                </div>
+            </div>
+
+            <!-- actions counter -->
+            <div class="actionsCounter">
+                ACTIONS
+                <div class="actionsText">
+                    XX
+                </div>
+            </div>
+
+            <!-- skill pts counter -->
+            <div class="skillPtsCounter">
+                <img src="Images/Item_Icons/item_skill_point.png">
+                <div class="skillPtsText">
+                    XX
+                </div>
+            </div>
+
+            <!-- revive counter -->
+            <div class="reviveCounter reviveCounterHeader">
+                <img src="Images/Item_Icons/item_revive.png">
+                <div class="reviveCounterText" id="reviveCounterTextHeader">
+                    XX
+                </div>
+            </div>
+
+            <!-- top line break -->
+            <div class="lineBreak lineBreakRight">
+                <img src="Images/line_break_right.png">
+            </div>
+
+            <!-- it's button time baby -->
+            <div class="actionButtonContainer">
+                <div class="actionButton skewNeg30 buttonElement" id="moveButton"
+                    ontouchstart='event.preventDefault(); actionMoveDown()'
+                    ontouchend='event.preventDefault(); actionMove()' 
+                    ontouchcancel='event.preventDefault(); actionMoveUp()'
+                    onmousedown='event.preventDefault(); actionMoveDown()'
+                    onmouseup='event.preventDefault(); actionMove()'
+                    onmouseout='event.preventDefault(); actionMoveUp()'>
+                    <div class="actionButtonDetailLeft">
+                        <div class="actionButtonIcon">
+                            <img id="moveIcon" src="Images/Action_Icons/action_move.png">
+                        </div>
+                        <div class="actionText" id="actionText0">
+                            MOVE
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actionButton skewNeg30 buttonElement" id="attackButton"
+                    ontouchstart='event.preventDefault(); actionAttackDown()'
+                    ontouchend='event.preventDefault(); actionAttack()' 
+                    ontouchcancel='event.preventDefault(); actionAttackUp()'
+                    onmousedown='event.preventDefault(); actionAttackDown()'
+                    onmouseup='event.preventDefault(); actionAttack()'
+                    onmouseout='event.preventDefault(); actionAttackUp()'>
+                    <div class="actionButtonDetailRight">
+                        <div class="actionButtonIcon">
+                            <img id="attackIcon" src="Images/Weapon_Icons/weapon_pistol.png">
+                        </div>
+                        <div class="actionText"  id="actionText1">
+                            ATTACK
+                        </div>
+
+                        <!-- cooldown -->
+                        <div class="cooldownContainer" id="AttackAbilityCooldownContainer">
+                            <div class="cooldownIcon">
+                                <img src="Images/Action_Icons/cooldown_icon.png">
+                            </div>
+                            <div class="cooldownText" id="AttackAbilityCooldownText">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actionButton skewNeg30 buttonElement" id="itemButton"
+                    ontouchstart='event.preventDefault(); actionItemDown()'
+                    ontouchend='event.preventDefault(); actionItem()' 
+                    ontouchcancel='event.preventDefault(); actionItemUp()'
+                    onmousedown='event.preventDefault(); actionItemDown()'
+                    onmouseup='event.preventDefault(); actionItem()'
+                    onmouseout='event.preventDefault(); actionItemUp()'>
+                    <div class="actionButtonDetailLeft">
+                        <div class="actionButtonIcon">
+                            <img id="itemIcon" src="Images/Item_Icons/item_mine.png">
+                        </div>
+                        <div class="actionText" id="actionText2">
+                            USE ITEM
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actionButton skewNeg30 buttonElement" id="skipButton"
+                    ontouchstart='event.preventDefault(); actionSkipDown()'
+                    ontouchend='event.preventDefault(); actionSkip()' 
+                    ontouchcancel='event.preventDefault(); actionSkipUp()'
+                    onmousedown='event.preventDefault(); actionSkipDown()'
+                    onmouseup='event.preventDefault(); actionSkip()'
+                    onmouseout='event.preventDefault(); actionSkipUp()'>
+                    <div class="actionButtonDetailRight">
+                        <div class="actionButtonIcon">
+                            <img id="skipIcon" src="Images/Action_Icons/action_skip.png">
+                        </div>
+                        <div class="actionText" id="actionText3">
+                            SKIP ACTION
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- bottom line break -->
+            <div class="lineBreak lineBreakLeft">
+                <img src="Images/line_break_left.png">
+            </div>
+
+            <!-- button header -->
+            <div class="actionBatteryHeader">
+                <img src="Images/Action_Icons/battery_header.png">
+                <div class="batteryChargeText">
+                    XX
+                </div>
+            </div>
+
+            <!-- DoT button -->
+            <div class="bottomActionButton buttonElement" id="actionDot"
+                ontouchstart='event.preventDefault(); actionDotDown()'
+                ontouchend='event.preventDefault(); actionDot()' 
+                ontouchcancel='event.preventDefault(); actionDotUp()'
+                onmousedown='event.preventDefault(); actionDotDown()'
+                onmouseup='event.preventDefault(); actionDot()'
+                onmouseout='event.preventDefault(); actionDotUp()'>
+                <div class="bottomButtonImage abilityButtonImage">
+                    <img src="Images/Action_Icons/action_damageOverTime.png">
+                </div>
+                <div class="bottomButtonText abilityButtonText">
+                    DoT
+                </div>
+                <div class="bottomButtonLine">
+                </div>
+            </div>
+
+            <!-- heal button -->
+            <div class="bottomActionButton buttonElement" id="actionHeal"
+                ontouchstart='event.preventDefault(); actionHealDown()'
+                ontouchend='event.preventDefault(); actionHeal()' 
+                ontouchcancel='event.preventDefault(); actionHealUp()'
+                onmousedown='event.preventDefault(); actionHealDown()'
+                onmouseup='event.preventDefault(); actionHeal()'
+                onmouseout='event.preventDefault(); actionHealUp()'>
+                <div class="bottomButtonImage abilityButtonImage">
+                    <img src="Images/Action_Icons/action_heal.png">
+                </div>
+                <div class="bottomButtonText abilityButtonText">
+                    HEAL
+                </div>
+                <div class="bottomButtonLine">
+                </div>
+            </div>
+
+            <!-- buff button -->
+            <div class="bottomActionButton buttonElement" id="actionBuff"
+                ontouchstart='event.preventDefault(); actionBuffDown()'
+                ontouchend='event.preventDefault(); actionBuff()' 
+                ontouchcancel='event.preventDefault(); actionBuffUp()'
+                onmousedown='event.preventDefault(); actionBuffDown()'
+                onmouseup='event.preventDefault(); actionBuff()'
+                onmouseout='event.preventDefault(); actionBuffUp()'>
+                <div class="bottomButtonImage abilityButtonImage">
+                    <img src="Images/Action_Icons/action_buff.png">
+                </div>
+                <div class="bottomButtonText abilityButtonText">
+                    BUFF
+                </div>
+                <div class="bottomButtonLine">
+                </div>
+            </div>
+
+            <!-- footer color -->
+            <div class="footerColor"></div>
+        </div> <!-- ACTION UI END -->
+
+        <!-- DIRECTION UI -->
+        <div id="directionUI">
+
+            <!-- options button -->
+            <div class="rectButtonRight optionsButton masterControlElement skew25 buttonElement"
+                ontouchstart='event.preventDefault(); optionsDown()'
+                ontouchend='event.preventDefault(); optionsOpen()' 
+                ontouchcancel='event.preventDefault(); optionsUp()'
+                onmousedown='event.preventDefault(); optionsDown()'
+                onmouseup='event.preventDefault(); optionsOpen()'
+                onmouseout='event.preventDefault(); optionsUp()'>
+                <div class="rectButtonRightText optionsButtonText">
+                    OPTIONS
+                </div>
+            </div>
+
+            <!-- player header -->
+            <div class="rectButtonLeft skewNeg35 elementHeaderCustom" id="directionPlayerHeader">
+                <div class="elementHeaderNameText">
+                    PLAYER NAME
+                </div>
+            </div>
+            <div class="playerHead playerHeadProfilePic" id="directionPlayerHead">
+                <img class="playerHeadImage playerHeadCustom" src="Images/Player_Head/player_head_0.png">
+            </div>
+
+            <div class="playerHealthBar"  id="directionHealthBar">
+                <div class="healthBar">
+                </div>
+
+                <div class="playerHealthHeader">
+                    HP   
+                </div>
+
+                <div class="healthText">
+                    XX
+                </div>
+            </div>
+
+            <!-- item/gun header -->
+            <div class="itemSelect" id="itemContainer4">
+                <!-- item select icon background -->
+                <div class="itemIconBackgroundContainer skewNeg35">
+                </div>
+
+                <!-- item select button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader" id="itemSelectButton4">
+                    <div class="itemSelectNameText skew35" id="itemSelectNameText4">
+                        ITEM NAME
+                    </div>
+                </div>
+
+                <!-- item icon -->
+                <div class="itemIconContainer">               
+                    <div class="itemIcon">
+                        <img id="itemIconImage4" src="Images/Item_Icons/item_utility_belt.png">
+                    </div>
+                </div>
+                
+                <!-- item description -->
+                <div class="itemSelectHeaderDescriptionText" id="itemDescriptionText4">
+                    ITEM
+                </div>
+
+                <!-- gun stats -->
+                <div class="itemGunStatsContainer" id="itemGunStatsContainer4">
+                    <div class="itemGunStat itemGunStat0" id="item4GunStat0Container">
+                        <div id="item4GunStatNameText0">ONE</div>
+                        <div class="playerSelectStatValue" id="item4GunStatValueText0">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat1" id="item4GunStat1Container">
+                        <div id="item4GunStatNameText1">TWO</div>
+                        <div class="playerSelectStatValue" id="item4GunStatValueText1">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat2" id="item4GunStat2Container">
+                        <div id="item4GunStatNameText2">THR</div>
+                        <div class="playerSelectStatValue" id="item4GunStatValueText2">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat3" id="item4GunStat3Container">
+                        <div id="item4GunStatNameText3">DMG</div>
+                        <div class="playerSelectStatValue" id="item4GunStatValueText3">
+                            XXXX
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- actions counter -->
+            <div class="actionsCounter">
+                ACTIONS
+                <div class="actionsText">
+                    XX
+                </div>
+            </div>
+
+            <!-- skill pts counter -->
+            <div class="skillPtsCounter">
+                <img src="Images/Item_Icons/item_skill_point.png">
+                <div class="skillPtsText">
+                    XX
+                </div>
+            </div>
+
+            <!-- revive counter -->
+            <div class="reviveCounter reviveCounterHeader">
+                <img src="Images/Item_Icons/item_revive.png">
+                <div class="reviveCounterText " id="reviveCounterTextHeader">
+                    XX
+                </div>
+            </div>
+
+            <!-- top line break -->
+            <div class="lineBreak lineBreakRight">
+                <img src="Images/line_break_right.png">
+            </div>
+
+            <!-- dpad -->
+            <div class="dPadContainer" id="dPadContainer">
+                <div class="dPad buttonElement" id="dPad0"
+                    ontouchstart='event.preventDefault(); dPadDown(0)'
+                    ontouchend='event.preventDefault(); dPad(0)'
+                    ontouchcancel='event.preventDefault(); dPadUp(0)' 
+                    onmousedown='event.preventDefault(); dPadDown(0)'
+                    onmouseup='event.preventDefault(); dPad(0)'
+                    onmouseout='event.preventDefault(); dPadUp(0)'>
+                    <img src="Images/DPad/dPad_topLeft.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad1"
+                    ontouchstart='event.preventDefault(); dPadDown(1)'
+                    ontouchend='event.preventDefault(); dPad(1)'
+                    ontouchcancel='event.preventDefault(); dPadUp(1)' 
+                    onmousedown='event.preventDefault(); dPadDown(1)'
+                    onmouseup='event.preventDefault(); dPad(1)'
+                    onmouseout='event.preventDefault(); dPadUp(1)'>
+                    <img src="Images/DPad/dPad_up.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad2"
+                    ontouchstart='event.preventDefault(); dPadDown(2)'
+                    ontouchend='event.preventDefault(); dPad(2)'
+                    ontouchcancel='event.preventDefault(); dPadUp(2)' 
+                    onmousedown='event.preventDefault(); dPadDown(2)'
+                    onmouseup='event.preventDefault(); dPad(2)'
+                    onmouseout='event.preventDefault(); dPadUp(2)'>
+                    <img src="Images/DPad/dPad_topRight.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad3"
+                    ontouchstart='event.preventDefault(); dPadDown(3)'
+                    ontouchend='event.preventDefault(); dPad(3)'
+                    ontouchcancel='event.preventDefault(); dPadUp(3)' 
+                    onmousedown='event.preventDefault(); dPadDown(3)'
+                    onmouseup='event.preventDefault(); dPad(3)'
+                    onmouseout='event.preventDefault(); dPadUp(3)'>
+                    <img src="Images/DPad/dPad_left.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad4"
+                    ontouchstart='event.preventDefault(); dPadDown(4)'
+                    ontouchend='event.preventDefault(); dPad(4)'
+                    ontouchcancel='event.preventDefault(); dPadUp(4)' 
+                    onmousedown='event.preventDefault(); dPadDown(4)'
+                    onmouseup='event.preventDefault(); dPad(4)'
+                    onmouseout='event.preventDefault(); dPadUp(4)'>
+                    <img src="Images/DPad/dPad_center.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad5"
+                    ontouchstart='event.preventDefault(); dPadDown(5)'
+                    ontouchend='event.preventDefault(); dPad(5)'
+                    ontouchcancel='event.preventDefault(); dPadUp(5)' 
+                    onmousedown='event.preventDefault(); dPadDown(5)'
+                    onmouseup='event.preventDefault(); dPad(5)'
+                    onmouseout='event.preventDefault(); dPadUp(5)'>
+                    <img src="Images/DPad/dPad_right.png">
+                </div>
+                <div class="dPad buttonElement"  id="dPad6"
+                    ontouchstart='event.preventDefault(); dPadDown(6)'
+                    ontouchend='event.preventDefault(); dPad(6)'
+                    ontouchcancel='event.preventDefault(); dPadUp(6)' 
+                    onmousedown='event.preventDefault(); dPadDown(6)'
+                    onmouseup='event.preventDefault(); dPad(6)'
+                    onmouseout='event.preventDefault(); dPadUp(6)'>
+                    <img src="Images/DPad/dPad_bottomLeft.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad7"
+                    ontouchstart='event.preventDefault(); dPadDown(7)'
+                    ontouchend='event.preventDefault(); dPad(7)'
+                    ontouchcancel='event.preventDefault(); dPadUp(7)' 
+                    onmousedown='event.preventDefault(); dPadDown(7)'
+                    onmouseup='event.preventDefault(); dPad(7)'
+                    onmouseout='event.preventDefault(); dPadUp(7)'>
+                    <img src="Images/DPad/dPad_down.png">
+                </div>
+                <div class="dPad buttonElement" id="dPad8"
+                    ontouchstart='event.preventDefault(); dPadDown(8)'
+                    ontouchend='event.preventDefault(); dPad(8)'
+                    ontouchcancel='event.preventDefault(); dPadUp(8)' 
+                    onmousedown='event.preventDefault(); dPadDown(8)'
+                    onmouseup='event.preventDefault(); dPad(8)'
+                    onmouseout='event.preventDefault(); dPadUp(8)'>
+                    <img src="Images/DPad/dPad_bottomRight.png">
+                </div>
+            </div>
+
+            <!-- self only item container -->
+            <div class="selfOnlyItemContainer" id="itemActionContainer">
+                <div class="selfOnlyItemImage">
+                    <img src="Images/Item_Icons/item_cloaking_device.png" id="selfOnlyItemIcon">
+                </div>
+                <div id="selfOnlyItemText">
+                    ACTIVATE
+                    <br>UTILITY BELT?
+                </div>
+            </div>
+
+            <!-- bottom line break -->
+            <div class="lineBreak lineBreakLeft" id="lineBreakLeftDirection">
+                <img src="Images/line_break_left.png">
+            </div>
+
+            <!-- moves remaining -->
+            <div class="movesRemaining">
+                MOVES REMAINING
+                <div class="movesRemainingText">
+                    XX
+                </div>
+            </div>
+
+            <!-- cancel button -->
+            <div class="bottomButton buttonElement" id="directionCancel"
+                ontouchstart='event.preventDefault(); directionCancelDown()'
+                ontouchend='event.preventDefault(); directionCancel()' 
+                ontouchcancel='event.preventDefault(); directionCancelUp()'
+                onmousedown='event.preventDefault(); directionCancelDown()'
+                onmouseup='event.preventDefault(); directionCancel()'
+                onmouseout='event.preventDefault(); directionCancelUp()'>
+                <div class="bottomButtonText">
+                    CANCEL
+                </div>
+                <div class="bottomButtonLine">
+                </div>
+            </div>
+
+            <!-- confirm button -->
+            <div class="bottomButton buttonElement" id="directionConfirm"
+                ontouchstart='event.preventDefault(); directionConfirmDown()'
+                ontouchend='event.preventDefault(); directionConfirm()' 
+                ontouchcancel='event.preventDefault(); directionConfirmUp()'
+                onmousedown='event.preventDefault(); directionConfirmDown()'
+                onmouseup='event.preventDefault(); directionConfirm()'
+                onmouseout='event.preventDefault(); directionConfirmUp()'>
+                <div class="bottomButtonText">
+                    CONFIRM
+                </div>
+                <div class="bottomButtonLine">
+                </div>
+            </div>
+
+            <!-- footer color -->
+            <div class="footerColor"></div>
+        </div> <!-- DIRECTION UI END -->
+
+        <!-- UPGRADE UI -->
+        <div id="upgradeUI">
+            <!-- title -->
+            <div class="upgradeTitle">
+                <img src="Images/upgrade_title.png">
+            </div>
+
+            <!-- player pose -->
+            <div class="playerPose">
+                <img id="playerPoseImg" src="Images/Player_Poses/player_pose_0.png">
+            </div>
+
+            <!-- reset button -->
+            <div class="skew25 buttonElement" id="upgradeResetButton"
+                ontouchstart='event.preventDefault(); upgradeResetDown()'
+                ontouchend='event.preventDefault(); upgradeReset()' 
+                ontouchcancel='event.preventDefault(); upgradeResetUp()'
+                onmousedown='event.preventDefault(); upgradeResetDown()'
+                onmouseup='event.preventDefault(); upgradeReset()'
+                onmouseout='event.preventDefault(); upgradeResetUp()'>
+                <div class="rectButtonRightText upgradeResetButtonText">
+                    UNDO
+                </div>
+            </div>
+
+            <!-- skill pts counter -->
+            <div class="skillPtsCounter" id="skillPtsUpgrade">
+                <img src="Images/Item_Icons/item_skill_point.png">
+                <div class="skillPtsText">
+                    XX
+                </div>
+            </div>
+
+            <!-- health stat -->
+            <div class="upgradeStatContainer" id="upgradeStatContainer0">
+                <div class="rectButtonRight skewNeg30 upgradeButton buttonElement" id="upgradeStatButton0"
+                    ontouchstart='event.preventDefault(); upgradeStatDown(0)'
+                    ontouchend='event.preventDefault(); upgradeStat(0)' 
+                    ontouchcancel='event.preventDefault(); upgradeStatUp(0)'
+                    onmousedown='event.preventDefault(); upgradeStatDown(0)'
+                    onmouseup='event.preventDefault(); upgradeStat(0)'
+                    onmouseout='event.preventDefault(); upgradeStatUp(0)'>
+                    <div class="upgradeStatButtonText">
+                        +
+                    </div>
+                </div>
+                <div class="upgradeStatHeader">
+                    HP
+                    <div class="upgradeStatText" id="upgradeStatText0">
+                        000
+                    </div>
+                </div>
+            </div>
+
+            <!-- speed stat -->
+            <div class="upgradeStatContainer" id="upgradeStatContainer1">
+                <div class="rectButtonRight skewNeg30 upgradeButton buttonElement" id="upgradeStatButton1"
+                    ontouchstart='event.preventDefault(); upgradeStatDown(1)'
+                    ontouchend='event.preventDefault(); upgradeStat(1)' 
+                    ontouchcancel='event.preventDefault(); upgradeStatUp(1)'
+                    onmousedown='event.preventDefault(); upgradeStatDown(1)'
+                    onmouseup='event.preventDefault(); upgradeStat(1)'
+                    onmouseout='event.preventDefault(); upgradeStatUp(1)'>
+                    <div class="upgradeStatButtonText">
+                        +
+                    </div>
+                </div>
+                <div class="upgradeStatHeader">
+                    SPD
+                    <div class="upgradeStatText" id="upgradeStatText1">
+                        000
+                    </div>
+                </div>
+            </div>
+
+            <!-- range stat -->
+            <div class="upgradeStatContainer" id="upgradeStatContainer2">
+                <div class="rectButtonRight skewNeg30 upgradeButton buttonElement" id="upgradeStatButton2"
+                    ontouchstart='event.preventDefault(); upgradeStatDown(2)'
+                    ontouchend='event.preventDefault(); upgradeStat(2)' 
+                    ontouchcancel='event.preventDefault(); upgradeStatUp(2)'
+                    onmousedown='event.preventDefault(); upgradeStatDown(2)'
+                    onmouseup='event.preventDefault(); upgradeStat(2)'
+                    onmouseout='event.preventDefault(); upgradeStatUp(2)'>
+                    <div class="upgradeStatButtonText">
+                        +
+                    </div>
+                </div>
+                <div class="upgradeStatHeader">
+                    RNG
+                    <div class="upgradeStatText" id="upgradeStatText2">
+                        000
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUN DMG stat -->
+            <div class="upgradeStatContainer" id="upgradeStatContainer3">
+                <div class="rectButtonRight skewNeg30 upgradeButton buttonElement" id="upgradeStatButton3"
+                    ontouchstart='event.preventDefault(); upgradeStatDown(3)'
+                    ontouchend='event.preventDefault(); upgradeStat(3)' 
+                    ontouchcancel='event.preventDefault(); upgradeStatUp(3)'
+                    onmousedown='event.preventDefault(); upgradeStatDown(3)'
+                    onmouseup='event.preventDefault(); upgradeStat(3)'
+                    onmouseout='event.preventDefault(); upgradeStatUp(3)'>
+                    <div class="upgradeStatButtonText">
+                        +
+                    </div>
+                </div>
+                <div class="upgradeStatHeader">
+                    ABL
+                    <div class="upgradeStatText" id="upgradeStatText3">
+                        000
+                    </div>
+                </div>
+            </div>
+
+            <!-- power arm stat -->
+            <div class="upgradeStatContainer" id="upgradeStatContainer4">
+                <div class="rectButtonRight skewNeg30 upgradeButton buttonElement" id="upgradeStatButton4"
+                    ontouchstart='event.preventDefault(); upgradeStatDown(4)'
+                    ontouchend='event.preventDefault(); upgradeStat(4)' 
+                    ontouchcancel='event.preventDefault(); upgradeStatUp(4)'
+                    onmousedown='event.preventDefault(); upgradeStatDown(4)'
+                    onmouseup='event.preventDefault(); upgradeStat(4)'
+                    onmouseout='event.preventDefault(); upgradeStatUp(4)'>
+                    <div class="upgradeStatButtonText">
+                        +
+                    </div>
+                </div>
+                <div class="upgradeStatHeader">
+                    PWR
+                    <div class="upgradeStatText" id="upgradeStatText4">
+                        000
+                    </div>
+                </div>
+            </div>
+
+            <!-- continue button -->
+            <div class="rectButtonRight skew25 buttonElement" id="upgradeContinueButton"
+                    ontouchstart='event.preventDefault(); upgradeContinueDown()'
+                    ontouchend='event.preventDefault(); upgradeContinue()' 
+                    ontouchcancel='event.preventDefault(); upgradeContinueUp()'
+                    onmousedown='event.preventDefault(); upgradeContinueDown()'
+                    onmouseup='event.preventDefault(); upgradeContinue()'
+                    onmouseout='event.preventDefault(); upgradeContinueUp()'>
+                    <div class="rectButtonRightText">
+                        CONTINUE
+                    </div>
+            </div>
+
+            <!-- upgrade help -->
+            <div id="upgradeHelp">
+                <div class="upgradeHelpBG">
+                    <img id="upgradeHelpBGImage" src="Images/Background/bg_white.png">
+                </div>
+                <div class="upgradeHelpImage">
+                    <img src="Images/stats_help.png">
+                </div>
+            </div>
+
+            <!-- help button -->
+            <div class="helpButton buttonElement" id="upgradeHelpButton"
+                ontouchstart='event.preventDefault(); upgradeHelpDown()'
+                ontouchend='event.preventDefault(); upgradeHelpUp()' 
+                ontouchcancel='event.preventDefault(); upgradeHelpUp()'
+                onmousedown='event.preventDefault(); upgradeHelpDown()'
+                onmouseup='event.preventDefault(); upgradeHelpUp()'
+                onmouseout='event.preventDefault(); upgradeHelpUp()'>
+                <img  class="helpImage" src="Images/help_button.png" id="upgradeHelpButtonImg">
+            </div>
+        </div> <!-- UPGRADE UI END -->
+
+        <!-- WAITING UI -->
+        <div id="waitingUI">
+            <div class="waitingOverlay">
+                <img src="Images/Background/bg_white.png">
+            </div>
+            <div class="waitingContainer">
+
+                <div class="waitingText" id="waitingHeaderText">
+                    WAITING&nbsp;&nbsp;FOR:
+                </div>
+                <div class="waitingText waitingPlayerText">
+                    Guest 420
+                </div>
+
+            </div>
+        </div> <!-- WAITING UI END -->
+
+        <!-- DEAD UI -->
+        <div id="deadUI">   
+            <!-- options button -->
+            <div class="rectButtonRight optionsButton masterControlElement skew25 buttonElement"
+                ontouchstart='event.preventDefault(); optionsDown()'
+                ontouchend='event.preventDefault(); optionsOpen()' 
+                ontouchcancel='event.preventDefault(); optionsUp()'
+                onmousedown='event.preventDefault(); optionsDown()'
+                onmouseup='event.preventDefault(); optionsOpen()'
+                onmouseout='event.preventDefault(); optionsUp()'>
+                <div class="rectButtonRightText optionsButtonText">
+                    OPTIONS
+                </div>
+            </div>
+         
+            <!-- title -->
+            <div class="deadTitle">
+                <img src="Images/dead_title.png">
+            </div>     
+
+            <!-- revive counter -->
+            <div class="reviveCounter">
+                <img src="Images/Item_Icons/item_revive.png">
+                <div class="reviveCounterText">
+                    XX
+                </div>
+            </div>
+
+            <!-- revive button -->
+            <div class="skew30 buttonElement" id="reviveButton"
+                ontouchstart='event.preventDefault(); reviveDown()'
+                ontouchend='event.preventDefault(); revive()' 
+                ontouchcancel='event.preventDefault(); reviveUp()'
+                onmousedown='event.preventDefault(); reviveDown()'
+                onmouseup='event.preventDefault(); revive()'
+                onmouseout='event.preventDefault(); reviveUp()'>
+                <div class="readyStartButtonText">
+                    REVIVE
+                </div>
+            </div>
+
+            <!-- text -->
+            <div class="reviveText" id="reviveNoneText">
+                NO REVIVES AVAILABLE
+            </div>
+
+            <div class="reviveText" id="reviveOrText">
+                OR
+            </div>
+
+            <div class="reviveText" id="reviveWaitText">
+                WAIT FOR TEAMMATES<br>TO COMPLETE THE FLOOR
+            </div>
+        </div> <!-- DEAD UI END -->
+
+        <!-- GAMEOVER UI -->
+        <div id="gameoverUI"> 
+            <!-- title -->
+            <div class="gameOverTitle">
+                <img src="Images/game_over_title.png">
+            </div>           
+            
+            <!-- stats -->
+            <div class="gameOverStatContainer" id="gameOverStatContainer0">
+                <div class="gameOverStatName" id="gameOverStatName0">
+                    ENEMIES KILLED
+                </div>
+                <div class="gameOverStatValue" id="gameOverStatValue0">
+                    XX
+                </div>
+            </div>
+            <div class="gameOverStatContainer" id="gameOverStatContainer1">
+                <div class="gameOverStatName" id="gameOverStatName1">
+                    FLOORS COMPLETED
+                </div>
+                <div class="gameOverStatValue" id="gameOverStatValue1">
+                    XX
+                </div>
+            </div>
+
+            <!-- leaderboards button -->
+            <!-- <div class="rectButtonLeft skew30 buttonElement" id="leaderboardsButton"
+                ontouchstart='event.preventDefault(); leaderboardsDown()'
+                ontouchend='event.preventDefault(); openLeaderboards()' 
+                ontouchcancel='event.preventDefault(); leaderboardsUp()'
+                onmousedown='event.preventDefault(); leaderboardsDown()'
+                onmouseup='event.preventDefault(); openLeaderboards()'
+                onmouseout='event.preventDefault(); leaderboardsUp()'>
+                <div class="leaderboardsButtonText">
+                    LEADERBOARDS
+                </div>
+            </div>-->
+
+            <!-- continue button -->
+            <div class="skew30 masterControlElement buttonElement" id="gameOverContinueButton"
+                ontouchstart='event.preventDefault(); gameOverContinueDown()'
+                ontouchend='event.preventDefault(); gameOverContinue()' 
+                ontouchcancel='event.preventDefault(); gameOverContinueUp()'
+                onmousedown='event.preventDefault(); gameOverContinueDown()'
+                onmouseup='event.preventDefault(); gameOverContinue()'
+                onmouseout='event.preventDefault(); gameOverContinueUp()'>
+                <div class="readyStartButtonText">
+                    MAIN MENU
+                </div>
+            </div>
+        </div> <!-- GAMEOVER UI END -->
+
+        <!-- OPTIONS UI -->
+        <div id="optionsUI">  
+
+            <!-- options title -->
+            <div class="optionsTitle">
+                <img src="Images/options_title.png">
+            </div>    
+
+            <!-- main menu button -->
+            <div class="rectButtonRight skew30 buttonElement" id="mainMenuButton"
+                ontouchstart='event.preventDefault(); mainMenuDown()'
+                ontouchend='event.preventDefault(); mainMenu()' 
+                ontouchcancel='event.preventDefault(); mainMenuUp()'
+                onmousedown='event.preventDefault(); mainMenuDown()'
+                onmouseup='event.preventDefault(); mainMenu()'
+                onmouseout='event.preventDefault(); mainMenuUp()'>
+                <div class="mainMenuButtonText">
+                    MAIN MENU
+                </div>
+            </div>
+
+            <!-- option settings -->
+            <div class="optionsSettingContainer" id="optionsSettingContainer0">
+
+                <!-- right button -->
+                <div class="rectButtonRight skewNeg30 optionsRightButton buttonElement" id="optionsSettingPos0"
+                    ontouchstart='event.preventDefault(); volumeMusicSettingDown(1)'
+                    ontouchend='event.preventDefault(); volumeMusicSetting(1)' 
+                    ontouchcancel='event.preventDefault(); volumeMusicSettingUp(1)'
+                    onmousedown='event.preventDefault(); volumeMusicSettingDown(1)'
+                    onmouseup='event.preventDefault(); volumeMusicSetting(1)'
+                    onmouseout='event.preventDefault(); volumeMusicSettingUp(1)'>
+                    <div class="optionsRightButtonText">
+                        +
+                    </div>
+                </div>
+
+                <div class="optionsSettingText">
+                    MUSIC
+                </div>
+
+                <div class="optionsSettingValue" id="optionsSettingValue0">
+                    XX
+                </div>
+
+                <!-- left button -->
+                <div class="rectButtonLeft skew30 optionsLeftButton buttonElement" id="optionsSettingNeg0"
+                    ontouchstart='event.preventDefault(); volumeMusicSettingDown(-1)'
+                    ontouchend='event.preventDefault(); volumeMusicSetting(-1)' 
+                    ontouchcancel='event.preventDefault(); volumeMusicSettingUp(-1)'
+                    onmousedown='event.preventDefault(); volumeMusicSettingDown(-1)'
+                    onmouseup='event.preventDefault(); volumeMusicSetting(-1)'
+                    onmouseout='event.preventDefault(); volumeMusicSettingUp(-1)'>
+                    <div class="optionsLeftButtonText"> </div>
+                </div>
+            </div>
+
+            <div class="optionsSettingContainer" id="optionsSettingContainer1">
+
+                <!-- right button -->
+                <div class="rectButtonRight skewNeg30 optionsRightButton buttonElement" id="optionsSettingPos1"
+                    ontouchstart='event.preventDefault(); volumeSFXSettingDown(1)'
+                    ontouchend='event.preventDefault(); volumeSFXSetting(1)' 
+                    ontouchcancel='event.preventDefault(); volumeSFXSettingUp(1)'
+                    onmousedown='event.preventDefault(); volumeSFXSettingDown(1)'
+                    onmouseup='event.preventDefault(); volumeSFXSetting(1)'
+                    onmouseout='event.preventDefault(); volumeSFXSettingUp(1)'>
+                    <div class="optionsRightButtonText">
+                        +
+                    </div>
+                </div>
+
+                <div class="optionsSettingText">
+                    SOUND FX
+                </div>
+
+                <div class="optionsSettingValue" id="optionsSettingValue1">
+                    XX
+                </div>
+
+                <!-- left button -->
+                <div class="rectButtonLeft skew30 optionsLeftButton buttonElement" id="optionsSettingNeg1"
+                    ontouchstart='event.preventDefault(); volumeSFXSettingDown(-1)'
+                    ontouchend='event.preventDefault(); volumeSFXSetting(-1)' 
+                    ontouchcancel='event.preventDefault(); volumeSFXSettingUp(-1)'
+                    onmousedown='event.preventDefault(); volumeSFXSettingDown(-1)'
+                    onmouseup='event.preventDefault(); volumeSFXSetting(-1)'
+                    onmouseout='event.preventDefault(); volumeSFXSettingUp(-1)'>
+                    <div class="optionsLeftButtonText"> </div>
+                </div>
+            </div>
+
+            <div class="optionsSettingContainer" id="optionsSettingContainer2">
+
+                <!-- right button -->
+                <div class="rectButtonRight skewNeg30 optionsRightButton buttonElement" id="optionsSettingPos2"
+                    ontouchstart='event.preventDefault(); qualitySettingDown(1)'
+                    ontouchend='event.preventDefault(); qualitySetting(1)' 
+                    ontouchcancel='event.preventDefault(); qualitySettingUp(1)'
+                    onmousedown='event.preventDefault(); qualitySettingDown(1)'
+                    onmouseup='event.preventDefault(); qualitySetting(1)'
+                    onmouseout='event.preventDefault(); qualitySettingUp(1)'>
+                    <div class="optionsRightButtonText">
+                        +
+                    </div>
+                </div>
+
+                <div class="optionsSettingText">
+                    QUALITY
+                </div>
+
+                <div class="optionsSettingValue" id="optionsSettingValue2">
+                    XX
+                </div>
+
+                <!-- left button -->
+                <div class="rectButtonLeft skew30 optionsLeftButton buttonElement" id="optionsSettingNeg2"
+                    ontouchstart='event.preventDefault(); qualitySettingDown(-1)'
+                    ontouchend='event.preventDefault(); qualitySetting(-1)' 
+                    ontouchcancel='event.preventDefault(); qualitySettingUp(-1)'
+                    onmousedown='event.preventDefault(); qualitySettingDown(-1)'
+                    onmouseup='event.preventDefault(); qualitySetting(-1)'
+                    onmouseout='event.preventDefault(); qualitySettingUp(-1)'>
+                    <div class="optionsLeftButtonText"> </div>
+                </div>
+            </div>
+
+            <!-- credits button -->
+            <div class="rectButtonLeft skewNeg30 buttonElement" id="creditsButton"
+                ontouchstart='event.preventDefault(); creditsDown()'
+                ontouchend='event.preventDefault(); openCredits()' 
+                ontouchcancel='event.preventDefault(); creditsUp()'
+                onmousedown='event.preventDefault(); creditsDown()'
+                onmouseup='event.preventDefault(); openCredits()'
+                onmouseout='event.preventDefault(); creditsUp()'>
+                <div class="creditsButtonText">
+                    CREDITS
+                </div>
+            </div>
+
+            <!-- leaderboards button -->
+            <!--<div class="rectButtonLeft skew30 buttonElement" id="leaderboardsButton"
+                ontouchstart='event.preventDefault(); leaderboardsDown()'
+                ontouchend='event.preventDefault(); openLeaderboards()' 
+                ontouchcancel='event.preventDefault(); leaderboardsUp()'
+                onmousedown='event.preventDefault(); leaderboardsDown()'
+                onmouseup='event.preventDefault(); openLeaderboards()'
+                onmouseout='event.preventDefault(); leaderboardsUp()'>
+                <div class="leaderboardsButtonText">
+                    LEADERBOARDS
+                </div>
+            </div> -- >
+
+            <!-- help button -->
+            <div class="helpButton buttonElement masterControlElement" id="optionsHelpButton"
+                ontouchstart='event.preventDefault(); helpDown()'
+                ontouchend='event.preventDefault(); helpOpen()' 
+                ontouchcancel='event.preventDefault(); helpUp()'
+                onmousedown='event.preventDefault(); helpDown()'
+                onmouseup='event.preventDefault(); helpOpen()'
+                onmouseout='event.preventDefault(); helpUp()'>
+                <img  class="helpImage" src="Images/help_button.png">
+            </div>
+
+            <!-- resume button -->
+            <div class="rectButtonRight skew25 buttonElement" id="optionsResumeButton"
+                ontouchstart='event.preventDefault(); optionsResumeDown()'
+                ontouchend='event.preventDefault(); optionsResume()' 
+                ontouchcancel='event.preventDefault(); optionsResumeUp()'
+                onmousedown='event.preventDefault(); optionsResumeDown()'
+                onmouseup='event.preventDefault(); optionsResume()'
+                onmouseout='event.preventDefault(); optionsResumeUp()'>
+                <div class="optionsResumeText">
+                    RESUME
+                </div>
+            </div>
+        </div> <!-- OPTIONS UI END -->
+
+        <!-- CREDITS UI -->
+        <div id="creditsUI">
+
+            <div class="creditsTitle">
+                <img src="Images/credits_title.png">
+            </div>
+
+            <div class="credits">
+                <div class="phlCredits">
+                    <img src="Images/PHL_4color_stack.png">
+                </div>
+                <div class="otherCredit">
+                    <center>
+                        <div class="bold">CONCEPT DESIGN AND
+                        <br>DEVELOPMENT BY:</div>
+                        PHL COLLECTIVE
+                        <div class="bold"><br>PHL COLLECTIVE IS:</div>
+                        BREN KING
+                        <br>BRIAN GITLIN
+                        <br>NICK MADONNA
+                        <br>RYAN REED
+                        <br>TERRY DIFELICIANTONIO
+                        <br>TOM TRAHEY
+                        <br>VINCENT ERHARD
+                        <div class="bold"><br>IRIS VOICE:</div>
+                        HEATHER CORSON
+                        <div class="bold"><br>MUSIC:</div>
+                        MAXSTACK
+                    </center>
+                </div>              
+            </div>
+
+            <div class="rectButtonRight skew25 buttonElement" id="creditsBackButton"
+                ontouchstart='event.preventDefault(); creditsBackDown()'
+                ontouchend='event.preventDefault(); creditsBack()' 
+                ontouchcancel='event.preventDefault(); creditsBackUp()'
+                onmousedown='event.preventDefault(); creditsBackDown()'
+                onmouseup='event.preventDefault(); creditsBack()'
+                onmouseout='event.preventDefault(); creditsBackUp()'>
+                <div class="rectButtonRightText">
+                    BACK
+                </div>
+            </div>
+        </div> <!-- CREDITS UI END -->
+
+        <!-- UPGRADE WAITING UI -->
+        <div id="upgradeWaitingUI">
+            <!-- text header -->
+            <div class="upgradeWaitingHeader" id="upgradeWaitingHeaderText">
+                WAITING<br>
+                FOR<br>
+                OTHER<br>
+                PLAYERS
+            </div>
+
+            <!-- ready area -->
+            <div class="readyArea">
+                <div class="readyHeader">
+                    <img id="upgradeReadyImage" src="Images/upgrade_wait.png">
+                </div>
+                <div class="readyInfo">
+                    <div class="readyTriangles">
+                        <div class="readyTriangle readyTriangleOne">
+                            <img class="rotate180" id="playerOneUpgradeTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleTwo">
+                            <img id="playerTwoUpgradeTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleThree">
+                            <img class="rotate180" id="playerThreeUpgradeTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleFour">
+                            <img id="playerFourUpgradeTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                    </div>
+                    <div class="skew30 masterControlElement buttonElement" id="advanceSessionButton"
+                        ontouchstart='event.preventDefault(); advanceSessionDown()'
+                        ontouchend='event.preventDefault(); advanceSession()' 
+                        ontouchcancel='event.preventDefault(); advanceSessionUp()'
+                        onmousedown='event.preventDefault(); advanceSessionDown()'
+                        onmouseup='event.preventDefault(); advanceSession()'
+                        onmouseout='event.preventDefault(); advanceSessionUp()'>
+                        <div class="readyStartButtonText">
+                            START
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- UPGRADE WAITING UI END -->
+
+        <!-- ITEM SELECTION UI -->
+        <div id="itemSelectionUI">  
+            <!-- options button -->
+            <div class="rectButtonRight optionsButton masterControlElement skew25 buttonElement"
+                ontouchstart='event.preventDefault(); optionsDown()'
+                ontouchend='event.preventDefault(); optionsOpen()' 
+                ontouchcancel='event.preventDefault(); optionsUp()'
+                onmousedown='event.preventDefault(); optionsDown()'
+                onmouseup='event.preventDefault(); optionsOpen()'
+                onmouseout='event.preventDefault(); optionsUp()'>
+                <div class="rectButtonRightText optionsButtonText">
+                    OPTIONS
+                </div>
+            </div>
+
+            <div class="characterSelectTitle">
+                <img src="Images/item_select_title.png">
+            </div>
+
+            <div class="itemSelectionDescription">
+                <img src="Images/item_select_description.png">
+            </div>
+
+            <!-- item slots -->
+            <div class="itemSelect" id="itemContainer0">
+                <!-- item select icon background -->
+                <div class="itemIconBackgroundContainer skewNeg35">
+                </div>
+
+                <!-- item select shadow -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeaderShadow" id="itemOneSelectShadow">
+                </div>
+
+                <!-- item select button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemSelectButton0"
+                    ontouchstart='event.preventDefault(); itemSelectDown(0)'
+                    ontouchend='event.preventDefault(); itemSelect(0)' 
+                    ontouchcancel='event.preventDefault(); itemSelectUp(0)'
+                    onmousedown='event.preventDefault(); itemSelectDown(0)'
+                    onmouseup='event.preventDefault(); itemSelect(0)'
+                    onmouseout='event.preventDefault(); itemSelectUp(0)'>
+                    <div class="itemSelectNameText skew35" id="itemSelectNameText0">
+                        ITEM NAME
+                    </div>
+                </div>
+
+                <!-- item icon -->
+                <div class="itemIconContainer">               
+                    <div class="itemIcon">
+                        <img id="itemIconImage0" src="Images/Item_Icons/item_utility_belt.png">
+                    </div>
+                </div>
+
+                <!-- item backout button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemBackoutButton0"
+                    ontouchstart='event.preventDefault(); itemBackoutDown(0)'
+                    ontouchend='event.preventDefault(); itemBackout(0)' 
+                    ontouchcancel='event.preventDefault(); itemBackoutUp(0)'
+                    onmousedown='event.preventDefault(); itemBackoutDown(0)'
+                    onmouseup='event.preventDefault(); itemBackout(0)'
+                    onmouseout='event.preventDefault(); itemBackoutUp(0)'>
+                    <div class="itemSelectNameText skew35" id="itemBackoutText0">
+                        DROP
+                    </div>
+                </div>
+
+                <!-- item compare button -->
+                <div class="itemCompareButton skewNeg35 buttonElement" id="itemCompareButton0"
+                    ontouchstart='event.preventDefault(); itemCompareOn(0)'
+                    ontouchend='event.preventDefault(); itemCompareOff(0)' 
+                    ontouchcancel='event.preventDefault(); itemCompareOff(0)'
+                    onmousedown='event.preventDefault(); itemCompareOn(0)'
+                    onmouseup='event.preventDefault(); itemCompareOff(0)'
+                    onmouseout='event.preventDefault(); itemCompareOff(0)'>
+                    <img src="Images/item_compare.png">
+                </div>
+                
+                <!-- item description -->
+                <div class="itemSelectHeaderDescriptionText" id="itemDescriptionText0">
+                    ITEM
+                </div>
+
+                <!-- gun stats -->
+                <div class="itemGunStatsContainer" id="itemGunStatsContainer0">
+                    <div class="itemGunStat itemGunStat0" id="item0GunStat0Container">
+                        <div id="item0GunStatNameText0">ONE</div>
+                        <div class="playerSelectStatValue" id="item0GunStatValueText0">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat1" id="item0GunStat1Container">
+                        <div id="item0GunStatNameText1">TWO</div>
+                        <div class="playerSelectStatValue" id="item0GunStatValueText1">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat2" id="item0GunStat2Container">
+                        <div id="item0GunStatNameText2">THR</div>
+                        <div class="playerSelectStatValue" id="item0GunStatValueText2">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat3" id="item0GunStat3Container">
+                        <div id="item0GunStatNameText3">DMG</div>
+                        <div class="playerSelectStatValue" id="item0GunStatValueText3">
+                            XXXX
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="itemSelect" id="itemContainer1">
+                <!-- item select icon background -->
+                <div class="itemIconBackgroundContainer skewNeg35">
+                </div>
+
+                <!-- item select shadow -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeaderShadow" id="itemTwoSelectShadow">
+                </div>
+
+                <!-- item select button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemSelectButton1"
+                    ontouchstart='event.preventDefault(); itemSelectDown(1)'
+                    ontouchend='event.preventDefault(); itemSelect(1)' 
+                    ontouchcancel='event.preventDefault(); itemSelectUp(1)'
+                    onmousedown='event.preventDefault(); itemSelectDown(1)'
+                    onmouseup='event.preventDefault(); itemSelect(1)'
+                    onmouseout='event.preventDefault(); itemSelectUp(1)'>
+                    <div class="itemSelectNameText skew35" id="itemSelectNameText1">
+                        ITEM NAME
+                    </div>
+                </div>
+
+                <!-- item icon -->
+                <div class="itemIconContainer">               
+                    <div class="itemIcon">
+                        <img id="itemIconImage1" src="Images/Item_Icons/item_utility_belt.png">
+                    </div>
+                </div>
+
+                <!-- item backout button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemBackoutButton1"
+                    ontouchstart='event.preventDefault(); itemBackoutDown(1)'
+                    ontouchend='event.preventDefault(); itemBackout(1)' 
+                    ontouchcancel='event.preventDefault(); itemBackoutUp(1)'
+                    onmousedown='event.preventDefault(); itemBackoutDown(1)'
+                    onmouseup='event.preventDefault(); itemBackout(1)'
+                    onmouseout='event.preventDefault(); itemBackoutUp(1)'>
+                    <div class="itemSelectNameText skew35" id="itemBackoutText1">
+                        DROP
+                    </div>
+                </div>
+
+                <!-- item compare button -->
+                <div class="itemCompareButton skewNeg35 buttonElement" id="itemCompareButton1"
+                    ontouchstart='event.preventDefault(); itemCompareOn(1)'
+                    ontouchend='event.preventDefault(); itemCompareOff(1)' 
+                    ontouchcancel='event.preventDefault(); itemCompareOff(1)'
+                    onmousedown='event.preventDefault(); itemCompareOn(1)'
+                    onmouseup='event.preventDefault(); itemCompareOff(1)'
+                    onmouseout='event.preventDefault(); itemCompareOff(1)'>
+                    <img src="Images/item_compare.png">
+                </div>
+                
+                <!-- item description -->
+                <div class="itemSelectHeaderDescriptionText" id="itemDescriptionText1">
+                    ITEM
+                </div>
+
+                <!-- gun stats -->
+                <div class="itemGunStatsContainer" id="itemGunStatsContainer1">
+                    <div class="itemGunStat itemGunStat0" id="item1GunStat0Container">
+                        <div id="item1GunStatNameText0">ONE</div>
+                        <div class="playerSelectStatValue" id="item1GunStatValueText0">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat1" id="item1GunStat1Container">
+                        <div id="item1GunStatNameText1">TWO</div>
+                        <div class="playerSelectStatValue" id="item1GunStatValueText1">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat2" id="item1GunStat2Container">
+                        <div id="item1GunStatNameText2">THR</div>
+                        <div class="playerSelectStatValue" id="item1GunStatValueText2">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat3" id="item1GunStat3Container">
+                        <div id="item1GunStatNameText3">DMG</div>
+                        <div class="playerSelectStatValue" id="item1GunStatValueText3">
+                            XXXX
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="itemSelect" id="itemContainer2">
+                <!-- item select icon background -->
+                <div class="itemIconBackgroundContainer skewNeg35">
+                </div>
+
+                <!-- item select shadow -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeaderShadow" id="itemThreeSelectShadow">
+                </div>
+
+                <!-- item select button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemSelectButton2"
+                    ontouchstart='event.preventDefault(); itemSelectDown(2)'
+                    ontouchend='event.preventDefault(); itemSelect(2)' 
+                    ontouchcancel='event.preventDefault(); itemSelectUp(2)'
+                    onmousedown='event.preventDefault(); itemSelectDown(2)'
+                    onmouseup='event.preventDefault(); itemSelect(2)'
+                    onmouseout='event.preventDefault(); itemSelectUp(2)'>
+                    <div class="itemSelectNameText skew35" id="itemSelectNameText2">
+                        ITEM NAME
+                    </div>
+                </div>
+
+                <!-- item icon -->
+                <div class="itemIconContainer">               
+                    <div class="itemIcon">
+                        <img id="itemIconImage2" src="Images/Item_Icons/item_utility_belt.png">
+                    </div>
+                </div>
+
+                <!-- item backout button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemBackoutButton2"
+                    ontouchstart='event.preventDefault(); itemBackoutDown(2)'
+                    ontouchend='event.preventDefault(); itemBackout(2)' 
+                    ontouchcancel='event.preventDefault(); itemBackoutUp(2)'
+                    onmousedown='event.preventDefault(); itemBackoutDown(2)'
+                    onmouseup='event.preventDefault(); itemBackout(2)'
+                    onmouseout='event.preventDefault(); itemBackoutUp(2)'>
+                    <div class="itemSelectNameText skew35" id="itemBackoutText2">
+                        DROP
+                    </div>
+                </div>
+
+                <!-- item compare button -->
+                <div class="itemCompareButton skewNeg35 buttonElement" id="itemCompareButton2"
+                    ontouchstart='event.preventDefault(); itemCompareOn(2)'
+                    ontouchend='event.preventDefault(); itemCompareOff(2)' 
+                    ontouchcancel='event.preventDefault(); itemCompareOff(2)'
+                    onmousedown='event.preventDefault(); itemCompareOn(2)'
+                    onmouseup='event.preventDefault(); itemCompareOff(2)'
+                    onmouseout='event.preventDefault(); itemCompareOff(2)'>
+                    <img src="Images/item_compare.png">
+                </div>
+                
+                <!-- item description -->
+                <div class="itemSelectHeaderDescriptionText" id="itemDescriptionText2">
+                    ITEM
+                </div>
+
+                <!-- gun stats -->
+                <div class="itemGunStatsContainer" id="itemGunStatsContainer2">
+                    <div class="itemGunStat itemGunStat0" id="item2GunStat0Container">
+                        <div id="item2GunStatNameText0">ONE</div>
+                        <div class="playerSelectStatValue" id="item2GunStatValueText0">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat1" id="item2GunStat1Container">
+                        <div id="item2GunStatNameText1">TWO</div>
+                        <div class="playerSelectStatValue" id="item2GunStatValueText1">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat2" id="item2GunStat2Container">
+                        <div id="item2GunStatNameText2">THR</div>
+                        <div class="playerSelectStatValue" id="item2GunStatValueText2">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat3" id="item2GunStat3Container">
+                        <div id="item2GunStatNameText3">DMG</div>
+                        <div class="playerSelectStatValue" id="item2GunStatValueText3">
+                            XXXX
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="itemSelect" id="itemContainer3">
+                <!-- item select icon background -->
+                <div class="itemIconBackgroundContainer skewNeg35">
+                </div>
+
+                <!-- item select shadow -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeaderShadow" id="itemFourSelectShadow">
+                </div>
+
+                <!-- item select button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemSelectButton3"
+                    ontouchstart='event.preventDefault(); itemSelectDown(3)'
+                    ontouchend='event.preventDefault(); itemSelect(3)' 
+                    ontouchcancel='event.preventDefault(); itemSelectUp(3)'
+                    onmousedown='event.preventDefault(); itemSelectDown(3)'
+                    onmouseup='event.preventDefault(); itemSelect(3)'
+                    onmouseout='event.preventDefault(); itemSelectUp(3)'>
+                    <div class="itemSelectNameText skew35" id="itemSelectNameText3">
+                        ITEM NAME
+                    </div>
+                </div>
+
+                <!-- item icon -->
+                <div class="itemIconContainer">               
+                    <div class="itemIcon">
+                        <img id="itemIconImage3" src="Images/Item_Icons/item_utility_belt.png">
+                    </div>
+                </div>
+
+                <!-- item backout button -->
+                <div class="rectButtonLeft skewNeg35 itemSelectHeader buttonElement" id="itemBackoutButton3"
+                    ontouchstart='event.preventDefault(); itemBackoutDown(3)'
+                    ontouchend='event.preventDefault(); itemBackout(3)' 
+                    ontouchcancel='event.preventDefault(); itemBackoutUp(3)'
+                    onmousedown='event.preventDefault(); itemBackoutDown(3)'
+                    onmouseup='event.preventDefault(); itemBackout(3)'
+                    onmouseout='event.preventDefault(); itemBackoutUp(3)'>
+                    <div class="itemSelectNameText skew35" id="itemBackoutText3">
+                        DROP
+                    </div>
+                </div>
+
+                <!-- item compare button -->
+                <div class="itemCompareButton skewNeg35 buttonElement" id="itemCompareButton3"
+                    ontouchstart='event.preventDefault(); itemCompareOn(3)'
+                    ontouchend='event.preventDefault(); itemCompareOff(3)' 
+                    ontouchcancel='event.preventDefault(); itemCompareOff(3)'
+                    onmousedown='event.preventDefault(); itemCompareOn(3)'
+                    onmouseup='event.preventDefault(); itemCompareOff(3)'
+                    onmouseout='event.preventDefault(); itemCompareOff(3)'>
+                    <img src="Images/item_compare.png">
+                </div>
+                
+                <!-- item description -->
+                <div class="itemSelectHeaderDescriptionText" id="itemDescriptionText3">
+                    ITEM
+                </div>
+
+                <!-- gun stats -->
+                <div class="itemGunStatsContainer" id="itemGunStatsContainer3">
+                    <div class="itemGunStat itemGunStat0" id="item3GunStat0Container" >
+                        <div id="item3GunStatNameText0">ONE</div>
+                        <div class="playerSelectStatValue" id="item3GunStatValueText0">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat1" id="item3GunStat1Container" >
+                        <div id="item3GunStatNameText1">TWO</div>
+                        <div class="playerSelectStatValue" id="item3GunStatValueText1">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat2" id="item3GunStat2Container" >
+                        <div id="item3GunStatNameText2">THR</div>
+                        <div class="playerSelectStatValue" id="item3GunStatValueText2">
+                            X
+                        </div>
+                    </div>
+                    <div class="itemGunStat itemGunStat3" id="item3GunStat3Container" >
+                        <div id="item3GunStatNameText3">DMG</div>
+                        <div class="playerSelectStatValue" id="item3GunStatValueText3">
+                            XXXX
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ready area -->
+            <div class="readyArea">
+                <div class="readyHeader">
+                    <img id="characterSelectReadyImage" src="Images/Player_Select/player_select_ready.png">
+                </div>
+                <div class="readyInfo">
+                    <div class="readyTriangles">
+                        <div class="readyTriangle readyTriangleOne">
+                            <img class="rotate180" id="playerOneItemReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleTwo">
+                            <img id="playerTwoItemReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleThree">
+                            <img class="rotate180" id="playerThreeItemReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                        <div class="readyTriangle readyTriangleFour">
+                            <img id="playerFourItemReadyTriangle" src="Images/Player_Select/player_select_ready_triangle_black.png">
+                        </div>
+                    </div>
+                    <div class="skew30 masterControlElement buttonElement" id="itemConfirmButton"
+                        ontouchstart='event.preventDefault(); confirmItemsDown()'
+                        ontouchend='event.preventDefault(); confirmItems()' 
+                        ontouchcancel='event.preventDefault(); confirmItemsUp()'
+                        onmousedown='event.preventDefault(); confirmItemsDown()'
+                        onmouseup='event.preventDefault(); confirmItems()'
+                        onmouseout='event.preventDefault(); confirmItemsUp()'>
+                        <div class="readyStartButtonText">
+                            CONFIRM
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- compare overlays -->
+            <div class="itemCompareOverlay" id="itemCompareOverlayTop">
+            </div>
+            <div class="itemCompareOverlay" id="itemCompareOverlayBottom">
+            </div>
+        </div> <!-- ITEM SELECTION UI END -->
+
+        <!-- QUIT CHECK UI -->
+        <div id="quitCheckUI">
+            <div class="quitCheckTitle">
+                <img src="Images/quit_check_title.png">
+            </div>
+
+            <!-- no button -->
+            <div class="rectButtonLeft skewNeg30 buttonElement" id="quitCheckNoButton"
+                ontouchstart='event.preventDefault(); quitCheckNoDown()'
+                ontouchend='event.preventDefault(); quitCheckNo()' 
+                ontouchcancel='event.preventDefault(); quitCheckNoUp()'
+                onmousedown='event.preventDefault(); quitCheckNoDown()'
+                onmouseup='event.preventDefault(); quitCheckNo()'
+                onmouseout='event.preventDefault(); quitCheckNoUp()'>
+                <div class="quitCheckNoButtonText">
+                    NO
+                </div>
+            </div>
+
+            <!-- yes button -->
+            <div class="rectButtonRight skew30 buttonElement" id="quitCheckYesButton"
+                ontouchstart='event.preventDefault(); quitCheckYesDown()'
+                ontouchend='event.preventDefault(); quitCheckYes()' 
+                ontouchcancel='event.preventDefault(); quitCheckYesUp()'
+                onmousedown='event.preventDefault(); quitCheckYesDown()'
+                onmouseup='event.preventDefault(); quitCheckYes()'
+                onmouseout='event.preventDefault(); quitCheckYesUp()'>
+                <div class="quitCheckYesButtonText">
+                    YES
+                </div>
+            </div>
+        </div> <!-- QUIT CHECK UI END -->
+
+        <!-- HELP UI -->
+        <div id="helpUI">
+            <!-- help title -->
+            <div class="helpDot" id="helpDotLeft">
+                <img id="helpDot0" src="Images/help_dot_open.png">
+            </div>
+            <div class="helpDot" id="helpDotRight">
+                <img id="helpDot1" src="Images/help_dot_open.png">
+            </div>
+
+            <!-- help back button -->
+            <div class="rectButtonRight skew30 buttonElement" id="helpBackButton"
+                ontouchstart='event.preventDefault(); helpBackDown()'
+                ontouchend='event.preventDefault(); helpBack()' 
+                ontouchcancel='event.preventDefault(); helpBackUp()'
+                onmousedown='event.preventDefault(); helpBackDown()'
+                onmouseup='event.preventDefault(); helpBack()'
+                onmouseout='event.preventDefault(); helpBackUp()'>
+                <div class="helpBackButtonText">
+                    BACK
+                </div>
+            </div>
+
+            <div id="helpText">
+                JAWN01
+                <br>JAWN02
+                <br>JAWN03
+            </div>
+
+            <!-- help next button -->
+            <div class="rectButtonRight skew30 buttonElement" id="helpNextButton"
+                ontouchstart='event.preventDefault(); helpNextDown()'
+                ontouchend='event.preventDefault(); helpNext()' 
+                ontouchcancel='event.preventDefault(); helpNextUp()'
+                onmousedown='event.preventDefault(); helpNextDown()'
+                onmouseup='event.preventDefault(); helpNext()'
+                onmouseout='event.preventDefault(); helpNextUp()'>
+                <div class="helpNextButtonText">
+                    NEXT
+                </div>
+            </div>
+
+            <!-- help previous button -->
+            <div class="rectButtonLeft skewNeg30 buttonElement" id="helpPreviousButton"
+                ontouchstart='event.preventDefault(); helpPreviousDown()'
+                ontouchend='event.preventDefault(); helpPrevious()' 
+                ontouchcancel='event.preventDefault(); helpPreviousUp()'
+                onmousedown='event.preventDefault(); helpPreviousDown()'
+                onmouseup='event.preventDefault(); helpPrevious()'
+                onmouseout='event.preventDefault(); helpPreviousUp()'>
+                <div class="helpPreviousButtonText">
+                    PREVIOUS
+                </div>
+            </div>
+        </div> <!-- HELP UI END -->
+
+        <!-- SPECTATE UI -->
+        <div id="spectateUI">
+
+            <!-- title -->
+            <div class="joinTitle">
+                <img src="Images/iris_title.png" />
+            </div>
+
+            <!-- spectate title -->
+            <div id="loadingTitle">
+                <img id="spectatingImage" src="Images/Spectating/spectating_left_01.png"/>
+            </div>
+        </div> <!-- SPECTATE UI END -->
+
+        <!-- LEADERBOARD UI -->
+        <div id="leaderboardsUI">
+            <!-- title -->
+            <div class="leaderboardsTitle">
+                <img src="Images/leaderboards_title.png" />
+            </div>
+
+            <!-- leader board containers -->
+            <div class="leaderboardContainer" id="leaderboardContianer0">
+                <div class="rectButtonLeft skewNeg30 leaderboardOpenButton buttonElement" id="leaderboardOpenButton0"
+                ontouchstart='event.preventDefault(); leaderboardOpenDown(0)'
+                ontouchend='event.preventDefault(); leaderboardOpen(0)' 
+                ontouchcancel='event.preventDefault(); leaderboardOpenUp(0)'
+                onmousedown='event.preventDefault(); leaderboardOpenDown(0)'
+                onmouseup='event.preventDefault(); leaderboardOpen(0)'
+                onmouseout='event.preventDefault(); leaderboardOpenUp(0)'>
+                    <div class="leaderboardsOpenText">
+                        VIEW
+                    </div>
+                </div>
+                <div class="leaderboardNameContainer">
+                    <div class="leaderboardNameText">
+                        FLOORS COMPLETED
+                    </div>
+                </div>
+                <div class="leaderboardIcon">
+                    <img src="Images/Leaderboard_Icons/leaderboard_floors.png">
+                </div>
+            </div>
+            <div class="leaderboardContainer" id="leaderboardContianer1">
+                <div class="rectButtonLeft skewNeg30 leaderboardOpenButton buttonElement" id="leaderboardOpenButton1"
+                ontouchstart='event.preventDefault(); leaderboardOpenDown(1)'
+                ontouchend='event.preventDefault(); leaderboardOpen(1)' 
+                ontouchcancel='event.preventDefault(); leaderboardOpenUp(1)'
+                onmousedown='event.preventDefault(); leaderboardOpenDown(1)'
+                onmouseup='event.preventDefault(); leaderboardOpen(1)'
+                onmouseout='event.preventDefault(); leaderboardOpenUp(1)'>
+                    <div class="leaderboardsOpenText">
+                        VIEW
+                    </div>
+                </div>
+                <div class="leaderboardNameContainer">
+                    <div class="leaderboardNameText">
+                        ENEMIES KILLED
+                    </div>
+                </div>
+                <div class="leaderboardIcon">
+                    <img src="Images/Leaderboard_Icons/leaderboard_kills.png">
+                </div>
+            </div>
+
+            <!-- back button -->
+            <div class="rectButtonRight skew25 buttonElement" id="leaderboardsBackButton"
+                ontouchstart='event.preventDefault(); leaderboardsBackDown()'
+                ontouchend='event.preventDefault(); leaderboardsBack()' 
+                ontouchcancel='event.preventDefault(); leaderboardsBackUp()'
+                onmousedown='event.preventDefault(); leaderboardsBackDown()'
+                onmouseup='event.preventDefault(); leaderboardsBack()'
+                onmouseout='event.preventDefault(); leaderboardsBackUp()'>
+                <div class="leaderboardsBackText">
+                    BACK
+                </div>
+            </div>
+        </div> <!-- LEADERBOARD UI END -->
+
+        <!-- DISCONNECT UI -->
+        <div id="disconnectUI">
+            
+            <div id="disconnectMaster">
+                <div class="disconnectText" id="disconnectName">
+                    PLAYERNAME
+                </div>
+
+                <div class="disconnectText" id="disconnectHeader">
+                    HAS&nbsp;&nbsp;DISCONNECTED
+                </div>
+
+                <div class="disconnectText" id="disconnectMasterText">
+                    CONTINUE WITHOUT THEM?
+                </div>
+
+                <!-- yes button -->
+                <div class="rectButtonRight skew30 buttonElement disconnectButton" id="disconnectContinueButton"
+                    ontouchstart='event.preventDefault(); disconnectContinueDown()'
+                    ontouchend='event.preventDefault(); disconnectContinue()' 
+                    ontouchcancel='event.preventDefault(); disconnectContinueUp()'
+                    onmousedown='event.preventDefault(); disconnectContinueDown()'
+                    onmouseup='event.preventDefault(); disconnectContinue()'
+                    onmouseout='event.preventDefault(); disconnectContinueUp()'>
+                    <div class="disconnectButtonText">
+                        YES
+                    </div>
+                </div>
+            </div>
+
+            <div id="disconnectSlave">
+                <div class="disconnectText" id="disconnectName">
+                    PLAYERNAME
+                </div>
+
+                <div class="disconnectText" id="disconnectHeader">
+                    HAS&nbsp;&nbsp;DISCONNECTED
+                </div>
+
+                <div class="disconnectText" id="disconnectMasterText">
+                    JOIN GAME IN PROGRESS?
+                </div>
+
+                <!-- yes button -->
+                <div class="rectButtonRight skew30 buttonElement disconnectButton" id="disconnectFillInButton"
+                    ontouchstart='event.preventDefault(); disconnectFillInDown()'
+                    ontouchend='event.preventDefault(); disconnectFillIn()' 
+                    ontouchcancel='event.preventDefault(); disconnectFillInUp()'
+                    onmousedown='event.preventDefault(); disconnectFillInDown()'
+                    onmouseup='event.preventDefault(); disconnectFillIn()'
+                    onmouseout='event.preventDefault(); disconnectFillInUp()'>
+                    <div class="disconnectButtonText">
+                        YES
+                    </div>
+                </div>
+            </div>
+        </div> <!-- DISCONNECT UI END -->
+
+        <!-- LOAD LEVEL UI -->
+        <div id="loadLevelUI">
+            <div class="waitingOverlay">
+                <img src="Images/Background/bg_white.png">
+            </div>
+            <div class="waitingContainer">
+
+                <div class="waitingText" id="waitingHeaderText">
+                    PLEASE<br>WAIT
+                </div>
+            </div>
+        </div> <!-- LOAD LEVEL UI END -->
+    </body>
+
+    <!-- TEMP debug text -->
+    <div id="debug">
+        <div id="debug-content">
+        </div>
+    </div>
+</html>
