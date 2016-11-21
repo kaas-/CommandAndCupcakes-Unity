@@ -10,16 +10,6 @@ class GridMove : MonoBehaviour
         Horizontal,
         Vertical
     };
-    private enum Actions
-    {
-        move_left,
-        move_right,
-        move_down,
-        move_up,
-        attack,
-        dig,
-        interact
-    };
     private Orientation gridOrientation = Orientation.Horizontal;
     private bool allowDiagonals = false;
     private bool correctDiagonalSpeed = true;
@@ -30,7 +20,7 @@ class GridMove : MonoBehaviour
     private float t;
     private float factor;
     private int actionIterator = 2;
-    private Actions[] actions;
+    private string[] actions;
 
     public void Update()
     {
@@ -39,23 +29,23 @@ class GridMove : MonoBehaviour
         {
             switch (actions[actionIterator])
             {
-                case Actions.move_left:
+                case "move_left":
                     input = new Vector2(1, 0);
                     break;
-                case Actions.move_right:
+                case "move_right":
                     input = new Vector2(-1, 0);
                     break;
-                case Actions.move_up:
+                case "move_up":
                     input = new Vector2(0, 1);
                     break;
-                case Actions.move_down:
+                case "move_down":
                     input = new Vector2(0, -1);
                     break;
-                case Actions.attack:
+                case "attack":
                     break;
-                case Actions.interact:
+                case "interact":
                     break;
-                case Actions.dig:
+                case "dig":
                     break;
                 default:
                     break;
@@ -157,7 +147,7 @@ class GridMove : MonoBehaviour
         yield return 0;
     }
 
-    void Action(Actions[] actions)
+    void Action(string[] actions)
     {
         actionIterator = 0;
         this.actions = actions;
