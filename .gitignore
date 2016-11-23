@@ -29,3 +29,54 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+CommandAndCupcakes/Assets/Animation.meta
+CommandAndCupcakes/Assets/Animation/Attack_anim.fbx.meta
+CommandAndCupcakes/Assets/Animation/Search_anim.fbx.meta
+CommandAndCupcakes/Assets/Animation/Walkcycle.fbx.meta
+CommandAndCupcakes/Assets/Animation/attack_anim.mb.meta
+CommandAndCupcakes/Assets/Animation/search_animation.mb.meta
+CommandAndCupcakes/Assets/Animation/walk_cycle.mb.meta
+CommandAndCupcakes/Assets/Meshes/Pirate.fbx.meta
+CommandAndCupcakes/Assets/Meshes/Rigs.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/Fern.mb.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/Fern_Animated.mb.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/PalmTree.mb.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/PalmTree_Animated.mb.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/Pirate.mb.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/Skull.mb.meta
+CommandAndCupcakes/Assets/Meshes/Rigs/Skull_animated.mb.meta
+CommandAndCupcakes/Assets/Meshes/Textures/Blue_texture.jpg.meta
+CommandAndCupcakes/Assets/Meshes/Textures/Green_texture.jpg.meta
+CommandAndCupcakes/Assets/Meshes/Textures/Red_texture.jpg.meta
+CommandAndCupcakes/Assets/Meshes/Textures/Yellow_texture.jpg.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap.weightMap.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_Head.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lAnkle.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lElbow.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lHeel.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lHip.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lKnee.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lShoulder.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_lWrist.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_pelvis.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rAnkle.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rElbow.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rHeel.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rHip.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rKnee.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rShoulder.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_rWrist.iff.meta
+CommandAndCupcakes/Assets/Meshes/Weight maps/weightmap/Pirate_torso.iff.meta
+CommandAndCupcakes/Assets/Movement test.unity.meta
+CommandAndCupcakes/Assets/Scripts/AnimationController.cs.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/attack.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/dig.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/do_It.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/interact.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/move_down.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/move_left.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/move_right.png.meta
+CommandAndCupcakes/Assets/WebGLTemplates/AirConsole/img/move_up.png.meta

@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour {
     static GameObject[] playerObjects = new GameObject[4];
 
     private int currentPlayer;
+    private int lastPlayer;
+    private int count;
+    private int[] turnOrder;
     private bool isWaiting = false;
     private bool isPaused = false;
     private bool isStarted = false;
@@ -52,14 +55,43 @@ public class GameManager : MonoBehaviour {
 
     private void nextTurn()
     {
+        lastPlayer = currentPlayer; //update last player
 
-        if (currentPlayer == playerCount - 1)
-            currentPlayer = 0;
-        else
-            currentPlayer++;
+        //check if the turn order is depleted
+        if (count < playerCount) //turn order is not depleted
+        {
+            count++; //increase turn counter
+            currentPlayer = turnOrder[count - 1]; //update current player
+        }
+        else //turn order is depleted
+        {
+            UpdateOrder(); //scramble order
+            currentPlayer = turnOrder[0]; //update current player
+            count = 1; //reset turn counter
+        }
 
         //send message to controller of next player
+        Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+    }
+
+    //method to scramble the turn order
+    void UpdateOrder()
+    {
+        System.Random random = new System.Random();
+        for (int i = 0; i < playerCount; i++)
+        {
+            int rnd = random.Next(playerCount);
+            int temp = turnOrder[i];
+            turnOrder[i] = turnOrder[rnd];
+            turnOrder[rnd] = temp;
+        }
+        if (lastPlayer == turnOrder[0])
+        {
+            int temp = turnOrder[0];
+            turnOrder[0] = turnOrder[1];
+            turnOrder[1] = temp;
+        }
     }
 
     // Update is called once per frame
