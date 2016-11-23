@@ -183,10 +183,11 @@ class GridMoveTest : MonoBehaviour
 
     public void OnTriggerEnter(Collider other) //Runs code when the colider enters.
     {
-
+        
         if (other.gameObject.CompareTag("Player2"))
         {
             gameObject.tag = "battle";
+            endPosition = startPosition;
         }
     }
 }
