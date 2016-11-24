@@ -1,0 +1,97 @@
+
+
+        body {
+            background-color    : burlywood;
+            text-align          : center;
+        }
+
+        .view {
+            position    		: absolute;
+            display     		: block;
+			background-size		: 100% 100%;
+            background-position	: center;
+            background-repeat	: no-repeat;
+           	background-size		: cover;
+        }
+
+        .button {
+            position            : absolute;
+            display             : block;
+            background-color    : rgba(0, 0, 0, 0.05);
+            background-repeat   : no-repeat;
+            top                 : 7%;
+        }
+
+        /*START SCREEN*/    
+        #start_button {
+            padding : 10px, 20px;
+            display : block;
+            width   : 60vw;
+            height  : 10vw;
+        }
+
+        /*PLANNING SCREEN*/
+        .planning_area {
+            position: absolute;
+            width   : 90%;
+            height  : 27%;
+        }
+
+        #planned_actions_area {
+
+           
+            top                 : 0%;
+        }
+
+        #action_button_area {
+          
+            top                 : 33%;
+        }
+
+        #execute_turn_button_area {
+          
+            top                 : 67%;
+        }
+
+        .action_button{
+            width           : 7vw;
+            height          : 7vw;
+        }
+ 
+        .action_indicator{
+
+        }
+
+        #execute_turn_button{
+            background-image    : url('/img/Final images/ready.svg');
+            width               : 50%;
+            height              : 7vw;
+             
+        }
+
+        #move_left_down_button{
+            background-image    : url('/img/Final images/left-down.svg');
+        }
+
+        #move_right_down_button{
+            background-image    : url('/img/Final images/right-down.svg');
+        }
+
+        #move_left_up_button{
+            background-image    : url('/img/Final images/left-up.svg');
+        }
+
+        #move_right_up_button {
+            background-image    : url('/img/Final images/right-up.svg');
+        }
+
+        #interact_button{
+            background-image    : url('/img/Final images/interact.svg');
+        }
+
+        #dig_button{
+            background-image    : url('/img/Final images/dig.svg');
+        }
+               
+
+  
