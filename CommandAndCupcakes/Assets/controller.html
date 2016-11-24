@@ -7,117 +7,11 @@
     <script type="text/javascript"
             src="airconsole-view-manager.js"></script>
     
+	<link rel="stylesheet" type="text/css" href="controllerStyle.css">
 </head>
 
 <body onload="setup()">
-
-    <style type="text/css">
-
-        body {
-            background-color    : burlywood;
-            text-align          : center;
-        }
-
-        .view {
-            position    		: absolute;
-            display     		: block;
-			background-size		: 100% 100%;
-            background-position	: center;
-            background-repeat	: no-repeat;
-           	height      		: 100%;
-            width       		: 100%;
-			top					: 0px;
-			left				: 0px;
-			max-height			: 100%;
-			max-width			: 100%;
-        }
-
-        .button {
-            position            : absolute;
-            display             : block;
-            background-color    : rgba(0, 0, 0, 0.05);
-            background-repeat   : no-repeat;
-            top                 : 7%;
-        }
-
-        /*START SCREEN*/    
-        #start_button {
-            padding : 10px, 20px;
-            display : block;
-            width   : 60vw;
-            height  : 10vw;
-        }
-
-        /*PLANNING SCREEN*/
-        .planning_area {
-            position: absolute;
-            width   : 90%;
-            height  : 27%;
-        }
-
-        #planned_actions_area {
-
-            background-color    : aquamarine;
-            top                 : 0%;
-        }
-
-        #action_button_area {
-            background-color    : darkgray;
-            top                 : 33%;
-        }
-
-        #execute_turn_button_area {
-            background-color    : blueviolet;
-            top                 : 67%;
-        }
-
-        .action_button{
-            width           : 7vw;
-            height          : 7vw;
-        }
- 
-        .action_indicator{
-
-        }
-
-        #execute_turn_button{
-            background-image    : url('/img/do_It.png');
-            width               : 50%;
-            height              : 7vw;
-             
-        }
-
-        #move_left_button{
-            background-image    : url('/img/move_left.png');
-        }
-
-        #move_right_button{
-            background-image    : url('/img/move_right.png');
-        }
-
-        #move_up_button{
-            background-image    : url('/img/move_up.png');
-        }
-
-        #move_down_button {
-            background-image    : url('/img/move_down.png');
-        }
-
-        #interact_button{
-            background-image    : url('/img/interact.png');
-        }
-
-        #attack_button {
-            background-image    : url('/img/attack.png');
-        }
-
-        #dig_button{
-            background-image    : url('/img/dig.png');
-        }
-               
-
-    </style>
-    <!--START GAME SCREEN-->
+	<!--START GAME SCREEN-->
     <div id="start" class="view">
         <div id="start_button" class="startbutton">
             Start game!
