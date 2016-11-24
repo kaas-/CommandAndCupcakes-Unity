@@ -3,15 +3,30 @@
             text-align          : center;
         }
 
-        .view {
+       .view {
+            position    		: absolute;
+            display     		: block;
+			/*background-size		: cover;*/
+            background-position	: center;
+            background-repeat	: no-repeat;
+         	height      		: 100%;
+            width       		: 100%;
+/*			top					: 0px;
+			left				: 0px;
+			max-height			: 100%;
+			max-width			: 100%;
+*/        }
+
+       /*.view {
             position    		: absolute;
             display     		: block;
 			background-size		: 100% 100%;
             background-position	: center;
             background-repeat	: no-repeat;
            	background-size		: cover;
-        }
+        }*/
 
+		
         .button {
             position            : absolute;
             display             : block;
@@ -37,17 +52,17 @@
 
         #planned_actions_area {
 
-           
+            background-color    : aquamarine;
             top                 : 0%;
         }
 
         #action_button_area {
-          
+            background-color    : darkgray;
             top                 : 33%;
         }
 
         #execute_turn_button_area {
-          
+            background-color    : blueviolet;
             top                 : 67%;
         }
 
@@ -61,33 +76,37 @@
         }
 
         #execute_turn_button{
-            background-image    : url('/img/Final images/ready.svg');
+            background-image    : url('/img/do_It.png');
             width               : 50%;
             height              : 7vw;
              
         }
 
-        #move_left_down_button{
-            background-image    : url('/img/Final images/left-down.svg');
+        #move_left_button{
+            background-image    : url('/img/move_left.png');
         }
 
-        #move_right_down_button{
-            background-image    : url('/img/Final images/right-down.svg');
+        #move_right_button{
+            background-image    : url('/img/move_right.png');
         }
 
-        #move_left_up_button{
-            background-image    : url('/img/Final images/left-up.svg');
+        #move_up_button{
+            background-image    : url('/img/move_up.png');
         }
 
-        #move_right_up_button {
-            background-image    : url('/img/Final images/right-up.svg');
+        #move_down_button {
+            background-image    : url('/img/move_down.png');
         }
 
         #interact_button{
-            background-image    : url('/img/Final images/interact.svg');
+            background-image    : url('/img/interact.png');
+        }
+
+        #attack_button {
+            background-image    : url('/img/attack.png');
         }
 
         #dig_button{
-            background-image    : url('/img/Final images/dig.svg');
+            background-image    : url('/img/dig.png');
         }
                
