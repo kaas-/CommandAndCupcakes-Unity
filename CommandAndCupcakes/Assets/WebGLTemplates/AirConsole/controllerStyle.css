@@ -76,35 +76,33 @@
         }
 
         #execute_turn_button{
-            background-image    : url('/img/do_It.png');
+            background-image    : url('/img/ready.png');
             width               : 50%;
             height              : 7vw;
              
         }
 
         #move_left_button{
-            background-image    : url('/img/move_left.png');
+            background-image    : url('/img/left_down.png');
         }
 
         #move_right_button{
-            background-image    : url('/img/move_right.png');
+            background-image    : url('/img/right_down.png');
         }
 
         #move_up_button{
-            background-image    : url('/img/move_up.png');
+            background-image    : url('/img/left_up.png');
         }
 
         #move_down_button {
-            background-image    : url('/img/move_down.png');
+            background-image    : url('/img/right_up.png');
         }
 
         #interact_button{
             background-image    : url('/img/interact.png');
         }
 
-        #attack_button {
-            background-image    : url('/img/attack.png');
-        }
+     
 
         #dig_button{
             background-image    : url('/img/dig.png');
