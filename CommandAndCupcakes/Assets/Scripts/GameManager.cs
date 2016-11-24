@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour {
 
     private int currentPlayer;
 
+    private int lastPlayer;
+    private int count;
+    private int[] turnOrder;
+
     //Variables used to control the game state
     //IsWaiting; waiting for player to make their turn
     private bool isWaiting = false;
@@ -128,11 +132,20 @@ public class GameManager : MonoBehaviour {
 
     private void nextTurn()
     {
-        //Go to next player
-        if (currentPlayer == playerCount - 1)
-            currentPlayer = 0;
-        else
-            currentPlayer++;
+        lastPlayer = currentPlayer; //update last player
+
+        //check if the turn order is depleted
+        if (count < playerCount) //turn order is not depleted
+        {
+            count++; //increase turn counter
+            currentPlayer = turnOrder[count - 1]; //update current player
+        }
+        else //turn order is depleted
+        {
+            UpdateOrder(); //scramble order
+            currentPlayer = turnOrder[0]; //update current player
+            count = 1; //reset turn counter
+        }
 
         //send message to controller of next player
         Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
@@ -146,7 +159,24 @@ public class GameManager : MonoBehaviour {
         playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
-
+    //method to scramble the turn order
+    void UpdateOrder()
+    {
+        System.Random random = new System.Random();
+        for (int i = 0; i < playerCount; i++)
+        {
+            int rnd = random.Next(playerCount);
+            int temp = turnOrder[i];
+            turnOrder[i] = turnOrder[rnd];
+            turnOrder[rnd] = temp;
+        }
+        if (lastPlayer == turnOrder[0])
+        {
+            int temp = turnOrder[0];
+            turnOrder[0] = turnOrder[1];
+            turnOrder[1] = temp;
+        }
+    }
     //handles messages from controllers, gets called whenever a controller does something
     //device_id; the controller that did the thing, data; whatever it did
     void OnMessage(int device_id, JToken data)
