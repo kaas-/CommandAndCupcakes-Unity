@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour {
 
     private int currentPlayer;
 
+    private int lastPlayer;
+    private int count;
+    private int[] turnOrder;
+
     //Variables used to control the game state
     //IsWaiting; waiting for player to make their turn
     private bool isWaiting = false;
@@ -22,16 +26,28 @@ public class GameManager : MonoBehaviour {
     private bool isStarted = false;
     //waiting for turn to execute
     private bool isMoving = false;
-    
 
 
-	// Use this for initialization
-	void Start () {
+    float plane_length_x;
+    float plane_length_z;
+    long num_tiles = 4;
+    bool[,] board;
+    System.Random rnd;
+
+
+    // Use this for initialization
+    void Start () {
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
         AirConsole.instance.onDisconnect += OnDisconnect;
+
+        plane_length_x = this.GetComponent<Renderer>().bounds.size.x;
+        plane_length_z = this.GetComponent<Renderer>().bounds.size.z;
+        board = new bool[num_tiles, num_tiles];
+        rnd = new System.Random();
+        RandomiseTiles();
 
         Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
@@ -41,21 +57,10 @@ public class GameManager : MonoBehaviour {
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
-        //isMoving == false, means active player is not moving,
-        //isWaiting == false, means active player has executed their turn
-        //isPaused == false, because we don't want to continue if paused
-        if (!isMoving && !isWaiting && !isPaused && isStarted)
-        {
-            //nextTurn();
-            isWaiting = true;
-        }
-    }
-
-    //Gets called to start the game
+    //<summary
+    //Starts the game
+    //</summary>
     void StartGame()
     {
         //Start the game with a certain amount of players. playerCount defines the amount of players.
@@ -72,14 +77,75 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
+    /// <summary>
+    /// Randomly add some tile map pieces
+    /// </summary>
+    void RandomiseTiles()
+    {
+        int i = 0;
+
+        //defines what percent of tiles contains a map piece
+        float percentage = 0.25f;
+
+        //number of tiles with a map piece/pieces 
+        int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
+
+        GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("InteractableObject");
+
+        //checks if there is not enough tiles with objects to assign map pieces to
+        if (true_pos > interactable_objects.Length)
+        {
+            true_pos = interactable_objects.Length;
+        }
+
+        while (i < true_pos)
+        {
+            //gets the random position for the x direction
+            int pos_x = rnd.Next(0, board.GetLength(0));
+
+            //gets the random position for the z direction
+            int pos_z = rnd.Next(0, board.GetLength(1));
+
+            //the if condition makes sure not to assign a map piece twice
+            // and iterates only through those tiles that contain objects
+            if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
+            {
+                board[pos_x, pos_z] = true;
+                i++;
+            }
+        }
+    }
+
+    bool IsObject(int tile_x, int tile_z, GameObject[] int_objects)
+    {
+        foreach (GameObject inter_obj in int_objects)
+        {
+            int[] obj_tiles = CalculateTile(inter_obj);
+
+            if (obj_tiles[0] == tile_x && obj_tiles[1] == tile_z)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void nextTurn()
     {
-        //Go to next player
-        if (currentPlayer == playerCount - 1)
-            currentPlayer = 0;
-        else
-            currentPlayer++;
+        lastPlayer = currentPlayer; //update last player
+
+        //check if the turn order is depleted
+        if (count < playerCount) //turn order is not depleted
+        {
+            count++; //increase turn counter
+            currentPlayer = turnOrder[count - 1]; //update current player
+        }
+        else //turn order is depleted
+        {
+            UpdateOrder(); //scramble order
+            currentPlayer = turnOrder[0]; //update current player
+            count = 1; //reset turn counter
+        }
 
         //send message to controller of next player
         Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
@@ -93,7 +159,24 @@ public class GameManager : MonoBehaviour {
         playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
-
+    //method to scramble the turn order
+    void UpdateOrder()
+    {
+        System.Random random = new System.Random();
+        for (int i = 0; i < playerCount; i++)
+        {
+            int rnd = random.Next(playerCount);
+            int temp = turnOrder[i];
+            turnOrder[i] = turnOrder[rnd];
+            turnOrder[rnd] = temp;
+        }
+        if (lastPlayer == turnOrder[0])
+        {
+            int temp = turnOrder[0];
+            turnOrder[0] = turnOrder[1];
+            turnOrder[1] = temp;
+        }
+    }
     //handles messages from controllers, gets called whenever a controller does something
     //device_id; the controller that did the thing, data; whatever it did
     void OnMessage(int device_id, JToken data)
@@ -141,6 +224,54 @@ public class GameManager : MonoBehaviour {
         isMoving = false;
     }
 
+    void OnPlayerInteractWithTile()
+    {
+        int[] tile = CalculateTile(playerObjects[currentPlayer]);
+        if (HasMapPiece(tile[0], tile[1]))
+        {
+            SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+        }
+    }
+
+    bool HasMapPiece(int tile_x, int tile_z)
+    {
+        //check if the player is on the tile that contains a map piece
+        return board[tile_x, tile_z];
+    }
+
+    void SendMapPiece(int device_id)
+    {
+        Debug.Log("Sending Mappiece, device id " + device_id);
+        //send the map piece to the phone
+        var message = new
+        {
+
+            action = "mapPieceFound"
+        };
+
+        AirConsole.instance.Message(device_id, message);
+    }
+
+    /// <summary>
+    /// Determines on which tile the player is
+    /// </summary>
+    int[] CalculateTile(GameObject g)
+    {
+        float pirate_x = g.transform.position.x;
+        float pirate_z = g.transform.position.z;
+
+        int[] tiles = new int[2];
+        tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
+        tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
+
+        return tiles;
+    }
+
+    int CalculateStepNum(float pos, float length, long steps)
+    {
+        return (int)Mathf.Floor((pos / length) * steps);
+    }
+
     //When a device connects to the game
     void OnConnect(int device_id)
     {
@@ -181,6 +312,21 @@ public class GameManager : MonoBehaviour {
     void onActivePlayersChange(int device_id)
     {
 
+    }
+
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        //isMoving == false, means active player is not moving,
+        //isWaiting == false, means active player has executed their turn
+        //isPaused == false, because we don't want to continue if paused
+        if (!isMoving && !isWaiting && !isPaused && isStarted)
+        {
+            //nextTurn();
+            isWaiting = true;
+        }
     }
 
 }
