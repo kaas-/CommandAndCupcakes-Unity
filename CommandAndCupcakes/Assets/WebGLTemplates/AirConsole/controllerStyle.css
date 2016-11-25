@@ -88,9 +88,11 @@
 		
 		.map_button{
 			background-image 	: url('/img/map.png');
+			top					: 3%;
+			left				: 2%;
 			
 		}
-
+		
         #execute_turn_button{
             background-image    : url('/img/ready.png');
             width               : 25vw;
@@ -126,10 +128,12 @@
 			top: 39%;
         }
 
-     
-
         #dig_button{
             background-image    : url('/img/dig.png');
         }
-
-               
+		
+		/*MAP SCREEN*/
+		.map_area{
+			left				: 20%;
+			top					: 5%;
+		}
