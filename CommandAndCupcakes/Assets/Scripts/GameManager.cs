@@ -273,6 +273,7 @@ public class GameManager : MonoBehaviour {
         if (HasMapPiece(tile[0], tile[1]))
         {
             SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+            board[tile[0], tile[1]] = false;
         }
         else
         {
