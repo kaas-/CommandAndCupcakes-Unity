@@ -62,50 +62,55 @@
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-    <div id="waiting" class="view">
-		<div class="button action_button map_button">
+     <div id="waiting" class="view default-view ">
+        <div class="button action_button map_button">
 			MAP SWITCHBUTTON
 		</div>
-        <div class="planning_area" style="top: 4%">
-			<div class="button action_button" style="left: 9%">
+		<div id="planned_actions_area_wait" class="planning_area" style="left: 20%">
+			<div id="planned_action_1_wait" class="button action_button" style="left: 13%">
 				1
 			</div>
-			<div class="button action_button" style="left: 49%">
+			<div id="planned_action_2_wait" class="button action_button" style="left: 69%">
 				2
 			</div>
+			
         </div>
-        <div class="planning_area" style="top: 31%">
+        <div id="action_button_area_wait" class="planning_area" style="top: 31%">
           
-            <div class="button action_button" style="left: 15%">
+            <div id="move_down_button_wait" class="button action_button" style="left: 34%">
                 DOWN
             </div>
-            <div class="button action_button" style="left: 30%">
+            <div id="move_up_button_wait" class="button action_button" style="left: 2%">
                 UP
             </div>
-            <div class="button action_button" style="left: 45%">
+            <div id="move_left_button_wait" class="button action_button" style="left: 2%">
                 LEFT
             </div>
-            <div class="button action_button" style="left: 60%">
+            <div id="move_right_button_wait" class="button action_button" style="left: 34%">
                 RIGHT
             </div>
-
-            <div class="button action_button" style="left: 75%">
+            
+            <div id="dig_button_wait" class="button action_button" style="left: 74%">
                 DIG
             </div>
-            <div class="button action_button" style="left: 90%">
+            <div id="interact_button_wait" class="button action_button" style="left: 74%">
                 INTERACT
             </div>
         </div>
-        <div class="planning_area">
-            <div class="button" style="left: 33%">
+        <div id="execute_turn_button_area_wait" class="planning_area">
+            <div id="execute_turn_button_wait" class="button" style="left: 10%">
                 TURN
             </div>
+			
         </div>
-	
+		<div id="waiting_image">
+				WAITING
+			</div>
+        
     </div>
 	
 	<!-- MAP SCREEN -->
-	<div id="map_screen" class="view default-view">
+	<div id="map_screen" class="view">
 		<div class="button action_button map_button">
 			MAP SWTICH BUTTON
 		</div>

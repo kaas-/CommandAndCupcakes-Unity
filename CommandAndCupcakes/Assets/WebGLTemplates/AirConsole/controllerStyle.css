@@ -47,7 +47,31 @@
             top                 : 7%;
 			background-size		: 100% 100%;
         }
+		.planning_area {
+            position: absolute;
+            width   : 90%;
+            height  : 27%;
+        }
+		
+		 .action_button{
+            width           : 15vw;
+            height          : 15vw;
+        }
+ 
+        .action_indicator{
 
+        }
+		
+		.map_button{
+			background-image 	: url('/img/map.png');
+			top					: 3%;
+			left				: 2%;
+			z-index				: 2;
+			
+
+		}
+		
+		
         /*START SCREEN*/    
         #start_button {
             padding : 10px, 20px;
@@ -56,12 +80,9 @@
             height  : 10vw;
         }
 
-        /*PLANNING SCREEN*/
-        .planning_area {
-            position: absolute;
-            width   : 90%;
-            height  : 27%;
-        }
+      
+  /*PLANNING SCREEN*/
+      
 		
 		#planned_actions_area {
             
@@ -85,25 +106,7 @@
 			left				: 66%;
         }
 
-        .action_button{
-            width           : 15vw;
-            height          : 15vw;
-        }
- 
-        .action_indicator{
-
-        }
-		
-		.map_button{
-			background-image 	: url('/img/map.png');
-<<<<<<< HEAD
-			top					:3%;
-=======
-			top					: 3%;
-			left				: 2%;
-			
->>>>>>> 9ae31611f8d1ad44310b4c34e6b83e0a81604910
-		}
+        
 		
         #execute_turn_button{
             background-image    : url('/img/ready.png');
@@ -144,7 +147,7 @@
             background-image    : url('/img/dig.png');
         }
 		
-<<<<<<< HEAD
+
 		#planned_action_1 {
 			border				: 2px solid black;
 			background-color	: rgba(255, 255, 255, 0.5);
@@ -165,11 +168,112 @@
 			
 		}
 
-               
-=======
+        /*Waiting screen*/
+		#waiting_image{
+			position			: fixed;
+			border				: 1px solid opacity(0.5);
+			background-color	: rgba(255, 255, 255, 0.5);
+			height				: 100vw;
+			width				: 100vw;
+			font-size			: 120;
+			font-family			: pirate;
+			z-index				: 1;
+			line-height			: 260%;
+			text-align			: center;
+			/*background-image 	:url('/img/waiting.png');
+			background-size		: 100vw 100vw;
+			background-repeat	: no-repeat;*/
+		}
+		
+		
+		
+		#planned_actions_area_wait {
+            
+			width				: 55vw;
+			height				: 20vw;
+            top                 : 3%;
+        }
+
+        #action_button_area_wait {
+            
+			width				: 60vw;
+			height				: 60vw;
+            top                 : 33%;
+        }
+
+        #execute_turn_button_area_wait {
+			
+			width				: 30vw;
+			height				: 60vw;
+            top                 : 33%;
+			left				: 66%;
+        }
+
+      
+		
+        #execute_turn_button_wait{
+            background-image    : url('/img/ready.png');
+            width               : 25vw;
+            height              : 25vw;
+			top					: 13%;
+			
+             
+        }
+
+        #move_left_button_wait{
+            background-image    : url('/img/left-down.png');
+			top: 39%; 
+        }
+
+        #move_right_button_wait{
+            background-image    : url('/img/right-down.png');
+			top: 39%;
+        }
+		
+
+        #move_up_button_wait{
+            background-image    : url('/img/left-up.png');
+        }
+
+        #move_down_button_wait {
+            background-image    : url('/img/right-up.png');
+			
+			
+        }
+
+        #interact_button_wait{
+            background-image    : url('/img/interact.png');
+			top: 39%;
+        }
+
+        #dig_button_wait{
+            background-image    : url('/img/dig.png');
+        }
+		
+
+		#planned_action_1_wait {
+			border				: 2px solid black;
+			background-color	: rgba(255, 255, 255, 0.5);
+			line-height			: 65%;
+			font-size			: 100;
+			font-family			: pirate;
+			border-radius		: 25px;
+			
+		}
+		
+		#planned_action_2_wait {
+			border				: 2px solid black;
+			background-color	: rgba(255, 255, 255, 0.5);
+			line-height			: 65%;
+			font-size			: 100;
+			font-family			: pirate;
+			border-radius		: 25px;
+			
+		}
+
 		/*MAP SCREEN*/
 		.map_area{
 			left				: 20%;
 			top					: 5%;
 		}
->>>>>>> 9ae31611f8d1ad44310b4c34e6b83e0a81604910
+
