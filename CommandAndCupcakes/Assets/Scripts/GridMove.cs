@@ -11,7 +11,7 @@ class GridMove : MonoBehaviour
         Vertical
     };
 
-    private GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+    private GameObject gameManager = GameObject.FindGameObjectWithTag("GameController");
     private Orientation gridOrientation = Orientation.Horizontal;
     private bool allowDiagonals = false;
     private bool correctDiagonalSpeed = true;
@@ -26,26 +26,32 @@ class GridMove : MonoBehaviour
 
     public void Update()
     {
-
+        Debug.Log("Action iterator: " + actionIterator);
         if (actionIterator != 2 && !isMoving)
         {
+            Debug.Log("Starting action: " + actions[actionIterator]);
             switch (actions[actionIterator])
             {
                 case "move_left":
                     input = new Vector2(1, 0);
+                    StartCoroutine(move(transform));
                     break;
                 case "move_right":
                     input = new Vector2(-1, 0);
+                    StartCoroutine(move(transform));
                     break;
                 case "move_up":
                     input = new Vector2(0, 1);
+                    StartCoroutine(move(transform));
                     break;
                 case "move_down":
                     input = new Vector2(0, -1);
+                    StartCoroutine(move(transform));
                     break;
                 case "attack":
                     break;
                 case "interact":
+                    Debug.Log("Gridmove: Player interacting with tile");
                     gameManager.SendMessage("OnPlayerInteractWithTile");
                     input = new Vector2(0, 0);
                     break;
@@ -55,10 +61,8 @@ class GridMove : MonoBehaviour
                     break;
             }
 
-            Debug.Log("Starting action: " + actions[actionIterator]);
-
-            StartCoroutine(move(transform));
             actionIterator++;
+            
         }
 
         //REAL-TIME CONTROLLER CODE FOR TESTING ONLY

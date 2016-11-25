@@ -28,12 +28,13 @@ public class GameManager : MonoBehaviour {
     private bool isMoving = false;
 
 
-    float plane_length_x;
-    float plane_length_z;
-    long num_tiles = 4;
-    bool[,] board;
-    System.Random rnd;
+    private float plane_length_x;
+    private float plane_length_z;
 
+    private long num_tiles = 5;
+    private bool[,] board;
+
+    private System.Random rnd;
 
     // Use this for initialization
     void Start () {
@@ -42,6 +43,7 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
         AirConsole.instance.onDisconnect += OnDisconnect;
+
 
         plane_length_x = this.GetComponent<Renderer>().bounds.size.x;
         plane_length_z = this.GetComponent<Renderer>().bounds.size.z;
@@ -110,14 +112,40 @@ public class GameManager : MonoBehaviour {
             //gets the random position for the z direction
             int pos_z = rnd.Next(0, board.GetLength(1));
 
+            Debug.Log("Checking tile [" + pos_x + "," + pos_z + "]. Board has been assigned: " + board[pos_x, pos_z] + ". Has object: " + IsObject(pos_x, pos_z, interactable_objects));
             //the if condition makes sure not to assign a map piece twice
             // and iterates only through those tiles that contain objects
             if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
             {
+                Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
                 board[pos_x, pos_z] = true;
                 i++;
             }
+            
         }
+    }
+
+    /// <summary>
+    /// Determines on which tile the player is
+    /// </summary>
+    int[] CalculateTile(GameObject g)
+    {
+        Debug.Log("Calculating tile: " + g);
+        float pirate_x = g.transform.position.x;
+        float pirate_z = g.transform.position.z;
+
+        int[] tiles = new int[2];
+        tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
+        tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
+
+        return tiles;
+    }
+
+    int CalculateStepNum(float pos, float length, long steps)
+    {
+        Debug.Log("Calculating step number for " + pos + ", " + length + ", " + ",  " + steps);
+        Debug.Log("Step number is " + (int)Mathf.Floor((pos / length) * steps));
+        return (int)Mathf.Floor((pos / length) * steps);
     }
 
 
@@ -137,7 +165,7 @@ public class GameManager : MonoBehaviour {
 
     private void nextTurn()
     {
-        lastPlayer = currentPlayer; //update last player
+        /*lastPlayer = currentPlayer; //update last player
 
         //check if the turn order is depleted
         if (count < playerCount) //turn order is not depleted
@@ -150,6 +178,15 @@ public class GameManager : MonoBehaviour {
             UpdateOrder(); //scramble order
             currentPlayer = turnOrder[0]; //update current player
             count = 1; //reset turn counter
+        }*/
+
+        if(currentPlayer == playerCount-1)
+        {
+            currentPlayer = 0;
+        }
+        else
+        {
+            currentPlayer++;
         }
 
         //send message to controller of next player
@@ -231,10 +268,15 @@ public class GameManager : MonoBehaviour {
 
     void OnPlayerInteractWithTile()
     {
+        Debug.Log("Player checking for map piece");
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
         if (HasMapPiece(tile[0], tile[1]))
         {
             SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+        }
+        else
+        {
+            Debug.Log("No map piece found at " + tile);
         }
     }
 
@@ -255,26 +297,6 @@ public class GameManager : MonoBehaviour {
         };
 
         AirConsole.instance.Message(device_id, message);
-    }
-
-    /// <summary>
-    /// Determines on which tile the player is
-    /// </summary>
-    int[] CalculateTile(GameObject g)
-    {
-        float pirate_x = g.transform.position.x;
-        float pirate_z = g.transform.position.z;
-
-        int[] tiles = new int[2];
-        tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
-        tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
-
-        return tiles;
-    }
-
-    int CalculateStepNum(float pos, float length, long steps)
-    {
-        return (int)Mathf.Floor((pos / length) * steps);
     }
 
     //When a device connects to the game
