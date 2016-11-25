@@ -45,6 +45,10 @@ public class GameManager : MonoBehaviour {
 
         plane_length_x = this.GetComponent<Renderer>().bounds.size.x;
         plane_length_z = this.GetComponent<Renderer>().bounds.size.z;
+
+        Debug.Log("bound.size.x: " + plane_length_x);
+        Debug.Log("bound.size.z: " + plane_length_z);
+
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
         RandomiseTiles();
@@ -52,6 +56,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
         currentPlayer = 0;
+        turnOrder = new int[] { 0, 1, 2, 4 };
 
         Debug.Log("Start log");
 
@@ -83,14 +88,13 @@ public class GameManager : MonoBehaviour {
     void RandomiseTiles()
     {
         int i = 0;
-
         //defines what percent of tiles contains a map piece
         float percentage = 0.25f;
 
         //number of tiles with a map piece/pieces 
         int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
 
-        GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("InteractableObject");
+        GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("interactable");
 
         //checks if there is not enough tiles with objects to assign map pieces to
         if (true_pos > interactable_objects.Length)
@@ -115,6 +119,7 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
+
 
     bool IsObject(int tile_x, int tile_z, GameObject[] int_objects)
     {
@@ -284,7 +289,7 @@ public class GameManager : MonoBehaviour {
             {
                 //too many players
             }
-            else if(AirConsole.instance.GetControllerDeviceIds().Count == 2)
+            else if (AirConsole.instance.GetControllerDeviceIds().Count == 3)
             {
                 StartGame();
             }
