@@ -118,22 +118,22 @@
         }
 
         #move_left_button{
-            background-image    : url('/img/left-down.png');
+            background-image    : url('/img/left_down.png');
 			top: 39%; 
         }
 
         #move_right_button{
-            background-image    : url('/img/right-down.png');
+            background-image    : url('/img/right_down.png');
 			top: 39%;
         }
 		
 
         #move_up_button{
-            background-image    : url('/img/left-up.png');
+            background-image    : url('/img/left_up.png');
         }
 
         #move_down_button {
-            background-image    : url('/img/right-up.png');
+            background-image    : url('/img/right_up.png');
 			
 			
         }
@@ -221,22 +221,22 @@
         }
 
         #move_left_button_wait{
-            background-image    : url('/img/left-down.png');
+            background-image    : url('/img/left_down.png');
 			top: 39%; 
         }
 
         #move_right_button_wait{
-            background-image    : url('/img/right-down.png');
+            background-image    : url('/img/right_down.png');
 			top: 39%;
         }
 		
 
         #move_up_button_wait{
-            background-image    : url('/img/left-up.png');
+            background-image    : url('/img/left_up.png');
         }
 
         #move_down_button_wait {
-            background-image    : url('/img/right-up.png');
+            background-image    : url('/img/right_up.png');
 			
 			
         }
