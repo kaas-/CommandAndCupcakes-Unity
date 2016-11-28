@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
+using System;
 
 public class GameManager : MonoBehaviour {
 
@@ -273,6 +274,23 @@ public class GameManager : MonoBehaviour {
     {
         //gets called by the player object - ends the turn
         isMoving = false;
+
+        checkAttackAction(currentPlayer);
+    }
+
+    private void checkAttackAction(int player)
+    {
+        int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
+        for(int i = 0; i < playerCount; i++)
+        {
+            if(currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
+            {
+                var message = new { action = "attack" };
+
+                AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(i), message);
+                AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), message);
+            }
+        }
     }
 
     void OnPlayerInteractWithTile()
