@@ -34,6 +34,9 @@ public class GameManager : MonoBehaviour {
     private long num_tiles = 5;
     private bool[,] board;
 
+    private int map_no;
+    private int map_piece_no;
+
     private System.Random rnd;
 
     // Use this for initialization
@@ -64,7 +67,6 @@ public class GameManager : MonoBehaviour {
 
     }
 
-
     //<summary
     //Starts the game
     //</summary>
@@ -84,6 +86,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
+
     /// <summary>
     /// Randomly add some tile map pieces
     /// </summary>
@@ -191,6 +194,12 @@ public class GameManager : MonoBehaviour {
 
         //send message to controller of next player
         Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+
+        var message = new
+        {
+            action = "turn",
+        };
+
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
@@ -294,10 +303,14 @@ public class GameManager : MonoBehaviour {
         var message = new
         {
 
-            action = "mapPieceFound"
+            action = "map_piece",
+            map = map_no,
+            map_piece = map_piece_no
         };
 
         AirConsole.instance.Message(device_id, message);
+
+        map_piece_no++;
     }
 
     //When a device connects to the game
