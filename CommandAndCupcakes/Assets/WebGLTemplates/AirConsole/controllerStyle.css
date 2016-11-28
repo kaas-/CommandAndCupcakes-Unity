@@ -275,5 +275,136 @@
 		.map_area{
 			left				: 20%;
 			top					: 5%;
+			
 		}
 
+		.map_piece{
+			position			: absolute;
+			width				: 17vw;
+			height				: 17vw;
+		}
+		
+		#no_map_1{
+		background-color		: white;
+		top						: 6vw;
+			
+		}
+		#no_map_2{
+		background-color		: lightblue;
+		top						: 6vw;
+			
+		}
+		#no_map_3{
+		background-color		: blue;
+		top						: 6vw;
+				
+		}
+		#no_map_4{
+		background-color		: lightblue;
+		top						: 25vw;
+			
+		}
+		#no_map_5{
+		background-color		: blue;
+		top						: 25vw;
+				
+		}
+		#no_map_6{
+		background-color		: darkblue;
+		top						: 25vw;
+				
+		}
+		#no_map_7{
+		background-color		: blue;
+		top						: 44vw;
+			
+		}
+		#no_map_8{
+		background-color		: darkblue;
+		top						: 44vw;
+			
+		}
+		#no_map_9{
+		background-color		: black;
+		top						: 44vw;
+			
+		}	
+		#map_1{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 6vw;
+		z-index					: 1;
+			
+		}
+		#map_2{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 6vw;
+		z-index					: 1;
+			
+		}
+		#map_3{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 6vw;
+		z-index					: 1;
+				
+		}
+		#map_4{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 25vw;
+		z-index					: 1;
+			
+		}
+		#map_5{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		:rgba(255, 255, 255, 0);
+		top						: 25vw;
+		z-index					: 1;
+				
+		}
+		#map_6{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 25vw;
+		z-index					: 1;
+				
+		}
+		#map_7{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 44vw;
+		z-index					: 1;
+			
+		}
+		#map_8{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 44vw;
+		z-index					: 1;
+			
+		}
+		#map_9{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 44vw;
+		z-index					: 1;
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
