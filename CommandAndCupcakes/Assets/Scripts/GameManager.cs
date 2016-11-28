@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour {
         plane_length_z = this.GetComponent<Renderer>().bounds.size.z;
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
-        RandomiseTiles();
+       // RandomiseTiles();
 
         Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
@@ -72,7 +72,16 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
 
-        Debug.Log("Player count: " + playerCount);
+        //initialise turn order
+        turnOrder = new int[playerCount];
+        for (int i = 0; i < playerCount; i++)
+        {
+            turnOrder[i] = i; //fill array with players
+            print(i);
+        }
+        UpdateOrder(); //scramble order
+
+            Debug.Log("Player count: " + playerCount);
 
         Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
@@ -133,12 +142,12 @@ public class GameManager : MonoBehaviour {
     private void nextTurn()
     {
         lastPlayer = currentPlayer; //update last player
-
         //check if the turn order is depleted
         if (count < playerCount) //turn order is not depleted
         {
             count++; //increase turn counter
             currentPlayer = turnOrder[count - 1]; //update current player
+            print(count);
         }
         else //turn order is depleted
         {
@@ -150,13 +159,6 @@ public class GameManager : MonoBehaviour {
         //send message to controller of next player
         Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
-    }
-
-    private void Action(int player, string[] actions)
-    {
-        //Actions to be executed are sent to the appropriate player object.
-        Debug.Log("Current player: " + currentPlayer);
-        playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
     //method to scramble the turn order
@@ -177,6 +179,14 @@ public class GameManager : MonoBehaviour {
             turnOrder[1] = temp;
         }
     }
+
+    private void Action(int player, string[] actions)
+    {
+        //Actions to be executed are sent to the appropriate player object.
+        Debug.Log("Current player: " + currentPlayer);
+        playerObjects[currentPlayer].SendMessage("Action", actions);
+    }
+
     //handles messages from controllers, gets called whenever a controller does something
     //device_id; the controller that did the thing, data; whatever it did
     void OnMessage(int device_id, JToken data)
@@ -210,9 +220,11 @@ public class GameManager : MonoBehaviour {
                 //so that the game knows the player has executed their turn
                 //isWaiting = false;
                 nextTurn();
+                Debug.Log("nextturn started");
             }
             else
             {
+                Debug.Log("Else statement run");
                 //wtf how did you do that!?
             }
         }
@@ -284,7 +296,7 @@ public class GameManager : MonoBehaviour {
             {
                 //too many players
             }
-            else if(AirConsole.instance.GetControllerDeviceIds().Count == 2)
+            else if(AirConsole.instance.GetControllerDeviceIds().Count == 4)
             {
                 StartGame();
             }
