@@ -11,7 +11,7 @@ class GridMove : MonoBehaviour
         Vertical
     };
 
-    private GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+    private GameObject gameManager;
     private Orientation gridOrientation = Orientation.Horizontal;
     private bool allowDiagonals = false;
     private bool correctDiagonalSpeed = true;
@@ -23,6 +23,11 @@ class GridMove : MonoBehaviour
     private float factor;
     private int actionIterator = 2;
     private string[] actions;
+
+    public void Start()
+    {
+        gameManager = GameObject.FindGameObjectWithTag("GameController");
+    }
 
     public void Update()
     {
