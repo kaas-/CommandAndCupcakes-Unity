@@ -64,8 +64,7 @@
 		
 		.map_button{
 			background-image 	: url('/img/map.png');
-			top					: 3%;
-			left				: 2%;
+			top					: 1.5%;
 			z-index				: 2;
 			
 
@@ -81,7 +80,7 @@
         }
 
       
-  /*PLANNING SCREEN*/
+		/*PLANNING SCREEN*/
       
 		
 		#planned_actions_area {
@@ -276,6 +275,10 @@
 			left				: 20%;
 			top					: 5%;
 			
+		}
+		
+		#map_return{
+			background-image 	: url('/img/map_return.png');
 		}
 
 		.map_piece{
