@@ -277,15 +277,13 @@ public class GameManager : MonoBehaviour {
             first_attack_received = true;
             first_attack_player = device_id;
 
-            var message_1 = new { action = "combat_win" };
-            var message_2 = new { action = "combat_loss" };
+            var message = new { action = "combat_loss" };
 
-            AirConsole.instance.Message(first_attack_player, message_1);
             if (AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) != combat_player_1)
-                AirConsole.instance.Message(combat_player_1, message_2);
+                AirConsole.instance.Message(combat_player_1, message);
             else
-                AirConsole.instance.Message(combat_player_2, message_2);
-
+                AirConsole.instance.Message(combat_player_2, message);
+                
         }
         else if (data["action"].Equals("map_piece_loss"))
         {

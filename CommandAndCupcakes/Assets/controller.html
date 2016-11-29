@@ -246,9 +246,26 @@
 
 			airconsole.onMessage = function (device_id, data) {
 			    console.log("Received message: " + data);
-				if (device_id == AirConsole.SCREEN && data == 'turn') {
-					vm.show('planning');
-				};
+			    if (device_id == AirConsole.SCREEN) 
+			    {
+
+			        switch (data['action']) {
+			            case 'turn':
+			                vm.show('planning');
+			                break;
+			            case 'map_piece':
+			                var map_no = data['map_no'];
+			                var map_piece = data['map_piece'];
+                            //TODO: apply map piece
+			                break;
+			            case 'combat_loss':
+                            //TODO: send map piece to server
+			                break;
+			        }
+					
+			    };
+
+
 			}
 		};
 
@@ -299,7 +316,8 @@
 		execute_turn_button.addEventListener('click', function () {
 
 		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = { 
+		    var message = {
+                'action' : 'turn_action',
 		        'action_1': actions[0], 
 		        'action_2': actions[1]};
 
