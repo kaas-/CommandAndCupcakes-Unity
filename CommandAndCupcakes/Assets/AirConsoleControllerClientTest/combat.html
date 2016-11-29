@@ -8,38 +8,54 @@
             src="airconsole-view-manager.js"></script>
 
     <style> 
-       input[type=button] {
-         position:absolute;
-         transition: .5s ease;
+        #splash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #ffffff;
+        }
+
+        .b {
+            position: absolute;
+            transition: .5s ease;
+            left: 9px;
+            top: 17px;
+            background-color: white;
+            color: black;
+            display: block;
+            height: 90px;
+            width: 90px;
+            text-align: center;
         }
     </style>
 </head>
+
+
 <body>
 
-<script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.6.0.js"></script>
-<script type="text/javascript" src="airconsole-view-manager.js"></script>
+    <div id="splash"> READY STEADY GO </div>
 
-    <div id="combat" class="view">
+    <div id="start_combat">
+        <div id="1" class="b" onclick="press(this.id)">1</div>
+        <div id="2" class="b" onclick="press(this.id)">2</div>
+        <div id="3" class="b" onclick="press(this.id)">3</div>  
     </div>
 
+    <div id="combat_result_won" class="view">YOU WON</div>
+    <div id="combat_result_lost" class="view">YOU LOST</div>
 
-    <div id="start_combat" class="view">
-        <input type="button" id="1" onclick="press(this.id)" value="1">
-        <input type="button" id="2" onclick="press(this.id)" value="2">
-        <input type="button" id="3" onclick="press(this.id)" value="3">
-    </div>
 
-    <div id="combat_result_won" class="view">
-         YOU WON 
-        
-    </div>
+    <script>
 
-    <div id="combat_result_lost" class="view">
-       
-       YOU LOST
-    </div>
+            //code for splash screen
+            $("#splash").show();
+            setTimeout(function () {
+                $("#splash").fadeOut();
+            }, 2500);
 
-        <script>
+
             var air_console = new AirConsole();
             var vm;
 
@@ -53,49 +69,46 @@
             //the button with this value should be clicked first
             var start_button = 1;
 
-            //number of parameters for position (left and top)
-            var param = 2;
+            //number of parameters for position (left_start, left_end, top_start, top_end)
+            var param = 4;
 
-            //create 2D array to store previous positions in
+            //create 2D array to store previous "button" positions in
             var param_arr = new Array(num_buttons);
             for (var i = 0; i < num_buttons; i++) {
                 param_arr[i] = new Array(param);
             }
 
             var index = -1;
-
-            //sets a button in a random position
             function randomPosition(id) {
                 index++;
-                var d = document.getElementById(id);
+                var d = GetElementInsideContainer("start_combat", id);
                 assignRandom(d, index);
             }
 
-
+            //assings random position to a button
             function assignRandom(d, index) {
-                var left = getRandomArbitrary(10, 90);
-                var top = getRandomArbitrary(10, 90);
-                d.style.left = left + '%';
-                d.style.top = top + '%';
                 var button_width = (d.offsetWidth / window.innerWidth) * 100;
                 var button_height = (d.offsetHeight / window.innerHeight) * 100;
-                if (index > 0) {
-                    if (!checkBoundaries(param_arr, left, left + button_width, top, top + button_height)) {
-                        assignRandom(d, index);
-                    }
-                    else {
-                        param_arr[index] = [left, top];
-                    }
+                var left = getRandomArbitrary(10, 100 - button_width);
+                var top = getRandomArbitrary(10, 100 - button_height);
+                d.style.left = left + '%';
+                d.style.top = top + '%';
+                if (!checkBoundaries(param_arr, left, left + button_width, top, top + button_height)) {
+                    assignRandom(d, index);
                 }
                 else {
-                    param_arr[index] = [left, top];
+                    param_arr[index] = [left, left + button_width, top, top + button_height];
                 }
             }
 
+            //checks if the "button" overlaps existing "button"
             function checkBoundaries(arr, fromWidth, toWidth, fromHeight, toHeight) {
-                //go through array
                 for (var i = 0; i < arr.length; i++) {
-                    if ((arr[i][0] >= fromWidth && arr[i][0] <= toWidth) && (arr[i][1]) >= fromHeight && arr[i][1] <= toHeight) {
+                    //a beatiful if statement ^^
+                    if (((arr[i][0] >= fromWidth && arr[i][0] <= toWidth) ||
+                        (arr[i][1] >= fromWidth && arr[i][1] <= toWidth)) &&
+                        ((arr[i][2] >= fromHeight && arr[i][2] <= toHeight) ||
+                        (arr[i][3] >= fromHeight && arr[i][3] <= toHeight))) {
                         return false;
                     }
                 }
@@ -108,7 +121,7 @@
             randomPosition("1");
 
             function eraseButton(id) {
-                var d = document.getElementById(id);
+                var d = GetElementInsideContainer("start_combat", id);
                 d.style.display = "none";
             }
 
@@ -117,22 +130,15 @@
                 return Math.random() * (max - min) + min;
             }
 
+            //when combat result message is received
             air_console.onMessage = function (from, data) {
                 console.log(data.action);
                 if (data.action == "Won") {
-                    //TODO access another HTML page
-                    //document.location = "file://///C:/Users/Margo/Documents/CommandAndCupcakes-Unity/CommandAndCupcakes/Assets/AirConsoleControllerClientTest/won.html";
-                    //location.replace("http://9gag.com/");
-                    //document.location.href = "http://ekstrabladet.dk/";
-                    //alert("You win");
                     vm.show('combat_result_won');
-
                 }
                 else if (data.action == "Lost") {
-                    document.location.href = "http://www.yr.no/";
-                    //alert("You loose");
+                    vm.show('combat_result_lost');
                 }
-
             };
 
 
@@ -145,12 +151,11 @@
             }
 
 
-
+            //executes when the "button" is pressed
             function press(clicked_id) {
                 eraseButton(clicked_id);
-
+                //checks if "buttons" are pressed in correct order
                 if (clicked_id == start_button) {
-
                     if (num_buttons == start_button) {
                         send_message("win");
                     }
@@ -162,7 +167,22 @@
                 }
             }
 
-        </script>
+            //get the div inside a div
+            function GetElementInsideContainer(containerID, childID) {
+                var elm = {};
+                var elms = document.getElementById(containerID).getElementsByTagName("*");
+                for (var i = 0; i < elms.length; i++) {
+                    if (elms[i].id === childID) {
+                        elm = elms[i];
+                        break;
+                    }
+                }
+                return elm;
+            }
+
+    </script>
+
+
 
 </body>
 </html>
