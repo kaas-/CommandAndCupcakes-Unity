@@ -19,10 +19,8 @@
     </div>
 
     <!--PLANNING SCREEN-->
-    <div id="planning" class="view
-	default-view
-	">
-        <div class="button action_button map_button">
+    <div id="planning" class="view">
+        <div id="map_switch" class="button action_button map_button">
 			MAP SWITCHBUTTON
 		</div>
 		<div id="planned_actions_area" class="planning_area" style="left: 20%">
@@ -64,10 +62,8 @@
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-     <div id="waiting" class="view
-	 <!-- default-view -->
-	 ">
-        <div class="button action_button map_button">
+     <div id="waiting" class="view default-view">
+        <div id="waiting_map_switch" class="button action_button map_button">
 			MAP SWITCHBUTTON
 		</div>
 		<div id="planned_actions_area_wait" class="planning_area" style="left: 20%">
@@ -114,9 +110,7 @@
     </div>
 	
 	<!-- MAP SCREEN -->
-	<div id="map_screen" class="view 
-	<!-- default-view -->
-	">
+	<div id="map_screen" class="view">
 		<div id="map_return" class="button action_button map_button">
 			MAP SWTICH BUTTON
 		</div>
@@ -186,6 +180,7 @@
         var possible_actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
         var actions = [];
 		var action_selector = 0;
+		var your_turn = false;
 
         //Start menu buttons
         var start_button = document.getElementById("start_button");
@@ -202,6 +197,12 @@
 		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 		
         var execute_turn_button = document.getElementById("execute_turn_button");
+		
+		var planning_map_button = document.getElementById("map_switch");
+		
+		var waiting_map_button = document.getElementById("waiting_map_switch");
+		
+		var map_return = document.getElementById("map_return");
 
 		
 		function setup() {
@@ -216,6 +217,7 @@
 			    console.log("Received message: " + data);
 				if (device_id == AirConsole.SCREEN && data == 'turn') {
 					vm.show('planning');
+					your_turn = true;
 				};
 			}
 		};
@@ -276,6 +278,30 @@
 
 
 			vm.show('waiting');
+			your_turn = false;
+			
+		
+		});
+		
+		planning_map_button.addEventListener('click', function() {
+			vm.show('map_screen');
+			
+		});
+		
+		waiting_map_button.addEventListener('click', function() {
+			vm.show('map_screen');
+			
+		});
+		
+		map_return.addEventListener('click', function() {
+			
+			
+			if(your_turn)
+				vm.show('planning');
+			else
+				vm.show('waiting');
+			
+			
 		});
 		
 		function setAction(action, action_selector)
