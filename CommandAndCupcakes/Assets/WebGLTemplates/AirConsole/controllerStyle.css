@@ -54,8 +54,13 @@
         }
 		
 		 .action_button{
-            width           : 15vw;
-            height          : 15vw;
+            width           	: 15vw;
+            height          	: 15vw;
+			border-radius		: 25px;
+			/* border				: 2px solid black; */
+			background-color	: cornsilk;
+			
+			
         }
  
         .action_indicator{
@@ -63,6 +68,8 @@
         }
 		
 		.map_button{
+			width           	: 15vw;
+            height          	: 15vw;
 			background-image 	: url('/img/map.png');
 			top					: 1.5%;
 			z-index				: 2;
@@ -108,7 +115,10 @@
         
 		
         #execute_turn_button{
-            background-image    : url('/img/ready.png');
+            background-image    : url('/img/ready_square.png');
+			background-color	: white;
+			border-radius		: 10%;
+			border-color		: brown;
             width               : 25vw;
             height              : 25vw;
 			top					: 13%;
@@ -140,10 +150,12 @@
         #interact_button{
             background-image    : url('/img/interact.png');
 			top: 39%;
+			background-color	: moccasin;
         }
 
         #dig_button{
             background-image    : url('/img/dig.png');
+			background-color	: moccasin;
         }
 		
 
@@ -211,7 +223,7 @@
       
 		
         #execute_turn_button_wait{
-            background-image    : url('/img/ready.png');
+            background-image    : url('/img/ready_square.png');
             width               : 25vw;
             height              : 25vw;
 			top					: 13%;
@@ -243,10 +255,12 @@
         #interact_button_wait{
             background-image    : url('/img/interact.png');
 			top: 39%;
+			background-color	: moccasin;
         }
 
         #dig_button_wait{
             background-image    : url('/img/dig.png');
+			background-color	: moccasin;
         }
 		
 
