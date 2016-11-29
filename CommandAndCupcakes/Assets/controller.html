@@ -46,9 +46,9 @@
                 
             </div>
             
-            <div id="dig_button" class="button action_button" style="left: 74%">
+            <!-- <div id="dig_button" class="button action_button" style="left: 74%"> -->
                 
-            </div>
+            <!-- </div> -->
             <div id="interact_button" class="button action_button" style="left: 74%">
                 
             </div>
@@ -90,9 +90,9 @@
                 
             </div>
             
-            <div id="dig_button_wait" class="button action_button" style="left: 74%">
+            <!-- <div id="dig_button_wait" class="button action_button" style="left: 74%"> -->
                
-            </div>
+            <!-- </div> -->
             <div id="interact_button_wait" class="button action_button" style="left: 74%">
                 
             </div>
@@ -104,7 +104,7 @@
 			
         </div>
 		<div id="waiting_image">
-				WAITING
+				 WAITING 
 			</div>
         
     </div>
@@ -192,7 +192,7 @@
         var move_right_button = document.getElementById("move_right_button");
         /*var attack_button = document.getElementById("attack_button");*/
         var interact_button = document.getElementById("interact_button");
-        var dig_button = document.getElementById("dig_button");
+        <!-- var dig_button = document.getElementById("dig_button"); -->
 		
 		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 		
@@ -257,7 +257,7 @@
 		move_down_button.addEventListener('click', function () { setAction(3, action_selector); });
 		interact_button.addEventListener('click', function () { setAction(4, action_selector); });
 		/*attack_button.addEventListener('click', function () { setAction(5, action_selector); });*/
-		dig_button.addEventListener('click', function () { setAction(5/*6*/, action_selector); });
+		<!-- dig_button.addEventListener('click', function () { setAction(5/*6*/, action_selector); }); -->
 
 		planned_action_buttons[0].addEventListener('click', function () {
 			action_selector = 0;
