@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour {
     private int currentPlayer;
 
     private int lastPlayer;
-    private int count;
+    private int count = 0;
     private int[] turnOrder;
 
     //Variables used to control the game state
@@ -77,9 +77,10 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < playerCount; i++)
         {
             turnOrder[i] = i; //fill array with players
-            print(i);
         }
         UpdateOrder(); //scramble order
+        currentPlayer = turnOrder[0];
+
 
             Debug.Log("Player count: " + playerCount);
 
@@ -142,18 +143,19 @@ public class GameManager : MonoBehaviour {
     private void nextTurn()
     {
         lastPlayer = currentPlayer; //update last player
+        Debug.LogWarning(lastPlayer);
         //check if the turn order is depleted
-        if (count < playerCount) //turn order is not depleted
+        if (count < playerCount-1) //turn order is not depleted
         {
             count++; //increase turn counter
-            currentPlayer = turnOrder[count - 1]; //update current player
-            print(count);
+            currentPlayer = turnOrder[count]; //update current player
+            print(currentPlayer);
         }
         else //turn order is depleted
         {
             UpdateOrder(); //scramble order
             currentPlayer = turnOrder[0]; //update current player
-            count = 1; //reset turn counter
+            count = 0; //reset turn counter
         }
 
         //send message to controller of next player
@@ -165,9 +167,9 @@ public class GameManager : MonoBehaviour {
     void UpdateOrder()
     {
         System.Random random = new System.Random();
-        for (int i = 0; i < playerCount; i++)
+        for (int i = playerCount -1; i>=0; i--)
         {
-            int rnd = random.Next(playerCount);
+            int rnd = random.Next(i + 1);
             int temp = turnOrder[i];
             turnOrder[i] = turnOrder[rnd];
             turnOrder[rnd] = temp;
