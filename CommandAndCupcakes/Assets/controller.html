@@ -19,7 +19,7 @@
     </div>
 
     <!--PLANNING SCREEN-->
-	<div id="planning" class="view">
+	<div id="planning" class="view default-view">
         <div id="map_switch" class="button map_button">
 			<div class="map_amount">
 				<span id="map_current" class="map_text">0</span>
@@ -66,9 +66,12 @@
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-	<div id="waiting" class="view default-view">
+	<div id="waiting" class="view">
         <div id="waiting_map_switch" class="button map_button">
-			
+			<div class="map_amount">
+				<span id="map_current_wait" class="map_text">0</span>
+				<span id="map_max_wait" class="map_text">/ 9</span>
+			</div>
 		</div>
 		<div id="planned_actions_area_wait" class="planning_area" style="left: 20%">
 			<div id="planned_action_1_wait" class="button action_button" style="left: 13%">
