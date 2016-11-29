@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour {
 
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
-       // RandomiseTiles();
+        RandomiseTiles();
 
         Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
@@ -234,6 +234,7 @@ public class GameManager : MonoBehaviour {
     {
         //Actions to be executed are sent to the appropriate player object.
         Debug.Log("Current player: " + currentPlayer);
+        Debug.Log("Actions: " + actions[0] + ", " + actions[1]);
         playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
@@ -242,7 +243,8 @@ public class GameManager : MonoBehaviour {
     void OnMessage(int device_id, JToken data)
     {
         //data gets logged to console for dev reasons
-        Debug.Log(data);
+        //Debug.Log("Received data: " + data + " from device: " + device_id);
+        //Debug.Log("Message type is: " + data["action"]);
 
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
@@ -252,9 +254,9 @@ public class GameManager : MonoBehaviour {
                 StartGame();
             }
         }
-        else if (data["action"].Equals("turn_action")) //if the game has started, the message will be actions for turns
+        else if ((string)data["action"] == "turn_action") //if the game has started, the message will be actions for turns
         {
-            Debug.Log("Message received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+            Debug.Log("Turn action received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
             //If the controller that sent the message corresponds to active player
             if (device_id == AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer))
             {

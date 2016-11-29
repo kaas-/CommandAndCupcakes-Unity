@@ -127,34 +127,34 @@
     <!--PLANNING SCREEN-->
     <div id="planning" class="view">
         <div id="planned_actions_area" class="planning_area" style="top: 4%">
-            <div id="planned_action_1" class="button action_button" style="left: 9%">
+            <div id="planned_action_1" class="button action_button" onclick="plannedActionButton(0)" style="left: 9%">
                 ACTION 1
             </div>
-            <div id="planned_action_2" class="button action_button" style="left: 49%">
+            <div id="planned_action_2" class="button action_button" onclick="plannedActionButton(1)" style="left: 49%">
                 ACTION 2
             </div>
         </div>
         <div id="action_button_area" class="planning_area" style="top: 31%">
 
-            <div id="move_down_button" class="button action_button" onclick="setAction(0)" style="left: 10%">
+            <div id="move_down_button" class="button action_button" onclick="setAction(0, action_selector)" style="left: 10%">
                 DOWN
             </div>
-            <div id="move_up_button" class="button action_button" onclick="setAction(1)" style="left: 18%">
+            <div id="move_up_button" class="button action_button" onclick="setAction(1, action_selector)" style="left: 18%">
                 UP
             </div>
-            <div id="move_left_button" class="button action_button" onclick="setAction(2)" style="left: 26%">
+            <div id="move_left_button" class="button action_button" onclick="setAction(2, action_selector)" style="left: 26%">
                 LEFT
             </div>
-            <div id="move_right_button" class="button action_button" onclick="setAction(3)" style="left: 34%">
+            <div id="move_right_button" class="button action_button" onclick="setAction(3, action_selector)" style="left: 34%">
                 RIGHT
             </div>
-            <div id="attack_button" class="button action_button" onclick="setAction(4)" style="left: 42%">
+            <div id="attack_button" class="button action_button" onclick="setAction(4, action_selector)" style="left: 42%">
                 ATTACK
             </div>
-            <div id="dig_button" class="button action_button" onclick="setAction(5)" style="left: 50%">
+            <div id="dig_button" class="button action_button" onclick="setAction(5, action_selector)" style="left: 50%">
                 DIG
             </div>
-            <div id="interact_button" class="button action_button" onclick="setAction(6)" style="left: 58%">
+            <div id="interact_button" class="button action_button" onclick="setAction(6, action_selector)" style="left: 58%">
                 INTERACT
             </div>
         </div>
@@ -215,28 +215,14 @@
         var airconsole;
         var vm;
 
-        var possible_actions = ["move_up", "move_down", "move_left", "move_right", "interact", "attack", "dig"];
+        var possible_actions = ["move_down", "move_up", "move_left", "move_right", "attack", "dig", "interact"];
         var actions = [];
         var action_selector = 0;
 
         //Start menu buttons
         var start_button = document.getElementById("start_button");
 
-        //Planning phase buttons
-        /*var move_up_button = document.getElementById("move_up_button");
-        var move_down_button = document.getElementById("move_down_button");
-        var move_left_button = document.getElementById("move_left_button");
-        var move_right_button = document.getElementById("move_right_button");
-        var attack_button = document.getElementById("attack_button");
-        var interact_button = document.getElementById("interact_button");
-        var dig_button = document.getElementById("dig_button");
-		
-        */
-
         var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
-
-        //var execute_turn_button = document.getElementById("execute_turn_button");
-
 
         function setup() {
 
@@ -254,68 +240,17 @@
             }
         };
 
-        /*move_left_button.addEventListener('touchstart', function () { setAction(0, action_selector); });
-        move_right_button.addEventListener('touchstart', function () { setAction(1, action_selector); }); 
-		move_up_button.addEventListener('touchstart', function () { setAction(2, action_selector); });
-        move_down_button.addEventListener('touchstart', function () { setAction(3, action_selector); });
-        interact_button.addEventListener('touchstart', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('touchstart', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('touchstart', function () { setAction(6, action_selector); });
-        
-        planned_action_buttons[0].addEventListener('touchstart', function () {
-			action_selector = 0;
-		});
-		planned_action_buttons[1].addEventListener('touchstart', function () { 
-			action_selector = 1;
-		});
-        
-        execute_turn_button.addEventListener('touchstart', function () {
 
-		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = { 
-		        'action_1': actions[0], 
-		        'action_2': actions[1]};
-
-		    airconsole.message(AirConsole.SCREEN, message);
-
-
-
-			vm.show('waiting');
-		});*/
-
-        /*move_left_button.addEventListener('click', function () { setAction(0, action_selector); });
-		move_right_button.addEventListener('click', function () { setAction(1, action_selector); });
-		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
-		move_down_button.addEventListener('click', function () { setAction(3, action_selector); });
-		interact_button.addEventListener('click', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('click', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('click', function () { setAction(6, action_selector); });
-
-		planned_action_buttons[0].addEventListener('click', function () {
-			action_selector = 0;
-		});
-		planned_action_buttons[1].addEventListener('click', function () { 
-			action_selector = 1;
-		});
-		
-		execute_turn_button.addEventListener('click', function () {
-
-		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = { 
-		        'action_1': actions[0], 
-		        'action_2': actions[1]};
-
-		    airconsole.message(AirConsole.SCREEN, message);
-
-
-
-			vm.show('waiting');
-		});*/
+        function plannedActionButton(selector)
+        {
+            action_selector = selector;
+        }
 
         function executeTurn() {
 
             console.log("Action 1: " + possible_actions[actions[0]] + ", index" + actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
             var message = {
+                'action' : 'turn_action',
                 'action_1': actions[0],
                 'action_2': actions[1]
             };
