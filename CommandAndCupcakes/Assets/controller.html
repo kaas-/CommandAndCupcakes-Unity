@@ -21,8 +21,12 @@
     <!--PLANNING SCREEN-->
 	<div id="planning" class="view">
         <div id="map_switch" class="button map_button">
-			
+			<div class="map_amount">
+				<span id="map_current" class="map_text">0</span>
+				<span id="map_max" class="map_text">/ 9</span>
+			</div>
 		</div>
+		
 		<div id="planned_actions_area" class="planning_area" style="left: 20%">
 			<div id="planned_action_1" class="button action_button" style="left: 13%">
 				1
@@ -283,26 +287,26 @@
 		
 		});
 		
-		planning_map_button.addEventListener('click', function() {
-			vm.show('map_screen');
+		<!-- planning_map_button.addEventListener('click', function() { -->
+			<!-- vm.show('map_screen'); -->
 			
-		});
+		<!-- }); -->
 		
-		waiting_map_button.addEventListener('click', function() {
-			vm.show('map_screen');
+		<!-- waiting_map_button.addEventListener('click', function() { -->
+			<!-- vm.show('map_screen'); -->
 			
-		});
+		<!-- }); -->
 		
-		map_return.addEventListener('click', function() {
+		<!-- map_return.addEventListener('click', function() { -->
 			
 			
-			if(your_turn)
-				vm.show('planning');
-			else
-				vm.show('waiting');
+			<!-- if(your_turn) -->
+				<!-- vm.show('planning'); -->
+			<!-- else -->
+				<!-- vm.show('waiting'); -->
 			
 			
-		});
+		<!-- }); -->
 		
 		function setAction(action, action_selector)
 		{
