@@ -7,6 +7,7 @@ public class moveAnimation : MonoBehaviour
     int movehash = Animator.StringToHash("Speed");
     int attackhash = Animator.StringToHash("Attack");
     int searchhash = Animator.StringToHash("Search");
+    int stophash = Animator.StringToHash("Stopped");
     // Use this for initialization
     void Start()
     {
@@ -18,6 +19,12 @@ public class moveAnimation : MonoBehaviour
     {
         float move = Mathf.Abs(Input.GetAxis("Vertical") + Mathf.Abs(Input.GetAxis("Horizontal")));
         anim.SetFloat("Speed", move);
+        if (move == 0)
+        {
+            anim.SetBool(stophash, true);
+        }
+        else
+            anim.SetBool(stophash, false);
     }
     public void OnTriggerStay(Collider other)
     {
@@ -25,7 +32,7 @@ public class moveAnimation : MonoBehaviour
         {
             anim.SetBool(searchhash, true);
         }
-        else
+        if (this.anim.GetCurrentAnimatorStateInfo(0).IsName("Search"))
         {
             anim.SetBool(searchhash, false);
         }
@@ -37,5 +44,6 @@ public class moveAnimation : MonoBehaviour
             anim.SetBool(attackhash, true);
         }
     }
+
     //Get message when combat is down to turn attackhash to false. 
 }

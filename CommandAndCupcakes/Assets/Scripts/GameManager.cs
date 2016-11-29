@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
+using System;
 
 public class GameManager : MonoBehaviour {
 
@@ -14,7 +15,7 @@ public class GameManager : MonoBehaviour {
     private int currentPlayer;
 
     private int lastPlayer;
-    private int count;
+    private int count = 0;
     private int[] turnOrder;
 
     //Variables used to control the game state
@@ -33,6 +34,10 @@ public class GameManager : MonoBehaviour {
 
     private long num_tiles = 5;
     private bool[,] board;
+
+    private bool first_attack_received;
+    private int first_attack_player;
+    private int combat_player_1, combat_player_2;
 
     private int map_no;
     private int map_piece_no;
@@ -56,7 +61,7 @@ public class GameManager : MonoBehaviour {
 
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
-        RandomiseTiles();
+       // RandomiseTiles();
 
         Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
@@ -81,7 +86,17 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
 
-        Debug.Log("Player count: " + playerCount);
+        //initialise turn order
+        turnOrder = new int[playerCount];
+        for (int i = 0; i < playerCount; i++)
+        {
+            turnOrder[i] = i; //fill array with players
+        }
+        UpdateOrder(); //scramble order
+        currentPlayer = turnOrder[0];
+
+
+            Debug.Log("Player count: " + playerCount);
 
         Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
@@ -168,28 +183,21 @@ public class GameManager : MonoBehaviour {
 
     private void nextTurn()
     {
-        /*lastPlayer = currentPlayer; //update last player
+        lastPlayer = currentPlayer; //update last player
 
         //check if the turn order is depleted
-        if (count < playerCount) //turn order is not depleted
+        if (count < playerCount-1) //turn order is not depleted
         {
             count++; //increase turn counter
-            currentPlayer = turnOrder[count - 1]; //update current player
+            currentPlayer = turnOrder[count]; //update current player
+            print(currentPlayer);
         }
         else //turn order is depleted
         {
             UpdateOrder(); //scramble order
             currentPlayer = turnOrder[0]; //update current player
-            count = 1; //reset turn counter
-        }*/
 
-        if(currentPlayer == playerCount-1)
-        {
-            currentPlayer = 0;
-        }
-        else
-        {
-            currentPlayer++;
+            count = 1; //reset turn counter
         }
 
         //send message to controller of next player
@@ -203,20 +211,13 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
-    private void Action(int player, string[] actions)
-    {
-        //Actions to be executed are sent to the appropriate player object.
-        Debug.Log("Current player: " + currentPlayer);
-        playerObjects[currentPlayer].SendMessage("Action", actions);
-    }
-
     //method to scramble the turn order
     void UpdateOrder()
     {
         System.Random random = new System.Random();
-        for (int i = 0; i < playerCount; i++)
+        for (int i = playerCount -1; i>=0; i--)
         {
-            int rnd = random.Next(playerCount);
+            int rnd = random.Next(i + 1);
             int temp = turnOrder[i];
             turnOrder[i] = turnOrder[rnd];
             turnOrder[rnd] = temp;
@@ -228,6 +229,14 @@ public class GameManager : MonoBehaviour {
             turnOrder[1] = temp;
         }
     }
+
+    private void Action(int player, string[] actions)
+    {
+        //Actions to be executed are sent to the appropriate player object.
+        Debug.Log("Current player: " + currentPlayer);
+        playerObjects[currentPlayer].SendMessage("Action", actions);
+    }
+
     //handles messages from controllers, gets called whenever a controller does something
     //device_id; the controller that did the thing, data; whatever it did
     void OnMessage(int device_id, JToken data)
@@ -238,12 +247,12 @@ public class GameManager : MonoBehaviour {
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
         {
-            if (data["action_1"].Equals("start_game"))
+            if (data["action"].Equals("start_game"))
             {
                 StartGame();
             }
         }
-        else //if the game has started, the message will be actions for turns
+        else if (data["action"].Equals("turn_action")) //if the game has started, the message will be actions for turns
         {
             Debug.Log("Message received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
             //If the controller that sent the message corresponds to active player
@@ -261,18 +270,63 @@ public class GameManager : MonoBehaviour {
                 //so that the game knows the player has executed their turn
                 //isWaiting = false;
                 nextTurn();
+                Debug.Log("nextturn started");
             }
             else
             {
+                Debug.Log("Else statement run");
                 //wtf how did you do that!?
             }
+        }
+        else if (data["action"].Equals("attack_response") && !first_attack_received)
+        {
+            first_attack_received = true;
+            first_attack_player = device_id;
+
+            var message = new { action = "combat_loss" };
+
+            if (AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) != combat_player_1)
+                AirConsole.instance.Message(combat_player_1, message);
+            else
+                AirConsole.instance.Message(combat_player_2, message);
+                
+        }
+        else if (data["action"].Equals("map_piece_loss"))
+        {
+            first_attack_received = false;
+            SendMapPiece(first_attack_player, (int)data["map_piece"]);
+            isMoving = false;
         }
     }
 
     void OnPlayerFinishedMoving()
     {
         //gets called by the player object - ends the turn
-        isMoving = false;
+        
+
+        if(!checkAttackAction(currentPlayer))
+            isMoving = false;
+    }
+
+    private bool checkAttackAction(int player)
+    {
+        int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
+        for(int i = 0; i < playerCount; i++)
+        {
+            if(currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
+            {
+                var message = new { action = "attack" };
+
+                AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(i), message);
+                AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), message);
+
+                combat_player_1 = i;
+                combat_player_2 = player;
+
+                return true;
+            }
+        }
+        return false;
     }
 
     void OnPlayerInteractWithTile()
@@ -281,8 +335,9 @@ public class GameManager : MonoBehaviour {
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
         if (HasMapPiece(tile[0], tile[1]))
         {
-            SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+            SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), map_piece_no);
             board[tile[0], tile[1]] = false;
+            map_piece_no++;
         }
         else
         {
@@ -296,7 +351,7 @@ public class GameManager : MonoBehaviour {
         return board[tile_x, tile_z];
     }
 
-    void SendMapPiece(int device_id)
+    void SendMapPiece(int device_id, int m_map_piece)
     {
         Debug.Log("Sending Mappiece, device id " + device_id);
         //send the map piece to the phone
@@ -305,12 +360,11 @@ public class GameManager : MonoBehaviour {
 
             action = "map_piece",
             map = map_no,
-            map_piece = map_piece_no
+            map_piece = m_map_piece
         };
 
         AirConsole.instance.Message(device_id, message);
 
-        map_piece_no++;
     }
 
     //When a device connects to the game
@@ -325,7 +379,7 @@ public class GameManager : MonoBehaviour {
             {
                 //too many players
             }
-            else if (AirConsole.instance.GetControllerDeviceIds().Count == 3)
+            else if(AirConsole.instance.GetControllerDeviceIds().Count == 4)
             {
                 StartGame();
             }
