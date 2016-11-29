@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
+using System;
 
 public class GameManager : MonoBehaviour {
 
@@ -33,6 +34,10 @@ public class GameManager : MonoBehaviour {
 
     private long num_tiles = 5;
     private bool[,] board;
+
+    private bool first_attack_received;
+    private int first_attack_player;
+    private int combat_player_1, combat_player_2;
 
     private int map_no;
     private int map_piece_no;
@@ -238,12 +243,12 @@ public class GameManager : MonoBehaviour {
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
         {
-            if (data["action_1"].Equals("start_game"))
+            if (data["action"].Equals("start_game"))
             {
                 StartGame();
             }
         }
-        else //if the game has started, the message will be actions for turns
+        else if (data["action"].Equals("turn_action")) //if the game has started, the message will be actions for turns
         {
             Debug.Log("Message received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
             //If the controller that sent the message corresponds to active player
@@ -267,12 +272,55 @@ public class GameManager : MonoBehaviour {
                 //wtf how did you do that!?
             }
         }
+        else if (data["action"].Equals("attack_response") && !first_attack_received)
+        {
+            first_attack_received = true;
+            first_attack_player = device_id;
+
+            var message = new { action = "combat_loss" };
+
+            if (AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) != combat_player_1)
+                AirConsole.instance.Message(combat_player_1, message);
+            else
+                AirConsole.instance.Message(combat_player_2, message);
+                
+        }
+        else if (data["action"].Equals("map_piece_loss"))
+        {
+            first_attack_received = false;
+            SendMapPiece(first_attack_player, (int)data["map_piece"]);
+            isMoving = false;
+        }
     }
 
     void OnPlayerFinishedMoving()
     {
         //gets called by the player object - ends the turn
-        isMoving = false;
+        
+
+        if(!checkAttackAction(currentPlayer))
+            isMoving = false;
+    }
+
+    private bool checkAttackAction(int player)
+    {
+        int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
+        for(int i = 0; i < playerCount; i++)
+        {
+            if(currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
+            {
+                var message = new { action = "attack" };
+
+                AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(i), message);
+                AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), message);
+
+                combat_player_1 = i;
+                combat_player_2 = player;
+
+                return true;
+            }
+        }
+        return false;
     }
 
     void OnPlayerInteractWithTile()
@@ -281,8 +329,9 @@ public class GameManager : MonoBehaviour {
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
         if (HasMapPiece(tile[0], tile[1]))
         {
-            SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
+            SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), map_piece_no);
             board[tile[0], tile[1]] = false;
+            map_piece_no++;
         }
         else
         {
@@ -296,7 +345,7 @@ public class GameManager : MonoBehaviour {
         return board[tile_x, tile_z];
     }
 
-    void SendMapPiece(int device_id)
+    void SendMapPiece(int device_id, int m_map_piece)
     {
         Debug.Log("Sending Mappiece, device id " + device_id);
         //send the map piece to the phone
@@ -305,12 +354,11 @@ public class GameManager : MonoBehaviour {
 
             action = "map_piece",
             map = map_no,
-            map_piece = map_piece_no
+            map_piece = m_map_piece
         };
 
         AirConsole.instance.Message(device_id, message);
 
-        map_piece_no++;
     }
 
     //When a device connects to the game
