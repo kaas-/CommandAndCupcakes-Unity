@@ -254,12 +254,14 @@
 			                vm.show('planning');
 			                break;
 			            case 'map_piece':
-			                var map_no = data['map_no'];
 			                var map_piece = data['map_piece'];
                             //TODO: apply map piece
 			                break;
 			            case 'combat_loss':
                             //TODO: send map piece to server
+			                break;
+			            case 'set_map_no':
+			                map_no = data['map_no'];
 			                break;
 			        }
 					

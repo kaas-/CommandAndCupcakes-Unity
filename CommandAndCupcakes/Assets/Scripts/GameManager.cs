@@ -9,6 +9,9 @@ using System;
 public class GameManager : MonoBehaviour {
 
     [Range(2, 4)][SerializeField] int playerCount = 4;
+    [Range(0, 2)]
+    [SerializeField]
+    int map_no = 0;
 
     static GameObject[] playerObjects = new GameObject[4];
 
@@ -39,7 +42,6 @@ public class GameManager : MonoBehaviour {
     private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
-    private int map_no;
     private int map_piece_no;
 
     private System.Random rnd;
@@ -302,8 +304,6 @@ public class GameManager : MonoBehaviour {
     void OnPlayerFinishedMoving()
     {
         //gets called by the player object - ends the turn
-        
-
         if(!checkAttackAction(currentPlayer))
             isMoving = false;
     }
@@ -359,7 +359,6 @@ public class GameManager : MonoBehaviour {
         {
 
             action = "map_piece",
-            map = map_no,
             map_piece = m_map_piece
         };
 
