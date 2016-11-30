@@ -254,7 +254,7 @@
         var actions = [];
         var action_selector = 0;
 
-        var map_array = "000000000";
+        var whole_map = "000000000";
 
         //Start menu buttons
         var start_button = document.getElementById("start_button");
@@ -287,6 +287,12 @@
                             //TODO send map piece
                             break;
                         case 'combat_result_loss':
+                            break;
+                        case 'map_piece_found':
+                            var map_piece = data['map_piece'];
+                            console.log('map_piece: ' + map_piece);
+                            whole_map = whole_map.replaceAt(map_piece, '1');
+                            console.log('whole_map: ' + whole_map);
                             break;
                     }
                 }
@@ -395,6 +401,10 @@
                 }
             }
             return elm;
+        }
+
+        String.prototype.replaceAt=function(index, character) {
+            return this.substr(0, index) + character + this.substr(index+character.length);
         }
 
         function plannedActionButton(selector)
