@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         AirConsole.instance.Message(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        SendMapPiece(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), 6);
     }
 
     /// <summary>
@@ -280,7 +281,7 @@ public class GameManager : MonoBehaviour {
                 //wtf how did you do that!?
             }
         }
-        else if (data["action"].Equals("attack_response") && !first_attack_received)
+        else if (data["action"].Equals("attack_response_success") && !first_attack_received)
         {
             first_attack_received = true;
             first_attack_player = device_id;
@@ -360,8 +361,7 @@ public class GameManager : MonoBehaviour {
         var message = new
         {
 
-            action = "map_piece",
-            map = map_no,
+            action = "map_piece_found",
             map_piece = m_map_piece
         };
 

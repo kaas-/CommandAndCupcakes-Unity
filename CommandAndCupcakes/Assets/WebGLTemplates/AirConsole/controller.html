@@ -114,6 +114,28 @@
         #dig_button{
             background-image    : url('/img/dig.png');
         }
+        /*COMBAT SCREEN*/
+        #splash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #ffffff;
+        }
+
+        .b {
+            position: absolute;
+            transition: .5s ease;
+            left: 9px;
+            top: 17px;
+            background-color: white;
+            color: black;
+            display: block;
+            height: 90px;
+            width: 90px;
+            text-align: center;
+        }
                
 
     </style>
@@ -207,6 +229,19 @@
         </div>
 	
     </div>
+    <!--COMBAT SCREEN-->
+    <div id="combat" class="view">
+        <div id="splash"> READY STEADY GO </div>
+
+        <div id="start_combat">
+            <div id="1" class="b" onclick="press(this.id)">1</div>
+            <div id="2" class="b" onclick="press(this.id)">2</div>
+            <div id="3" class="b" onclick="press(this.id)">3</div>
+        </div>
+
+        <div id="combat_result_won" class="view">YOU WON</div>
+        <div id="combat_result_lost" class="view">YOU LOST</div>
+    </div>
 
 
     
@@ -219,10 +254,17 @@
         var actions = [];
         var action_selector = 0;
 
+        var whole_map = "000000000";
+
         //Start menu buttons
         var start_button = document.getElementById("start_button");
 
         var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
+
+        $("#splash").show();
+        setTimeout(function () {
+            $("#splash").fadeOut();
+        }, 2500);
 
         function setup() {
 
@@ -234,12 +276,136 @@
 
             airconsole.onMessage = function (device_id, data) {
                 console.log("Received message: " + data);
-                if (device_id == AirConsole.SCREEN && data == 'turn') {
-                    vm.show('planning');
-                };
+                if (device_id == AirConsole.SCREEN)
+                {
+                    switch(data['action'])
+                    {
+                        case 'turn':
+                            vm.show('planning');
+                            break;
+                        case 'combat_result_won':
+                            //TODO send map piece
+                            break;
+                        case 'combat_result_loss':
+                            break;
+                        case 'map_piece_found':
+                            var map_piece = data['map_piece'];
+                            console.log('map_piece: ' + map_piece);
+                            whole_map = whole_map.replaceAt(map_piece, '1');
+                            console.log('whole_map: ' + whole_map);
+                            break;
+                    }
+                }
             }
         };
 
+        //determines the number of buttons present
+        var num_buttons = 3;
+
+        //the button with this value should be clicked first
+        var start_button = 1;
+
+        //number of parameters for position (left_start, left_end, top_start, top_end)
+        var param = 4;
+
+        //create 2D array to store previous "button" positions in
+        var param_arr = new Array(num_buttons);
+        for (var i = 0; i < num_buttons; i++) {
+            param_arr[i] = new Array(param);
+        }
+
+        var index = -1;
+        function randomPosition(id) {
+            index++;
+            var d = GetElementInsideContainer("start_combat", id);
+            assignRandom(d, index);
+        }
+
+        //assings random position to a button
+        function assignRandom(d, index) {
+            var button_width = (d.offsetWidth / window.innerWidth) * 100;
+            var button_height = (d.offsetHeight / window.innerHeight) * 100;
+            var left = getRandomArbitrary(10, 100 - button_width);
+            var top = getRandomArbitrary(10, 100 - button_height);
+            d.style.left = left + '%';
+            d.style.top = top + '%';
+            if (!checkBoundaries(param_arr, left, left + button_width, top, top + button_height)) {
+                assignRandom(d, index);
+            }
+            else {
+                param_arr[index] = [left, left + button_width, top, top + button_height];
+            }
+        }
+
+        //checks if the "button" overlaps existing "button"
+        function checkBoundaries(arr, fromWidth, toWidth, fromHeight, toHeight) {
+            for (var i = 0; i < arr.length; i++) {
+                //a beatiful if statement ^^
+                if (((arr[i][0] >= fromWidth && arr[i][0] <= toWidth) ||
+                    (arr[i][1] >= fromWidth && arr[i][1] <= toWidth)) &&
+                    ((arr[i][2] >= fromHeight && arr[i][2] <= toHeight) ||
+                    (arr[i][3] >= fromHeight && arr[i][3] <= toHeight))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //TODO optimize code
+        randomPosition("3");
+        randomPosition("2");
+        randomPosition("1");
+
+        function eraseButton(id) {
+            var d = GetElementInsideContainer("start_combat", id);
+            d.style.display = "none";
+        }
+
+        // Returns a random number between min (inclusive) and max (exclusive)
+        function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        //executes when the "button" is pressed
+        function press(clicked_id) {
+            eraseButton(clicked_id);
+            //checks if "buttons" are pressed in correct order
+            if (clicked_id == start_button) {
+                if (num_buttons == start_button) {
+                    send_combat_message("attack_response_success");
+                }
+
+                start_button++;
+            }
+            else {
+                send_combat_message("attack_response_failure");
+            }
+        }
+
+        function send_combat_message (action)
+        {
+            var message = {
+                'action': action
+            };
+            airconsole.message(AirConsole.SCREEN, message);
+        }
+
+        //get the div inside a div
+        function GetElementInsideContainer(containerID, childID) {
+            var elm = {};
+            var elms = document.getElementById(containerID).getElementsByTagName("*");
+            for (var i = 0; i < elms.length; i++) {
+                if (elms[i].id === childID) {
+                    elm = elms[i];
+                    break;
+                }
+            }
+            return elm;
+        }
+
+        String.prototype.replaceAt=function(index, character) {
+            return this.substr(0, index) + character + this.substr(index+character.length);
+        }
 
         function plannedActionButton(selector)
         {
