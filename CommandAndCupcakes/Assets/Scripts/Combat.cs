@@ -54,40 +54,35 @@ public class Combat : MonoBehaviour {
         //TODO if necessary, prevent receiving other "win" messages 
         if (action == "win")
         {
-            SendCombatVictory(from);
+            SendCombatResult(from, "Won");
             //send loosing message to the other pirate
-            SendCombatLoosing(index);
+            SendCombatResult(index, "Lost");
         }
         //if a player lost the combat
-        else if (action == "loose")
+        else if (action.Substring(0, 5) == "loose")
         {
-            SendCombatLoosing(from);
+            
+            SendCombatResult(from, "Lost");
             //send winning message to the other pirate
-            SendCombatVictory(index);
+            SendCombatResult(index, "Won" + action.Substring(5, 9));
+        }
+        else if (action.Substring(0, 2) == "mp")
+        {
+            SendCombatResult(index, action);
         }
     }
 
-    void SendCombatVictory(int device_id)
+    void SendCombatResult(int device_id, string mes)
     {
         var message = new
         {
-            action = "Won"
+            action = mes
         };
 
         AirConsole.instance.Message(device_id, message);
     }
 
-    void SendCombatLoosing(int device_id)
-    {
-        var message = new
-        {
-
-            action = "Lost"
-        };
-
-        AirConsole.instance.Message(device_id, message);
-    }
-
+   
     // Update is called once per frame
     void Update () {
 	

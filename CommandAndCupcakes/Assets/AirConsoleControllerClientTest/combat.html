@@ -55,6 +55,8 @@
                 $("#splash").fadeOut();
             }, 2500);
 
+            //9 map pieces in total
+            var whole_map = "000000000";
 
             var air_console = new AirConsole();
             var vm;
@@ -133,13 +135,33 @@
             //when combat result message is received
             air_console.onMessage = function (from, data) {
                 console.log(data.action);
-                if (data.action == "Won") {
+                if (data.action.substring(0, 3) == "Won") {
                     vm.show('combat_result_won');
                 }
                 else if (data.action == "Lost") {
                     vm.show('combat_result_lost');
+                    send_message("mp" + whole_map);
+                }
+                else if (data.action.substring(0, 2) == "mp") { 
+                    getOtherMapPiece(data.action.substring(2));
                 }
             };
+
+            //checks other player map pieces and "steals" one of them
+            function getOtherMapPiece(mapPieces) {
+                //go through other player map pieces
+                for (var i = 0; i < mapPieces.length; i++) {
+                    //if other player has a map piece this player does not have, then steal it
+                    if (mapPieces[i] == '1' && whole_map[i] == '0') {
+                        whole_map = whole_map.replaceAt(i, '1');
+                        break;
+                    }
+                }  
+            }
+
+            String.prototype.replaceAt = function (index, character) {
+                return this.substr(0, index) + character + this.substr(index + character.length);
+            }
 
 
             function send_message(action) {
@@ -163,7 +185,7 @@
                     start_button++;
                 }
                 else {
-                    send_message("loose");
+                    send_message("loose" + whole_map);
                 }
             }
 
