@@ -78,8 +78,9 @@
 		}
 		.map_text{
 			font-family			: pirate;
+			font-size			: 4vmax;
 			position			: absolute;
-			top					: 12vmax; 
+			top					: 12vmax;
 		}
 		
 		
@@ -119,11 +120,11 @@
         }
 		
 		#map_current{
-			left				: 5vmax;
+			left				: 2vmax;
 		
 		}
 		#map_max{
-			left				:8vmax;
+			left				:5vmax;
 		}
 
         
@@ -237,11 +238,11 @@
 
       
 		#map_current_wait{
-			left				: 5vmax;
+			left				: 2vmax;
 		
 		}
 		#map_max_wait{
-			left				:8vmax;
+			left				:5vmax;
 		}
 		
         #execute_turn_button_wait{
