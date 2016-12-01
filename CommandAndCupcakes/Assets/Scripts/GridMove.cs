@@ -31,7 +31,7 @@ class GridMove : MonoBehaviour
 
     public void Update()
     {
-        Debug.Log("Action iterator: " + actionIterator);
+        //Debug.Log("Action iterator: " + actionIterator);
         if (actionIterator != 2 && !isMoving)
         {
             Debug.Log("Starting action: " + actions[actionIterator]);

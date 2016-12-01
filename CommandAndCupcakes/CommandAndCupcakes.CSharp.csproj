@@ -232,6 +232,7 @@
     <Compile Include="Assets\Scripts\GridMoveTest.cs" />
     <Compile Include="Assets\Scripts\MapPiece.cs" />
     <Compile Include="Assets\Scripts\moveAnimation.cs" />
+    <Compile Include="Assets\SplashScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\AirConsole\README.txt" />
