@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour {
     static GameObject[] playerObjects = new GameObject[4];
 
     private int currentPlayer;
-    public Camera[] cameras = new Camera[5]; //an array with all the cameras in the game, [red, blue, green, yellow, game]
-    private Camera[] cameraTemp = new Camera[5];
+    public Camera[] cameras = new Camera[6]; //an array with all the cameras in the game, [red, blue, green, yellow, game, battleStart]
+    private Camera[] cameraTemp = new Camera[6];
     private float t;
     private int lastPlayer;
     private int count = 0;
@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Start log");
 
-        Array.Copy(cameras, cameraTemp, 4);
+        Array.Copy(cameras, cameraTemp, cameras.Length);
 
     }
 
@@ -99,15 +99,12 @@ public class GameManager : MonoBehaviour {
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < cameraTemp.Length; i++)
         {
             cameraTemp[i].enabled = false;
         }
         cameraTemp[0] = cameras[currentPlayer];
-        for (int i = 0; i < 3; i++)
-        {
-            cameraTemp[count].enabled = true;
-        }
+        cameraTemp[count].enabled = true;
         StartCoroutine("wait");
         Debug.LogWarning(cameraTemp[currentPlayer]);
         
@@ -340,10 +337,17 @@ public class GameManager : MonoBehaviour {
     void OnPlayerFinishedMoving()
     {
         //gets called by the player object - ends the turn
-        
 
-        if(!checkAttackAction(currentPlayer))
+
+        if (!checkAttackAction(currentPlayer))
             isMoving = false;
+        else
+        {
+            count = 5;
+            StartCoroutine("wait");
+            count = 0;
+        }
+           
     }
 
     private bool checkAttackAction(int player)
@@ -455,10 +459,6 @@ public class GameManager : MonoBehaviour {
         //isMoving == false, means active player is not moving,
         //isWaiting == false, means active player has executed their turn
         //isPaused == false, because we don't want to continue if paused
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            nextTurn();
-        }
         if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
             //nextTurn();
