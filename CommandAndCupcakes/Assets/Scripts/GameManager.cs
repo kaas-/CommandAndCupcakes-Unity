@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Start log");
 
-        Array.Copy(cameras, cameraTemp, 4);
+        //Array.Copy(cameras, cameraTemp, 4);
 
     }
 
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour {
         currentPlayer = turnOrder[0];
 
 
-        for (int i = 0; i < 4; i++)
+        /*for (int i = 0; i < 4; i++)
         {
             cameraTemp[i].enabled = false;
         }
@@ -108,9 +108,9 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < 3; i++)
         {
             cameraTemp[count].enabled = true;
-        }
+        }*/
         StartCoroutine("wait");
-        Debug.LogWarning(cameraTemp[currentPlayer]);
+        //Debug.LogWarning(cameraTemp[currentPlayer]);
         
         //Debug.Log("Player count: " + playerCount);
 
@@ -207,14 +207,14 @@ public class GameManager : MonoBehaviour {
         {
             count++; //increase turn counter
             currentPlayer = turnOrder[count]; //update current player
-            cameraTemp[count] = cameras[currentPlayer];
-            for (int i = 0; i < 4; i++)
+            //cameraTemp[count] = cameras[currentPlayer];
+            /*for (int i = 0; i < 4; i++)
             {
                         cameraTemp[i].enabled = false;
-            }
+            }*/
             StartCoroutine("wait");
             print(currentPlayer);
-            Debug.LogWarning(cameras[currentPlayer]);
+            //Debug.LogWarning(cameras[currentPlayer]);
 
         }
         else //turn order is depleted
@@ -224,9 +224,9 @@ public class GameManager : MonoBehaviour {
             currentPlayer = turnOrder[0]; //update current player
             Debug.LogWarning(currentPlayer);
             count = 0; //reset turn counter
-            cameraTemp[count] = cameras[currentPlayer];
+            //cameraTemp[count] = cameras[currentPlayer];
             StartCoroutine("wait");
-            Debug.LogWarning(cameraTemp[currentPlayer]);
+            //Debug.LogWarning(cameraTemp[currentPlayer]);
         }
 
         //send message to controller of next player
@@ -257,10 +257,10 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator wait()
     {
-        cameraTemp[count].enabled = true;
+        //cameraTemp[count].enabled = true;
         Debug.LogWarning("wait started");
         yield return new WaitForSecondsRealtime(3);
-        cameraTemp[count].enabled = false;
+        //cameraTemp[count].enabled = false;
         Debug.LogWarning("wait done");
     }
 

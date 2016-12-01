@@ -39,32 +39,30 @@ class GridMove : MonoBehaviour
             switch (actions[actionIterator])
             {
                 //TODO: input vectors don't match movement
-                case "move_left":
-                    input = new Vector2(1, 0);
-                    StartCoroutine(move(transform));
-                    break;
-                case "move_right":
-                    input = new Vector2(-1, 0);
-                    StartCoroutine(move(transform));
-                    break;
-                case "move_up":
-                    input = new Vector2(0, 1);
-                    StartCoroutine(move(transform));
-                    break;
-                case "move_down":
+                case "left_down":
                     input = new Vector2(0, -1);
                     StartCoroutine(move(transform));
                     break;
-                case "attack":
+                case "right_down":
+                    input = new Vector2(1, 0);
+                    StartCoroutine(move(transform));
+                    break;
+                case "left_up":
+                    input = new Vector2(-1, 0);
+                    StartCoroutine(move(transform));
+                    break;
+                case "right_up":
+                    input = new Vector2(0, 1);
+                    StartCoroutine(move(transform));
                     break;
                 case "interact":
                     Debug.Log("Gridmove: Player interacting with tile");
                     gameManager.SendMessage("OnPlayerInteractWithTile");
                     input = new Vector2(0, 0);
-                    break;
-                case "dig":
+                    StartCoroutine(move(transform));
                     break;
                 default:
+                    input = new Vector2(0, 0);
                     break;
             }
 
