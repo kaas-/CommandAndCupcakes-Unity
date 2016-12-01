@@ -19,8 +19,7 @@
     </div>
 
     <!--PLANNING SCREEN-->
-<<<<<<< HEAD
-	<div id="planning" class="view default-view">
+	<div id="planning" class="view">
         <div id="map_switch" class="button map_button">
 			<div class="map_amount">
 				<span id="map_current" class="map_text">0</span>
@@ -62,7 +61,7 @@
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-	<div id="waiting" class="view">
+	<div id="waiting" class="view default-view">
         <div id="waiting_map_switch" class="button map_button">
 			<div class="map_amount">
 				<span id="map_current_wait" class="map_text">0</span>
@@ -186,10 +185,20 @@
         <div id="combat_result_won" class="view">YOU WON</div>
         <div id="combat_result_lost" class="view">YOU LOST</div>
     </div>
+	
+	<div class="preload-img" style="background-image: url(attackbutton_1.png)"></div>
+    <div class="preload-img" style="background-image: url(attackbutton_2.png)"></div>
+    <div class="preload-img" style="background-image: url(attackbutton_3.png)"></div>
     
     <script type="text/javascript">
 
-        var airconsole;
+       //code for splash screen
+            $("#splash").show();
+            setTimeout(function () {
+                $("#splash").fadeOut();
+            }, 2500);
+
+	   var airconsole;
         var vm;
         var possible_actions_array = ["move_down", "move_up", "move_left", "move_right", "attack"];
         var possible_actions = {
@@ -241,6 +250,7 @@
                             randomPosition("3", 0);
                             randomPosition("2", 1);
                             randomPosition("1", 2);
+							console.log('randomPosition done');
                             vm.show('combat');
 
                             $("#splash").show();
@@ -297,6 +307,7 @@
 
         function randomPosition(id, index) {
             var d = GetElementInsideContainer("start_combat", id);
+			console.log("rand index" + index);
             assignRandom(d, index);
         }
 
@@ -304,10 +315,15 @@
         function assignRandom(d, index) {
             var button_width = (d.offsetWidth / window.innerWidth) * 100;
             var button_height = (d.offsetHeight / window.innerHeight) * 100;
+			var img_id = index + 1;
             var left = getRandomArbitrary(10, 100 - button_width);
             var top = getRandomArbitrary(10, 100 - button_height);
             d.style.left = left + '%';
             d.style.top = top + '%';
+			d.style.backgroundImage = "url('/img/attackbutton_" + img_id + ".png')";
+			
+			console.log("left: " + d.style.left);
+			console.log("top: " + d.style.top);
             if (!checkBoundaries(combat_button_param_arr, left, left + button_width, top, top + button_height)) {
                 assignRandom(d, index);
             }

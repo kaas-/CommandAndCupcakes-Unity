@@ -435,17 +435,75 @@
 		}
 		
 		
+		/* Combat screen */
 		
+		#combat{
+			position			: absolute;
+			background-image	: url('/img/fight_final.png');
+			background-position	: center;
+			top					: 0vmax;
+			left				: 0vmax;
+			width				: 100vmax;
+			height				: 100vmax;
+			background-size		: cover; 
+			background-repeat	: no-repeat;
+			z-index				: 1;
+		}
 		
+		 #splash {
+			position			: absolute;
+			text-align			: centre;
+			top					: 20vmax;
+			font-family			: pirate;
+			font-size			: 15vmax;
+			z-index				: 3;
+			color				: white;
+        }
+
+        .b {
+            position			: absolute;
+            transition			: .5s ease;
+            left				: 9px;
+            top					: 17px;
+            display				: block;
+            height				: 17vmax;
+            width				: 17vmax;
+			z-index				: 2;
+			background-size		: contain;
+			background-repeat	: no-repeat;
+        }
 		
+		#1 {
+			background-image	: url('/img/attackbutton_1.png');
+			
+		}
 		
+		#2 {
+			background-image	: url('/img/attackbutton_2.png');
+			
+		}
 		
+		#3 {
+			background-image	: url('/img/attackbutton_3.png');
+			
+		}
 		
+		#combat_result_won {
+			font-family			: pirate;
+			font-size			: 15vmax;
+			text-align			: centre;
+			top					: 50vmax;
+			z-index				: 3;
+		}
 		
+		#combat_result_lost {
+			font-family			: pirate;
+			font-size			: 15vmax;
+			text-align			: centre;
+			top					: 50vmax;
+			z-index				: 3;
+		}
 		
-		
-		
-		
-		
-		
-		
+		 .preload-img {
+            display: none;
+        }
