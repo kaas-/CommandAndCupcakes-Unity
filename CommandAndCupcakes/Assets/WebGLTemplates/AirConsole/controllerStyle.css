@@ -1,0 +1,451 @@
+        body {
+            background-image    : url('/img/backgroundtexture.png');
+            text-align          : center;
+			background-size		: cover;
+			background-repeat	: no-repeat;
+			background-position	: center;
+        }
+
+		@font-face {
+		font-family: pirate;
+		src: url(PiratesBay.ttf); 
+		}  
+
+
+		
+		
+       .view {
+            position    		: absolute;
+            display     		: block;
+			
+			/*background-size		: 100% 100%;*/
+  /*          background-position	: center;
+            background-repeat	: no-repeat;*/
+         	height      		: 100%;
+            width       		: 100%;
+			top					: 0px;
+			left				: 0px;
+			max-height			: 100%;
+			max-width			: 100%;
+        }
+
+       /*.view {
+            position    		: absolute;
+            display     		: block;
+			background-size		: 100% 100%;
+            background-position	: center;
+            background-repeat	: no-repeat;
+           	background-size		: cover;
+        }*/
+
+		
+        .button {
+            position            : absolute;
+            display             : block;
+            background-color    : rgba(0, 0, 0, 0.05);
+            background-repeat   : no-repeat;
+            top                 : 7%;
+			background-size		: 100% 100%;
+        }
+		.planning_area {
+            position: absolute;
+            width   : 90%;
+            height  : 27%;
+        }
+		
+		 .action_button{
+            width           	: 15vmax;
+            height          	: 15vmax;
+			border-radius		: 25px;
+			/* border				: 2px solid black; */
+			background-color	: cornsilk;
+			
+			
+        }
+ 
+        .action_indicator{
+
+        }
+		
+		.map_button{
+			width           	: 12vmax;
+            height          	: 12vmax;
+			background-image 	: url('/img/map.png');
+			top					: 1.5%;
+			z-index				: 2;
+			
+
+		}
+		.map_text{
+			font-family			: pirate;
+			font-size			: 4vmax;
+			position			: absolute;
+			top					: 12vmax;
+		}
+		
+		
+		
+        /*START SCREEN*/    
+        #start_button {
+            padding : 10px, 20px;
+            display : block;
+            width   : 60%;
+            height  : 10%;
+        }
+
+      
+		/*PLANNING SCREEN*/
+      
+		
+		#planned_actions_area {
+            
+			width				: 55%;
+			height				: 20%;
+            top                 : 3%;
+        }
+
+        #action_button_area {
+            
+			width				: 60%;
+			height				: 60%;
+            top                 : 33%;
+        }
+
+        #execute_turn_button_area {
+			
+			width				: 30%;
+			height				: 60%;
+            top                 : 33%;
+			left				: 66%;
+        }
+		
+		#map_current{
+			left				: 2vmax;
+		
+		}
+		#map_max{
+			left				:5vmax;
+		}
+
+        
+		
+        #execute_turn_button{
+            background-image    : url('/img/ready_square.png');
+			background-color	: white;
+			border-radius		: 10%;
+			border-color		: brown;
+            width               : 25vmax;
+            height              : 25vmax;
+			top					: 13%;
+			
+             
+        }
+
+        #move_left_button{
+            background-image    : url('/img/left_down.png');
+			top: 60%; 
+        }
+
+        #move_right_button{
+            background-image    : url('/img/right_down.png');
+			top: 60%;
+        }
+		
+
+        #move_up_button{
+            background-image    : url('/img/left_up.png');
+        }
+
+        #move_down_button {
+            background-image    : url('/img/right_up.png');
+			
+			
+        }
+
+        #interact_button{
+            background-image    : url('/img/interact.png');
+			top: 35%;
+			background-color	: moccasin;
+        }
+
+        #dig_button{
+            background-image    : url('/img/dig.png');
+			background-color	: moccasin;
+        }
+		
+	
+
+		#planned_action_1 {
+			border				: 2px solid black;
+			background-color	: rgba(255, 255, 255, 0.5);
+			line-height			: 650%;
+			font-size			: 4vmax;
+			font-family			: pirate;
+			border-radius		: 25px;
+			
+		}
+		
+		#planned_action_2 {
+			border				: 2px solid black;
+			background-color	: rgba(255, 255, 255, 0.5);
+			line-height			: 650%;
+			font-size			: 4vmax;
+			font-family			: pirate;
+			border-radius		: 25px;
+			
+		}
+
+        /*Waiting screen*/
+		#waiting_image{
+			position			: fixed;
+			border				: 1px solid opacity(0.5);
+			background-color	: rgba(255, 255, 255, 0.5);
+			height				: 100%;
+			width				: 100%;
+			font-size			: 20vmax;
+			font-family			: pirate;
+			z-index				: 1;
+			line-height			: 250%;
+			text-align			: center;
+			/*background-image 	:url('/img/waiting.png');
+			background-size		: 100% 100%;
+			background-repeat	: no-repeat;*/
+		}
+		
+		
+		
+		#planned_actions_area_wait {
+            
+			width				: 55%;
+			height				: 20%;
+            top                 : 3%;
+        }
+
+        #action_button_area_wait {
+            
+			width				: 60%;
+			height				: 60%;
+            top                 : 33%;
+        }
+
+        #execute_turn_button_area_wait {
+			
+			width				: 30%;
+			height				: 60%;
+            top                 : 33%;
+			left				: 66%;
+        }
+
+      
+		#map_current_wait{
+			left				: 2vmax;
+		
+		}
+		#map_max_wait{
+			left				:5vmax;
+		}
+		
+        #execute_turn_button_wait{
+            background-image    : url('/img/ready_square.png');
+			background-color	: white;
+            width               : 25vmax;
+            height              : 25vmax;
+			top					: 13%;
+			
+             
+        }
+
+        #move_left_button_wait{
+            background-image    : url('/img/left_down.png');
+			top: 60%; 
+        }
+
+        #move_right_button_wait{
+            background-image    : url('/img/right_down.png');
+			top: 60%;
+        }
+		
+
+        #move_up_button_wait{
+            background-image    : url('/img/left_up.png');
+        }
+
+        #move_down_button_wait {
+            background-image    : url('/img/right_up.png');
+			
+			
+        }
+
+        #interact_button_wait{
+            background-image    : url('/img/interact.png');
+			top: 35%;
+			background-color	: moccasin;
+        }
+
+        #dig_button_wait{
+            background-image    : url('/img/dig.png');
+			background-color	: moccasin;
+        }
+		
+
+		#planned_action_1_wait {
+			border				: 2px solid black;
+			background-color	: rgba(255, 255, 255, 0.5);
+			line-height			: 650%;
+			font-size			: 4vmax;
+			font-family			: pirate;
+			border-radius		: 25px;
+			
+		}
+		
+		#planned_action_2_wait {
+			border				: 2px solid black;
+			background-color	: rgba(255, 255, 255, 0.5);
+			line-height			: 650%;
+			font-size			: 4vmax;
+			font-family			: pirate;
+			border-radius		: 25px;
+			
+		}
+
+		/*MAP SCREEN*/
+		.map_area{
+			left				: 20%;
+			top					: 5%;
+			
+		}
+		
+		#map_return{
+			background-image 	: url('/img/map_return.png');
+		}
+
+		.map_piece{
+			position			: absolute;
+			width				: 17vmax;
+			height				: 17vmax;
+		}
+		
+		#no_map_1{
+		background-color		: white;
+		top						: 7vmax;
+			
+		}
+		#no_map_2{
+		background-color		: lightblue;
+		top						: 7vmax;
+			
+		}
+		#no_map_3{
+		background-color		: blue;
+		top						: 7vmax;
+				
+		}
+		#no_map_4{
+		background-color		: lightblue;
+		top						: 26vmax;
+			
+		}
+		#no_map_5{
+		background-color		: blue;
+		top						: 26vmax;
+				
+		}
+		#no_map_6{
+		background-color		: darkblue;
+		top						: 26vmax;
+				
+		}
+		#no_map_7{
+		background-color		: blue;
+		top						: 45vmax;
+			
+		}
+		#no_map_8{
+		background-color		: darkblue;
+		top						: 45vmax;
+			
+		}
+		#no_map_9{
+		background-color		: black;
+		top						: 45vmax;
+			
+		}	
+		#map_1{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 7vmax;
+		z-index					: 1;
+			
+		}
+		#map_2{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 7vmax;
+		z-index					: 1;
+			
+		}
+		#map_3{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 7vmax;
+		z-index					: 1;
+				
+		}
+		#map_4{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 26vmax;
+		z-index					: 1;
+			
+		}
+		#map_5{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		:rgba(255, 255, 255, 0);
+		top						: 26vmax;
+		z-index					: 1;
+				
+		}
+		#map_6{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 26vmax;
+		z-index					: 1;
+				
+		}
+		#map_7{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 45vmax;
+		z-index					: 1;
+			
+		}
+		#map_8{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 45vmax;
+		z-index					: 1;
+			
+		}
+		#map_9{
+		/*background-image 		: url('/img/xxx') ;*/
+		background-color		: rgba(255, 255, 255, 0);
+		top						: 45vmax;
+		z-index					: 1;
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

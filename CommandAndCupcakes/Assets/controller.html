@@ -7,333 +7,421 @@
     <script type="text/javascript"
             src="airconsole-view-manager.js"></script>
     
+	<link rel="stylesheet" type="text/css" href="controllerStyle.css">
 </head>
 
 <body onload="setup()">
-
-    <style type="text/css">
-
-        body {
-            background-color    : burlywood;
-            text-align          : center;
-        }
-
-        .view {
-            position    		: absolute;
-            display     		: block;
-			background-size		: 100% 100%;
-            background-position	: center;
-            background-repeat	: no-repeat;
-           	height      		: 100%;
-            width       		: 100%;
-			top					: 0px;
-			left				: 0px;
-			max-height			: 100%;
-			max-width			: 100%;
-        }
-
-        .button {
-            position            : absolute;
-            display             : block;
-            background-color    : rgba(0, 0, 0, 0.05);
-            background-repeat   : no-repeat;
-            top                 : 7%;
-        }
-
-        /*START SCREEN*/    
-        #start_button {
-            padding : 10px, 20px;
-            display : block;
-            width   : 60vw;
-            height  : 10vw;
-        }
-
-        /*PLANNING SCREEN*/
-        .planning_area {
-            position: absolute;
-            width   : 90%;
-            height  : 27%;
-        }
-
-        #planned_actions_area {
-
-            background-color    : aquamarine;
-            top                 : 0%;
-        }
-
-        #action_button_area {
-            background-color    : darkgray;
-            top                 : 33%;
-        }
-
-        #execute_turn_button_area {
-            background-color    : blueviolet;
-            top                 : 67%;
-        }
-
-        .action_button{
-            width           : 7vw;
-            height          : 7vw;
-        }
- 
-        .action_indicator{
-
-        }
-
-        #execute_turn_button{
-            background-image    : url('/img/do_It.png');
-            width               : 50%;
-            height              : 7vw;
-             
-        }
-
-        #move_left_button{
-            background-image    : url('/img/move_left.png');
-        }
-
-        #move_right_button{
-            background-image    : url('/img/move_right.png');
-        }
-
-        #move_up_button{
-            background-image    : url('/img/move_up.png');
-        }
-
-        #move_down_button {
-            background-image    : url('/img/move_down.png');
-        }
-
-        #interact_button{
-            background-image    : url('/img/interact.png');
-        }
-
-        #attack_button {
-            background-image    : url('/img/attack.png');
-        }
-
-        #dig_button{
-            background-image    : url('/img/dig.png');
-        }
-               
-
-    </style>
-    <!--START GAME SCREEN-->
+	<!--START GAME SCREEN-->
     <div id="start" class="view">
-        <div id="start_button" class="startbutton">
+        <div id="next_combat_button" class="startbutton">
             Start game!
         </div>
     </div>
 
     <!--PLANNING SCREEN-->
-    <div id="planning" class="view">
-        <div id="planned_actions_area" class="planning_area" style="top: 4%">
-			<div id="planned_action_1" class="button action_button" style="left: 9%">
-				ACTION 1
+<<<<<<< HEAD
+	<div id="planning" class="view default-view">
+        <div id="map_switch" class="button map_button">
+			<div class="map_amount">
+				<span id="map_current" class="map_text">0</span>
+				<span id="map_max" class="map_text">/ 9</span>
 			</div>
-			<div id="planned_action_2" class="button action_button" style="left: 49%">
-				ACTION 2
+		</div>
+		
+		<div id="planned_actions_area" class="planning_area" onclick="plannedActionButton(0)" style="left: 20%">
+			<div id="planned_action_1" class="button action_button" style="left: 13%">
+				1
+			</div>
+			<div id="planned_action_2" class="button action_button" onclick="plannedActionButton(1)" style="left: 69%">
+				2
 			</div>
         </div>
         <div id="action_button_area" class="planning_area" style="top: 31%">
           
-            <div id="move_down_button" class="button action_button" style="left: 10%">
-                DOWN
+            <div id="move_down_button" class="button action_button" onclick="setAction(possible_actions.move_down, action_selector)" style="left: 34%">
+                
             </div>
-            <div id="move_up_button" class="button action_button" style="left: 18%">
-                UP
+            <div id="move_up_button" class="button action_button" onclick="setAction(possible_actions.move_up, action_selector)" style="left: 2%">
+               
             </div>
-            <div id="move_left_button" class="button action_button" style="left: 26%">
-                LEFT
+            <div id="move_left_button" class="button action_button" onclick="setAction(possible_actions.move_left, action_selector)" style="left: 2%">
+               
             </div>
-            <div id="move_right_button" class="button action_button" style="left: 34%">
-                RIGHT
+            <div id="move_right_button" class="button action_button" onclick="setAction(possible_actions.move_right, action_selector)" style="left: 34%">
+                
             </div>
-            <div id="attack_button" class="button action_button" style="left: 42%">
-                ATTACK
-            </div>
-            <div id="dig_button" class="button action_button" style="left: 50%">
-                DIG
-            </div>
-            <div id="interact_button" class="button action_button" style="left: 58%">
-                INTERACT
+            <div id="interact_button" class="button action_button" onclick="setAction(possible_actions.interact, action_selector)" style="left: 74%">
+                
             </div>
         </div>
         <div id="execute_turn_button_area" class="planning_area">
-            <div id="execute_turn_button" class="button" style="left: 33%">
-                TURN
+            <div id="execute_turn_button" class="button" onclick="executeTurn()" style="left: 10%">
             </div>
         </div>
-        
+
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-    <div id="waiting" class="view default-view">
-        <div class="planning_area" style="top: 4%">
-			<div class="button action_button" style="left: 9%">
-				ACTION 1
+	<div id="waiting" class="view">
+        <div id="waiting_map_switch" class="button map_button">
+			<div class="map_amount">
+				<span id="map_current_wait" class="map_text">0</span>
+				<span id="map_max_wait" class="map_text">/ 9</span>
 			</div>
-			<div class="button action_button" style="left: 49%">
-				ACTION 2
+		</div>
+		<div id="planned_actions_area_wait" class="planning_area" style="left: 20%">
+			<div id="planned_action_1_wait" class="button action_button" style="left: 13%">
+				1
 			</div>
+			<div id="planned_action_2_wait" class="button action_button" style="left: 69%">
+				2
+			</div>
+			
         </div>
-        <div class="planning_area" style="top: 31%">
+        <div id="action_button_area_wait" class="planning_area" style="top: 31%">
           
-            <div class="button action_button" style="left: 10%">
-                DOWN
+            <div id="move_down_button_wait" class="button action_button" style="left: 34%">
+               
             </div>
-            <div class="button action_button" style="left: 18%">
-                UP
+            <div id="move_up_button_wait" class="button action_button" style="left: 2%">
+              
             </div>
-            <div class="button action_button" style="left: 26%">
-                LEFT
+            <div id="move_left_button_wait" class="button action_button" style="left: 2%">
+                
             </div>
-            <div class="button action_button" style="left: 34%">
-                RIGHT
+            <div id="move_right_button_wait" class="button action_button" style="left: 34%">
+                
             </div>
-            <div class="button action_button" style="left: 42%">
-                ATTACK
-            </div>
-            <div class="button action_button" style="left: 50%">
-                DIG
-            </div>
-            <div class="button action_button" style="left: 58%">
-                INTERACT
+            
+            <!-- <div id="dig_button_wait" class="button action_button" style="left: 74%"> -->
+               
+            <!-- </div> -->
+            <div id="interact_button_wait" class="button action_button" style="left: 74%">
+                
             </div>
         </div>
-        <div class="planning_area">
-            <div class="button" style="left: 33%">
-                TURN
+        <div id="execute_turn_button_area_wait" class="planning_area">
+            <div id="execute_turn_button_wait" class="button" style="left: 10%">
+                
             </div>
+			
         </div>
-	
+		<div id="waiting_image">
+				 WAITING 
+			</div>
+        
     </div>
+	
+	<!-- MAP SCREEN -->
+	<div id="map_screen" class="view" >
+		<div id="map_return" class="button map_button">
+			
+		</div>
+		<div class="map_area">
+			<div id="map_1" class="map_piece" style="left: 21%">
+				
+			</div>
+			<div id="no_map_1" class="map_piece" style="left: 21%">
+				MAP PIECE TOP LEFT
+			</div>
+			<div id="map_2" class="map_piece"	style="left: 40%">
+				
+			</div>
+			<div id="no_map_2" class="map_piece"	style="left: 40%">
+				MAP PIECE TOP MIDDLE
+			</div>
+			<div id="map_3" class="map_piece" style="left: 59%">
+				
+			</div>
+			<div id="no_map_3" class="map_piece" style="left: 59%">
+				MAP PIECE TOP RIGHT
+			</div>
+			<div id="map_4" class="map_piece"	style="left: 21%">
+				
+			</div>
+			<div id="no_map_4" class="map_piece"	style="left: 21%">
+				MAP PIECE MIDDLE LEFT
+			</div>
+			<div id="map_5" class="map_piece"	style="left: 40%">
+			
+			</div>
+			<div id="no_map_5" class="map_piece"	style="left: 40%">
+				MAP PIECE MIDDLE
+			</div>
+			<div id="map_6" class="map_piece"	style="left: 59%">
+				
+			</div>
+			<div id="no_map_6" class="map_piece"	style="left: 59%">
+				MAP PIECE MIDDLE RIGHT
+			</div>
+			<div id="map_7" class="map_piece"	style="left: 21%">
+			</div>
+			<div id="no_map_7" class="map_piece"	style="left: 21%">
+				MAP PIECE BOTTOM LEFT
+			</div>
+			<div id="map_8" class="map_piece"	style="left: 40%">
+				
+			</div>
+			<div id="no_map_8" class="map_piece"	style="left: 40%">
+				MAP PIECE BOTTOM MIDDLE
+			</div>
+			<div id="map_9" class="map_piece" style="left: 59%">
+				
+			</div>
+			<div id="no_map_9" class="map_piece" style="left: 59%">
+				MAP PIECE BOTTOM RIGHT
+			</div>
+		</div>
+	</div>
+    <!--COMBAT SCREEN-->
+    <div id="combat" class="view">
+        <div id="splash"> READY STEADY GO </div>
 
+        <div id="start_combat">
+            <div id="1" class="b" onclick="press(this.id)">1</div>
+            <div id="2" class="b" onclick="press(this.id)">2</div>
+            <div id="3" class="b" onclick="press(this.id)">3</div>
+        </div>
 
+        <div id="combat_result_won" class="view">YOU WON</div>
+        <div id="combat_result_lost" class="view">YOU LOST</div>
+    </div>
     
     <script type="text/javascript">
 
         var airconsole;
         var vm;
-
-        var possible_actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
+        var possible_actions_array = ["move_down", "move_up", "move_left", "move_right", "attack"];
+        var possible_actions = {
+            move_down : 0,
+            move_up : 1,
+            move_left : 2,
+            move_right : 3,
+            attack : 4
+        };
         var actions = [];
-		var action_selector = 0;
+        var action_selector = 0;
 
-        //Start menu buttons
-        var start_button = document.getElementById("start_button");
+        var map_element = document.getElementById("map_current");
+        var map_element_wait = document.getElementById("map_current_wait");
 
-        //Planning phase buttons
-        var move_up_button = document.getElementById("move_up_button");
-        var move_down_button = document.getElementById("move_down_button");
-        var move_left_button = document.getElementById("move_left_button");
-        var move_right_button = document.getElementById("move_right_button");
-        var attack_button = document.getElementById("attack_button");
-        var interact_button = document.getElementById("interact_button");
-        var dig_button = document.getElementById("dig_button");
-		
-		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
-		
-        var execute_turn_button = document.getElementById("execute_turn_button");
+        var whole_map = "000000000";
 
-		
-		function setup() {
-		
-			airconsole = new AirConsole({"orientation": "landscape"});
-		
-			airconsole.onReady = function () {
-				vm = new AirConsoleViewManager(airconsole);
-			}
+        var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 
-			airconsole.onMessage = function (device_id, data) {
-			    console.log("Received message: " + data);
-			    if (device_id == AirConsole.SCREEN) 
-			    {
+        /*COMBAT BUTTONS*/
+        //determines the number of buttons present
+        var num_buttons = 3;
 
-			        switch (data['action']) {
-			            case 'turn':
-			                vm.show('planning');
-			                break;
-			            case 'map_piece':
-			                var map_no = data['map_no'];
-			                var map_piece = data['map_piece'];
-                            //TODO: apply map piece
-			                break;
-			            case 'combat_loss':
-                            //TODO: send map piece to server
-			                break;
-			        }
-					
-			    };
+        //the button with this value should be clicked first
+        var next_combat_button = 1;
 
+        //number of combat_button_parameters for position (left_start, left_end, top_start, top_end)
+        var combat_button_param = 4;
+        /****/
 
-			}
-		};
+        function setup() {
 
-        /*move_left_button.addEventListener('touchstart', function () { setAction(0, action_selector); });
-        move_right_button.addEventListener('touchstart', function () { setAction(1, action_selector); }); 
-		move_up_button.addEventListener('touchstart', function () { setAction(2, action_selector); });
-        move_down_button.addEventListener('touchstart', function () { setAction(3, action_selector); });
-        interact_button.addEventListener('touchstart', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('touchstart', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('touchstart', function () { setAction(6, action_selector); });
-        
-        planned_action_buttons[0].addEventListener('touchstart', function () {
-			action_selector = 0;
-		});
-		planned_action_buttons[1].addEventListener('touchstart', function () { 
-			action_selector = 1;
-		});
-        
-        execute_turn_button.addEventListener('touchstart', function () {
+            airconsole = new AirConsole({ "orientation": "landscape" });
 
-		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = { 
-		        'action_1': actions[0], 
-		        'action_2': actions[1]};
+            airconsole.onReady = function () {
+                vm = new AirConsoleViewManager(airconsole);
+                sendMessage(AirConsole.SCREEN, "test_message", "test_name_1", "test_param_1");
+            }
 
-		    airconsole.message(AirConsole.SCREEN, message);
+            airconsole.onMessage = function (device_id, data) {
+                if (device_id == AirConsole.SCREEN)
+                {
+                    switch(data.action)
+                    {
+                        case 'turn':
+                            vm.show('planning');
+                            break;
+                        case 'attack':
+                            randomPosition("3", 0);
+                            randomPosition("2", 1);
+                            randomPosition("1", 2);
+                            vm.show('combat');
 
+                            $("#splash").show();
+                            setTimeout(function () {
+                                $("#splash").fadeOut();
+                            }, 2500);
 
+                            break;
+                        case 'combat_result_won':
+                            vm.show('combat_result_won');
+                            getOtherMapPiece(data.map);
+                            sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
+                            break;
+                        case 'combat_result_loss':
+                            vm.show('combat_result_lost');
+                            sendMessage(AirConsole.SCREEN, "map_piece_loss", "map", whole_map);
+                            break;
+                        case 'map_piece_found':
+                            var map_piece = data['map_piece'];
+                            console.log('map_piece: ' + map_piece);
+                            whole_map = whole_map.replaceAt(map_piece, '1');
+                            console.log('whole_map: ' + whole_map);
+                            break;
+                    }
+                }
+            }
+        };
 
-			vm.show('waiting');
-		});*/
-		
-		move_left_button.addEventListener('click', function () { setAction(0, action_selector); });
-		move_right_button.addEventListener('click', function () { setAction(1, action_selector); });
-		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
-		move_down_button.addEventListener('click', function () { setAction(3, action_selector); });
-		interact_button.addEventListener('click', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('click', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('click', function () { setAction(6, action_selector); });
+        function plannedActionButton(selector) {
+            action_selector = selector;
+        }
 
-		planned_action_buttons[0].addEventListener('click', function () {
-			action_selector = 0;
-		});
-		planned_action_buttons[1].addEventListener('click', function () { 
-			action_selector = 1;
-		});
-		
-		execute_turn_button.addEventListener('click', function () {
-
-		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = {
-                'action' : 'turn_action',
-		        'action_1': actions[0], 
-		        'action_2': actions[1]};
-
-		    airconsole.message(AirConsole.SCREEN, message);
-
-
-
-			vm.show('waiting');
-		});
-		
-		function setAction(action, action_selector)
+        function setAction(action, action_selector)
 		{
 		    console.log("Action: " + possible_actions[action] + " Set image to /img/" + possible_actions[action_selector] + ".png");
 			actions[action_selector] = possible_actions[action];
 			planned_action_buttons[action_selector].style.backgroundImage = "url('/img/" + possible_actions[action] + ".png')";
 		};
+
+        function executeTurn() {
+
+            console.log("Action 1: " + possible_actions[actions[0]] + ", index" + actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
+            sendMessage(AirConsole.SCREEN, 'turn_action', 'action_1', actions[0], 'action_2', actions[1]);
+
+            your_turn = false;
+            vm.show('waiting');
+        }
+
+        //create 2D array to store previous "button" positions in
+        var combat_button_param_arr = new Array(num_buttons);
+        for (var i = 0; i < num_buttons; i++) {
+            combat_button_param_arr[i] = new Array(combat_button_param);
+        }
+
+        function randomPosition(id, index) {
+            var d = GetElementInsideContainer("start_combat", id);
+            assignRandom(d, index);
+        }
+
+        //assings random position to a button
+        function assignRandom(d, index) {
+            var button_width = (d.offsetWidth / window.innerWidth) * 100;
+            var button_height = (d.offsetHeight / window.innerHeight) * 100;
+            var left = getRandomArbitrary(10, 100 - button_width);
+            var top = getRandomArbitrary(10, 100 - button_height);
+            d.style.left = left + '%';
+            d.style.top = top + '%';
+            if (!checkBoundaries(combat_button_param_arr, left, left + button_width, top, top + button_height)) {
+                assignRandom(d, index);
+            }
+            else {
+                combat_button_param_arr[index] = [left, left + button_width, top, top + button_height];
+            }
+        }
+
+        //checks if the "button" overlaps existing "button"
+        function checkBoundaries(arr, fromWidth, toWidth, fromHeight, toHeight) {
+            for (var i = 0; i < arr.length; i++) {
+                //a beatiful if statement ^^
+                if (((arr[i][0] >= fromWidth && arr[i][0] <= toWidth) ||
+                    (arr[i][1] >= fromWidth && arr[i][1] <= toWidth)) &&
+                    ((arr[i][2] >= fromHeight && arr[i][2] <= toHeight) ||
+                    (arr[i][3] >= fromHeight && arr[i][3] <= toHeight))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //executes when the "button" is pressed
+        function press(clicked_id) {
+            eraseButton(clicked_id);
+            //checks if "buttons" are pressed in correct order
+            if (clicked_id == next_combat_button) {
+                if (num_buttons == next_combat_button) {
+                    sendMessage(AirConsole.SCREEN, "attack_response_success");
+                }
+
+                next_combat_button++;
+            }
+            else {
+                sendMessage(AirConsole.SCREEN, "attack_response_failure", "map", whole_map);
+            }
+        }
+
+        function eraseButton(id) {
+            var d = GetElementInsideContainer("start_combat", id);
+            d.style.display = "none";
+        }
+
+        //checks other player map pieces and "steals" one of them
+        function getOtherMapPiece(mapPieces) {
+            
+            //go through other player map pieces
+            for (var i = 0; i < mapPieces.length; i++) {
+                //if other player has a map piece this player does not have, then steal it
+                if (mapPieces[i] == '1' && whole_map[i] == '0') {
+                    whole_map = whole_map.replaceAt(i, '1');
+                    console.log('map piece inserted at ' + i);
+                    console.log('new map: ' + whole_map);
+                    break;
+                }
+            }
+        }
+		
+
+
+		function sendMessage(device, action, param_1_name, param_1, param_2_name, param_2)
+		{
+		    var message = {
+		        'action': action
+		    };
+		    switch (arguments.length) {
+		        case 4:
+		            message = message_param_1(message, param_1_name, param_1);
+		            break;
+		        case 6:
+		            message = message_param_2(message, param_1_name, param_1, param_2_name, param_2);
+		            break;
+		    }
+		    console.log("Sending message to " + AirConsole.SCREEN + " with action " + message.action);
+		    airconsole.message(device, message);
+		}
+
+		function message_param_1(message, param_1_name, param_1)
+		{
+		    message[param_1_name] = param_1;
+		    console.log("message has custom parameter " + message[param_1_name]);
+		    return message;
+		}
+        
+		function message_param_2(message, param_1_name, param_1, param_2_name, param_2)
+		{
+		    message[param_1_name] = param_1;
+		    message[param_2_name] = param_1;
+
+		    console.log("message has custom parameters " + message[param_1_name] + " and " + message[param_2_name]);
+		    return message;
+		}
+
+		// Returns a random number between min (inclusive) and max (exclusive)
+		function getRandomArbitrary(min, max) {
+		    return Math.random() * (max - min) + min;
+		}
+
+		//get the div inside a div
+		function GetElementInsideContainer(containerID, childID) {
+		    var elm = {};
+		    var elms = document.getElementById(containerID).getElementsByTagName("*");
+		    for (var i = 0; i < elms.length; i++) {
+		        if (elms[i].id === childID) {
+		            elm = elms[i];
+		            break;
+		        }
+		    }
+		    return elm;
+		}
+
+		String.prototype.replaceAt = function (index, character) {
+		    return this.substr(0, index) + character + this.substr(index + character.length);
+		}
     </script>
 
 </body>
