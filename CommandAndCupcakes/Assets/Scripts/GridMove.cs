@@ -10,16 +10,8 @@ class GridMove : MonoBehaviour
         Horizontal,
         Vertical
     };
-    private enum Actions
-    {
-        move_left,
-        move_right,
-        move_down,
-        move_up,
-        attack,
-        dig,
-        interact
-    };
+
+    private GameObject gameManager;
     private Orientation gridOrientation = Orientation.Horizontal;
     private bool allowDiagonals = false;
     private bool correctDiagonalSpeed = true;
@@ -30,88 +22,98 @@ class GridMove : MonoBehaviour
     private float t;
     private float factor;
     private int actionIterator = 2;
-    private Actions[] actions;
+    private string[] actions;
+
+    public void Start()
+    {
+        gameManager = GameObject.FindGameObjectWithTag("GameController");
+    }
 
     public void Update()
     {
+        //Debug.Log("Action iterator: " + actionIterator);
 
         if (actionIterator != 2 && !isMoving)
         {
+            Debug.Log("Starting action: " + actions[actionIterator]);
             switch (actions[actionIterator])
             {
-                case Actions.move_left:
-                    input = new Vector2(1, 0);
-                    break;
-                case Actions.move_right:
-                    input = new Vector2(-1, 0);
-                    break;
-                case Actions.move_up:
-                    input = new Vector2(0, 1);
-                    break;
-                case Actions.move_down:
+                //TODO: input vectors don't match movement
+                case "left_down":
                     input = new Vector2(0, -1);
+                    StartCoroutine(move(transform));
                     break;
-                case Actions.attack:
+                case "right_down":
+                    input = new Vector2(1, 0);
+                    StartCoroutine(move(transform));
                     break;
-                case Actions.interact:
+                case "left_up":
+                    input = new Vector2(-1, 0);
+                    StartCoroutine(move(transform));
                     break;
-                case Actions.dig:
+                case "right_up":
+                    input = new Vector2(0, 1);
+                    StartCoroutine(move(transform));
+                    break;
+                case "interact":
+                    Debug.Log("Gridmove: Player interacting with tile");
+                    gameManager.SendMessage("OnPlayerInteractWithTile");
+                    input = new Vector2(0, 0);
+                    StartCoroutine(move(transform));
                     break;
                 default:
+                    input = new Vector2(0, 0);
                     break;
             }
 
-            StartCoroutine(move(transform));
             actionIterator++;
+            
         }
 
-        
         //REAL-TIME CONTROLLER CODE FOR TESTING ONLY
 
-       /* if (!isMoving)
-        {
-            input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            if (!allowDiagonals)
-            {
-                if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-                {
-                    input.y = 0;
-                }
-                else
-                {
-                    input.x = 0;
-                }
-            }
+        /* if (!isMoving)
+         {
+             input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+             if (!allowDiagonals)
+             {
+                 if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
+                 {
+                     input.y = 0;
+                 }
+                 else
+                 {
+                     input.x = 0;
+                 }
+             }
 
-            if (input != Vector2.zero)
-            {
-                StartCoroutine(move(transform));
-            }
-        } 
+             if (input != Vector2.zero)
+             {
+                 StartCoroutine(move(transform));
+             }
+         } 
 
-        */
+         //code to control what way the character is facing. 
+         if (Input.GetKeyDown(KeyCode.D))
+         {
+             transform.localEulerAngles = new Vector3(0, 45, 0);     
+         }
 
-        //code to control what way the character is facing. 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            transform.localEulerAngles = new Vector3(0, 45, 0);     
-        }
+         if (Input.GetKeyDown(KeyCode.A))
+         {
+             transform.localEulerAngles = new Vector3(0, -45, 0);
+         }
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            transform.localEulerAngles = new Vector3(0, -45, 0);
-        }
+         if (Input.GetKeyDown(KeyCode.W))
+         {
+             transform.localEulerAngles = new Vector3(0, 0, 0);
+         }
 
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            transform.localEulerAngles = new Vector3(0, 0, 0);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            transform.localEulerAngles = new Vector3(0, 90, 0);
-        }
-        
+         if (Input.GetKeyDown(KeyCode.S))
+         {
+             transform.localEulerAngles = new Vector3(0, 90, 0);
+         }*/
+
     }
 
     public IEnumerator move(Transform transform)
@@ -152,13 +154,15 @@ class GridMove : MonoBehaviour
         }
 
         isMoving = false;
-        GameObject.FindGameObjectWithTag("GameManager").SendMessage("OnPlayerFinishedMoving");
+        if (actionIterator == 2)
+            gameManager.SendMessage("OnPlayerFinishedMoving");
 
         yield return 0;
     }
 
-    void Action(Actions[] actions)
+    void Action(string[] actions)
     {
+        Debug.Log(gameObject + " received Action");
         actionIterator = 0;
         this.actions = actions;
     }

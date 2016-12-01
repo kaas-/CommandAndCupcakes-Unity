@@ -1,0 +1,19 @@
+// Exported skin weight map file
+// 
+Pirate_3:Pirate	Pirate_3:torso	Pirate_torso.iff
+Pirate_3:Pirate	Pirate_3:rShoulder	Pirate_rShoulder.iff
+Pirate_3:Pirate	Pirate_3:rElbow	Pirate_rElbow.iff
+Pirate_3:Pirate	Pirate_3:rWrist	Pirate_rWrist.iff
+Pirate_3:Pirate	Pirate_3:lShoulder	Pirate_lShoulder.iff
+Pirate_3:Pirate	Pirate_3:lElbow	Pirate_lElbow.iff
+Pirate_3:Pirate	Pirate_3:lWrist	Pirate_lWrist.iff
+Pirate_3:Pirate	Pirate_3:pelvis	Pirate_pelvis.iff
+Pirate_3:Pirate	Pirate_3:lHip	Pirate_lHip.iff
+Pirate_3:Pirate	Pirate_3:lKnee	Pirate_lKnee.iff
+Pirate_3:Pirate	Pirate_3:lAnkle	Pirate_lAnkle.iff
+Pirate_3:Pirate	Pirate_3:lHeel	Pirate_lHeel.iff
+Pirate_3:Pirate	Pirate_3:rHip	Pirate_rHip.iff
+Pirate_3:Pirate	Pirate_3:rKnee	Pirate_rKnee.iff
+Pirate_3:Pirate	Pirate_3:rAnkle	Pirate_rAnkle.iff
+Pirate_3:Pirate	Pirate_3:rHeel	Pirate_rHeel.iff
+Pirate_3:Pirate	Pirate_3:Head	Pirate_Head.iff

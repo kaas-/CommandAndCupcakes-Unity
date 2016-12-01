@@ -1,0 +1,2867 @@
+@charset "utf-8";
+/* CSS Document */
+html
+{
+	height:100%;
+	margin:0;	
+}
+
+@font-face {
+	font-family:Disolve_Light;
+	src: url('Fonts/Disolve/disolve_light.woff2') format('woff2'),
+		 url('Fonts/Disolve/disolve_light.woff') format('woff'),
+		 url('Fonts/Disolve/disolve_light.ttf') format('truetype');
+}
+
+@font-face {
+	font-family:Source_Sans_Light;
+	src: url('Fonts/SourceSans/SourceSansPro-Light.otf') format('opentype');
+}
+
+@font-face {
+	font-family:Source_Sans_Bold;
+	src: url('Fonts/SourceSans/SourceSansPro-Bold.otf') format('opentype');
+}
+
+body
+{		
+	position: fixed;
+	background-image:url("Images/Background/bg_white.png");	
+	background-size: 100% 100%;
+	height:100%;
+	width: 100%;
+	overflow:hidden;
+	margin:0;
+	font-family:Source_Sans_Light;
+	color:#000000;
+	font-size: 3.5vh
+	z-index: 1;
+}
+
+/*--------------------------------------------
+GENERIC CLASSES*/
+#debug
+{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	pointer-events: none;
+}
+
+#debug-content
+{
+	position:absolute;
+	bottom: 0;
+	right: 0;
+	font-size: 2.5vh;
+	color: red;
+	text-align: right;
+}
+
+.temp
+{
+	position: absolute;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+	width: 9.7%;
+	height: 4.7%;
+	left: 50%;
+	background-color: black;
+}
+
+.centerPivot
+{
+	-webkit-transform: translate(-50%,-50%);
+	-moz-transform: translate(-50%,-50%);
+	-ms-transform:translate(-50%,-50%);
+	-o-transform:translate(-50%,-50%);
+	transform:translate(-50%,-50%);
+}
+
+.skew25
+{
+	-webkit-transform: skewX(25deg);
+	-moz-transform: skewX(25deg);
+	-ms-transform: skewX(25deg);
+	-o-transform: skewX(25deg);
+	transform: skewX(25deg);
+}
+
+.skewNeg25
+{
+	-webkit-transform: skewX(-25deg);
+	-moz-transform: skewX(-25deg);
+	-ms-transform: skewX(-25deg);
+	-o-transform: skewX(-25deg);
+	transform: skewX(-25deg);
+}
+
+.skew30
+{
+	-webkit-transform: skewX(30deg);
+	-moz-transform: skewX(30deg);
+	-ms-transform: skewX(30deg);
+	-o-transform: skewX(30deg);
+	transform: skewX(30deg);
+}
+
+.skewNeg30
+{
+	-webkit-transform: skewX(-30deg);
+	-moz-transform: skewX(-30deg);
+	-ms-transform: skewX(-30deg);
+	-o-transform: skewX(-30deg);
+	transform: skewX(-30deg);
+}
+
+.skew35
+{
+	-webkit-transform: skewX(35deg);
+	-moz-transform: skewX(35deg);
+	-ms-transform: skewX(35deg);
+	-o-transform: skewX(35deg);
+	transform: skewX(35deg);
+}
+
+.skewNeg35
+{
+	-webkit-transform: skewX(-35deg);
+	-moz-transform: skewX(-35deg);
+	-ms-transform: skewX(-35deg);
+	-o-transform: skewX(-35deg);
+	transform: skewX(-35deg);
+}
+
+.rectButtonRight
+{
+	position:absolute;
+	height:5.5%;
+	width: 100%;
+	left: 32%;
+	bottom: 6%;
+}
+
+.rectButtonRightText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	color: white;
+	-webkit-transform: skewX(-25deg) translate(0%, -50%);
+	-moz-transform: skewX(-25deg) translate(0%, -50%);
+	-ms-transform: skewX(-25deg) translate(0%, -50%);
+	-o-transform: skewX(-25deg) translate(0%, -50%);
+	transform: skewX(-25deg) translate(0%, -50%);
+	top: 57%;
+	left: 4%;
+	letter-spacing: 1vw;
+}
+
+.rectButtonLeft
+{
+	position:absolute;
+	height:5.5%;
+	width: 100%;
+	right: 32%;
+	bottom: 6%;
+}
+
+.rectButtonLeftText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 3.5vh;
+	color: white;
+	-webkit-transform: skewX(25deg) translate(0%, -50%);
+	-moz-transform: skewX(25deg) translate(0%, -50%);
+	-ms-transform: skewX(25deg) translate(0%, -50%);
+	-o-transform: skewX(25deg) translate(0%, -50%);
+	transform: skewX(25deg) translate(0%, -50%);
+	top: 55%;
+	right: 2%;
+}
+
+.playerOneBGColor
+{
+	background-color: #f55e5e;
+}
+
+.playerTwoBGColor
+{
+	background-color: #6ea6d7;
+}
+
+.playerThreeBGColor
+{
+	background-color: #4dbc83;
+}
+
+.playerFourBGColor
+{
+	background-color: #f5f1a0;
+}
+
+.rotate180
+{
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform:rotate(180deg);
+	-o-transform:rotate(180deg);
+	transform:rotate(180deg);
+}
+
+.bold 
+{
+	font-family: Source_Sans_Bold;
+}
+/*--------------------------------------------*/
+
+/*--------------------------------------------
+JOIN UI*/
+.joinTitle
+{
+	-webkit-transform: translate(-50%,0%);
+	-moz-transform: translate(-50%,0%);
+	-ms-transform:translate(-50%,0%);
+	-o-transform:translate(-50%,0%);
+	transform:translate(-50%, 0%);
+	position: absolute;
+	height: 14%;
+	top:25%;
+	left:50%;
+}
+
+.joinTitle img 
+{
+	height: 100%;
+}
+
+#joinButton
+{
+	display: none;
+}
+
+.joinButton
+{
+	-webkit-transform:translate(-50%, 0%); 
+	-moz-transform:translate(-50%, 0%); 
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	position:absolute;
+	height: 25%;
+	bottom: 20%;
+	left: 50%;
+}
+
+.joinButton img
+{
+	height: 100%;
+}
+
+#loadingTitle
+{
+	-webkit-transform:translate(-50%, 0%); 
+	-moz-transform:translate(-50%, 0%); 
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	position:absolute;
+	height: 4%;
+	bottom: 31%;
+	left: 53.5%;
+}
+
+#loadingImage
+{
+	height: 100%;
+}
+
+.helpButton
+{
+	position: absolute;
+	height: 5%;
+	-webkit-transform:translate(-50%, 0%); 
+	-moz-transform:translate(-50%, 0%); 
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	left: 50%;
+	bottom: 5%;
+}
+
+#joinHelpButton
+{
+	display: none;
+}
+
+.helpButton img
+{
+	height: 100%;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+CHARACTER SELECT*/
+.characterSelectTitle
+{
+	position: absolute;
+	height: 4.1%;
+	max-width: 100%;
+	top: 7vh;
+	left: 4%;
+}
+
+.characterSelectTitle img
+{
+	height: 100%;
+}
+
+.playerSelect
+{
+	position: absolute;
+	height: 17%;
+	width: 100%;
+}
+
+#playerOneSelect
+{
+	top: 12%;
+}
+
+#playerTwoSelect
+{
+	top: 29.5%;
+}
+
+#playerThreeSelect
+{
+	top: 47%;
+}
+
+#playerFourSelect
+{
+	top: 64.5%;
+}
+
+.playerSelectHeader
+{
+	position: absolute;
+	top: 35%;
+	right: 13.5%;
+	height: 23.5%;
+	background-color: black;
+}
+
+.playerSelectHeaderShadow
+{
+	position: absolute;
+	top: 39%;
+	right: 12%;
+	height: 23.5%;
+	/*display: none;*/
+}
+
+.playerSelectHead
+{
+	position: absolute;
+	height: 85%;
+	top: 0%;
+	left: 0%;
+}
+
+.playerSelectNameText
+{
+	position: absolute;
+	color: white;
+	letter-spacing: 1vw;
+	font-family: Disolve_Light;
+	font-size: 3.7vh;
+	right: 3%;
+	top: 13.5%;
+	-webkit-transform: skewX(35deg);
+	-moz-transform: skewX(35deg);
+	-ms-transform: skewX(35deg);
+	-o-transform: skewX(35deg);
+	transform: skewX(35deg);
+}	
+
+.playerSelectHeaderWeaponDescriptionText
+{
+	position:absolute;
+	left: 10vh;
+	top: 63%;
+	width: 64%;
+	text-align: left;
+	font-family: Source_Sans_Light;
+	font-size: 2.2vh;
+}
+
+.playerSelectHeaderWeaknessDescriptionText
+{
+	position:absolute;
+	left: 10vh;
+	top: 63%;
+	width: 64%;
+	text-align: right;
+	font-family: Source_Sans_Light;
+	font-size: 2.2vh;
+}
+
+.playerSelectStat
+{
+	position:absolute;
+	font-family: Source_Sans_Light;
+	font-size: 1.8vh;
+	top: 80%;
+}
+
+.playerSelectHealth
+{
+	left: 18%;
+}
+
+.playerSelectSpeed
+{
+	left: 32%;
+}
+
+.playerSelectRange
+{
+	left: 46%;
+}
+
+.playerSelectAttack
+{
+	left: 60%;
+}
+
+.playerSelectAbility
+{
+	left: 74%;
+}
+
+.playerSelectStatValue
+{
+	position: absolute;
+	font-family: Source_Sans_Bold;
+	font-size: 2.3vh;
+	text-align: left;
+	top: 40%;
+	left: 102%;
+}
+
+.playerSelectTriangle
+{
+	position:absolute;
+	height: 12%;
+	left: 89%;
+	top: 46.75%;
+	-webkit-transform: translate(0%,-50%);
+	-moz-transform: translate(0%,-50%);
+	-ms-transform:translate(0%,-50%);
+	-o-transform:translate(0%,-50%);
+	transform:translate(0%,-50%);
+}
+
+.playerSelectTriangle img
+{
+	height: 100%;
+}
+
+.readyArea
+{
+	position:absolute;
+	height: 12%;
+	width: 100%;
+	bottom: 4%;
+}
+
+.readyHeader
+{
+	position: absolute;
+	top: 0%;
+	left: 7%;
+	height: 37%;
+}
+
+.readyHeader img
+{
+	height: 100%;
+}
+
+#characterSelectReadyImage
+{
+	display: 'none';
+}
+
+.readyInfo
+{
+	position: absolute;
+	bottom: 0%;
+	height: 52%;
+	width: 100%;
+}
+
+.readyTriangles
+{
+	position: absolute;
+	height: 100%;
+	width: 30%;
+	left: 8%;
+}
+
+.readyTriangle
+{
+	position: absolute;
+	height: 86%;
+}
+
+.readyTriangle img
+{
+	height: 100%;
+}
+
+.readyTriangleOne
+{
+	top: 0%;
+	left: 0%;
+}
+
+.readyTriangleTwo
+{
+	left: 24%;
+	bottom: 0%;
+}
+
+.readyTriangleThree
+{
+	left: 48%;
+	top: 0%;
+}
+
+.readyTriangleFour
+{
+	left: 72%;
+	bottom: 0%;
+}
+
+#readyStartButton
+{
+	position:absolute;
+	height:86%;
+	width: 100%;
+	left: 110.5%;
+	top: 0%;
+	background-color: black;
+}
+
+.readyStartButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4.5vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 60%;
+	left: 2%;
+	letter-spacing: 1vw;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+CREDITS*/
+.creditsTitle
+{
+	position: absolute;
+	height: 4%;
+	max-width: 100%;
+	top: 3%;
+	left: 4%;
+}
+
+.creditsTitle img
+{
+	height: 100%;
+}
+
+.credits
+{
+	font-family:Source_Sans_Light;
+	font-size: 2.5vh;
+	position: absolute;
+	height: 63%;
+	width: 100%;
+	top: 10%;
+}
+
+.phlCredits
+{
+	position: absolute;
+	top: 0%;
+	height: 18%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+	left: 50%;
+}
+
+.phlCredits img
+{
+	height: 100%;
+}
+
+.otherCredit
+{
+	position: relative;
+	top: 29%;
+	height: 75%;
+}
+
+#creditsBackButton
+{
+	background-color: black;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+ACTION CONTROLLER*/
+.actionButtonContainer
+{
+	position: absolute;
+	top: 30.5%;
+	height: 44%;
+	width: 100%;
+}
+
+.actionButton
+{
+	position: absolute;
+	background-color: rgba(0,0,0,0.1);
+	height: 49.2%;
+	width: 100%;
+}
+
+#moveButton
+{
+	top:0%;
+	left: -50.7%;
+}
+
+#attackButton
+{
+	top: 0%;
+	right: -50.7%;
+}
+
+#itemButton
+{
+	bottom: 0%;
+	left: -50.7%;
+}
+
+#skipButton
+{
+	bottom: 0%;
+	right: -50.7%;
+}
+
+.actionButtonDetailLeft
+{
+	position: absolute;
+	width: 50%;
+	height: 67%;
+	top: 51.5%;
+	right: -8%;
+	-webkit-transform: skewX(30deg) translate(0%, -50%);
+	-moz-transform: skewX(30deg) translate(0%, -50%);
+	-ms-transform: skewX(30deg) translate(0%, -50%);
+	-o-transform: skewX(30deg) translate(0%, -50%);
+	transform: skewX(30deg) translate(0%, -50%);
+}
+
+.actionButtonDetailRight
+{
+	position: absolute;
+	width: 50%;
+	height: 67%;
+	top: 51.5%;
+	left: 5%;
+	-webkit-transform: skewX(30deg) translate(0%, -50%);
+	-moz-transform: skewX(30deg) translate(0%, -50%);
+	-ms-transform: skewX(30deg) translate(0%, -50%);
+	-o-transform: skewX(30deg) translate(0%, -50%);
+	transform: skewX(30deg) translate(0%, -50%);
+}
+
+.actionButtonIcon
+{
+	position: absolute;
+	width: 100%;
+	height: 70%;
+	top: 0%;
+	left: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}	
+
+.actionButtonIcon img
+{
+	position: absolute;
+	bottom: 0%;
+	left: 50%;
+	-webkit-transform:translate(-50%, 0%); 
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+.actionText
+{
+	position: absolute;
+	font-size: 2.9vh;
+	text-align: center;
+	bottom: 0%;
+	left: 50%;
+	width: 100%;
+	-webkit-transform:translate(-50%, 0%); 
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+#actionText0
+{
+	opacity: 1;
+}
+
+#actionText1
+{
+	opacity: 1;
+}
+
+#actionText2
+{
+	opacity: 1;
+}
+
+#actionText3
+{
+	opacity: 1;
+}
+
+#moveIcon
+{
+	top: 8%;
+	height: 83%;
+}
+
+#attackIcon
+{
+	top: 16%;
+	height: 80%;
+}
+
+#itemIcon
+{
+	top: 15%;
+	height: 85%;;
+}
+
+#skipIcon
+{
+	top: 35%;
+	height: 51%;
+}
+
+.bottomButtonImage
+{
+	position: absolute;
+	top: 13%;
+	left: 50%;
+	height: 41%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.bottomButtonImage img
+{
+	height: 100%;
+}
+
+.cooldownContainer
+{
+	display: none;
+	position: absolute;
+	width: 30%;
+	height: 100%;
+	top: 0%;
+	left: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.cooldownText
+{
+	position: absolute;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+	-o-transform:translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	text-align: center;
+	top: 37%;
+	left: 50%;
+	font-size: 6vh;
+
+}
+
+.cooldownIcon
+{
+	position: absolute;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+	-o-transform:translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	left: 50%;
+	top: 38%;
+	height: 60%;
+}
+
+.cooldownIcon img
+{
+	height: 100%;	
+}
+
+#actionDot
+{
+	left: 8%;
+}
+
+#actionBuff
+{
+	right: 8%;
+}
+
+#actionHeal
+{
+	left: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+.bottomActionButton
+{
+	position: absolute;
+	width: 22%;
+	height: 13%;
+	bottom: 2%;
+	background-color: rgba(0,0,0,0.1);
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+DIRECTION CONTROLLER*/
+.optionsButton
+{
+	background-color: black;
+	height: 3.5%;
+	left: 71%;
+	top: 1.8%;
+	z-index: 6;
+}
+
+.optionsButtonText
+{
+	font-size: 2.5vh;
+	top: 60%;
+	left: 1%;
+}
+
+.elementHeaderCustom
+{
+	top: 6.7%;
+	right: 13.5%;
+	height: 4%;
+	background-color: white;
+	z-index: 6;
+}
+
+.elementHeaderNameText
+{
+	position: absolute;
+	font-family: Disolve_Light;
+	font-size: 3.4vh;
+	right: 3%;
+	top: 16%;
+	-webkit-transform: skewX(35deg);
+	-moz-transform: skewX(35deg);
+	-ms-transform: skewX(35deg);
+	-o-transform: skewX(35deg);
+	transform: skewX(35deg);
+}
+
+#elementHeaderElementImage
+{
+	position: absolute;
+	-webkit-transform: skewX(35deg);
+	-moz-transform: skewX(35deg);
+	-ms-transform: skewX(35deg);
+	-o-transform: skewX(35deg);
+	transform: skewX(35deg);
+	height: 98%;
+	top: 2%;
+	right: 3%;
+}
+
+.playerHead
+{
+	position: absolute;
+	top:1%;
+	height: 15%;
+	z-index: 6;
+}
+
+.playerHeadImage
+{
+	height: 100%;
+}
+
+.playerHeadProfilePic
+{
+	left: 3%;
+	height: 9%;
+	top: 8.7%;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform: translate(0%, -50%);
+	-o-transform: translate(0%, -50%);
+	transform: translate(0%, -50%);
+}
+
+.playerHeadCustom
+{
+
+}
+
+.playerHealthBar
+{
+	position:absolute;
+	background-color: black;
+	height: 0.2%;
+	width: 53%;
+	top:15%;
+	left:18%;
+	z-index: 6;
+}
+
+.healthBar
+{
+	background-color: black;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform:translate(0%, -50%);
+	-o-transform:translate(0%, -50%);
+	transform:translate(0%, -50%);
+	height: 550%;
+	width: 50%;
+}
+
+.playerHealthHeader
+{
+	position:absolute;
+	font-size: 2.9vh;
+	top: 0%;
+	right: -15%;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform:translate(0%, -50%);
+	-o-transform:translate(0%, -50%);
+	transform:translate(0%, -50%);
+}
+
+.healthText
+{
+	position:absolute;
+	font-size: 2.8vh;
+	text-align: left;
+	top: 0%;
+	left: 114%;
+	font-family:Source_Sans_Bold;
+}
+
+.actionsCounter
+{
+	position:absolute;
+	font-size: 2.9vh;
+	top: 21.5%;
+	left: 8%;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform:translate(0%, -50%);
+	-o-transform:translate(0%, -50%);
+	transform:translate(0%, -50%);
+	z-index: 6;
+}
+
+.actionsText
+{
+	position:absolute;
+	font-size: 2.8vh;
+	text-align: left;
+	top: 40%;
+	left: 102%;
+	font-family:Source_Sans_Bold;
+}
+
+.skillPtsCounter
+{
+	position:absolute;
+	font-size: 2.9vh;
+	height: 4%;
+	top: 22%;
+	right: 15%;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform:translate(0%, -50%);
+	-o-transform:translate(0%, -50%);
+	transform:translate(0%, -50%);
+	z-index: 6;
+}
+
+.skillPtsCounter img
+{
+	height: 100%;
+}
+
+.skillPtsText
+{
+	position:absolute;
+	font-size: 2.9vh;
+	text-align: left;
+	top: 23%;
+	left: 116%;
+	font-family:Source_Sans_Bold;
+}
+
+.dPad img
+{
+	position: absolute;
+	height: 100%;
+}
+
+.lineBreak
+{
+	position: absolute;
+	height: 2.45%;
+	z-index: 6;
+}
+
+.lineBreakRight
+{
+	top: 27%;
+	right: 0%;
+}
+
+.lineBreakLeft
+{
+	top: 76%;
+	left: 0%;
+}
+
+#lineBreakLeftDirection
+{
+	top: 81.5%;
+}
+
+.lineBreak img
+{
+	height: 100%;
+}
+
+.dPadContainer
+{
+	position: absolute;
+	left: 50%;
+	top: 55.3%;
+	height: 48vh;
+	width: 48vh;
+	background-color:rgba(255,255,255,0.15);
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+	-o-transform:translate(-50%, -50%);
+	transform:translate(-50%, -50%);
+}
+
+.dPad
+{
+	position:absolute;
+	width: 32%;
+	height: 32%;
+	background-color: rgba(0,0,0,0.1);
+}
+
+#dPad0
+{
+	top: 1%;
+	left: 1%;
+}
+
+#dPad1
+{
+	top: 1%;
+	left: 34%;
+}
+
+#dPad2
+{
+	top: 1%;
+	left: 67%;
+}
+
+#dPad3
+{
+	top: 34%;
+	left: 1%;
+}
+
+#dPad4
+{
+	top: 34%;
+	left: 34%;
+	background-color: rgba(0,0,0,0);
+}
+
+#dPad5
+{
+	top: 34%;
+	left: 67%;
+}
+
+#dPad6
+{
+	top: 67%;
+	left: 1%;
+}
+
+#dPad7
+{
+	top: 67%;
+	left: 34%;
+}
+
+#dPad8
+{
+	top: 67%;
+	left: 67%;
+}
+
+.movesRemaining
+{
+	position: absolute;
+	font-size: 2.9vh;
+	text-align: center;
+	top: 84.5%;
+	left: 47.5%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+.movesRemainingText
+{
+	position: absolute;
+	font-size: 2.8vh;
+	font-family:Source_Sans_Bold;
+	text-align: center;
+	left: 108%;
+	top: 47%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+.actionBatteryHeader
+{
+	position: absolute;
+	height: 6%;
+	top: 79%;
+	left: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+.actionBatteryHeader img
+{
+	height: 100%;
+}
+
+.batteryChargeText
+{
+	position: absolute;
+	font-size: 2.8vh;
+	font-family: Source_Sans_Bold;
+	text-align: center;
+	bottom: 36%;
+	left: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+.bottomButton
+{
+	position: absolute;
+	width: 38%;
+	height: 7%;
+	bottom: 2%;
+	background-color: rgba(0,0,0,0.1);
+}
+
+.bottomButtonText
+{
+	font-size: 2.9vh;
+	position: absolute;
+	text-align: center;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	left: 50%;
+	bottom: 8%;
+}
+
+.bottomButtonLine
+{
+	position: absolute;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	background-color: black;
+	width: 100%;
+	height: 4%;
+	bottom: 0%;
+	left: 50%;
+}
+
+#directionCancel
+{
+	left: 6%;
+}
+
+#directionConfirm
+{
+	right: 6%;
+}
+
+.footerColor
+{
+	position: absolute;
+	bottom: 0%;
+	height: 2%;
+	width: 100%;
+	background-color: white;
+}
+
+.selfOnlyItemContainer
+{
+	position: absolute;
+	left: 50%;
+	top: 55.3%;
+	height: 48vh;
+	width: 48vh;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform:translate(-50%, -50%);
+	-o-transform:translate(-50%, -50%);
+	transform:translate(-50%, -50%);
+}
+
+.selfOnlyItemImage
+{
+	position: absolute;
+	left: 50%;
+	bottom: 10%;
+	height: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+#selfOnlyItemIcon
+{
+	height: 100%;
+}
+
+#selfOnlyItemText
+{
+	position: absolute;
+	text-align: center;
+	left: 50%;
+	top: 15%;
+	width: 100%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	font-size: 4.5vh;
+}
+/*--------------------------------------------*/
+
+/*--------------------------------------------
+WAITING UI*/
+.waitingOverlay
+{
+	position: fixed;
+	height:100%;
+	width: 100%;
+}
+
+.waitingOverlay img
+{
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.waitingContainer
+{
+	position: fixed;
+	height: 52.5%;
+	width: 100%;
+	top: 29%;
+}
+
+.waitingText
+{
+	height: 6vh;
+	width: 100%;
+	font-family: Disolve_Light;
+	font-size: 6vh;
+	letter-spacing: .4vw;
+	text-align: center;
+}
+
+#waitingHeaderText
+{
+	position: absolute;
+	top: 29%;
+	line-height: 8vh;
+}
+
+.waitingPlayerText
+{
+	position: absolute;
+	top: 52%;
+}
+/*--------------------------------------------*/
+
+/*--------------------------------------------
+INITIAL OFF STATES*/
+#characterSelectUI
+{
+	display: none;
+}
+#pregameUI
+{
+	display: none;
+}
+#actionUI
+{
+	display: none;
+}
+#directionUI
+{
+	display: none;
+}
+#upgradeUI
+{
+	display: none;
+}
+#upgradeWaitingUI
+{
+	display: none;
+}
+#waitingUI
+{
+	display: none;
+
+	/* should show up above other screens */
+	position: absolute;
+	z-index: 5;
+}
+#levelLoadUI
+{
+	display: none;
+
+	/* should show up above other screens */
+	position: absolute;
+	z-index: 5;
+}
+#deadUI
+{
+	display: none;
+}
+#gameoverUI
+{
+	display: none;
+}
+#optionsUI
+{
+	display: none;
+}
+#creditsUI
+{
+	display: none;
+}
+#itemSelectionUI
+{
+	display: none;
+}
+#spectateUI
+{
+	display: none;
+}
+#quitCheckUI
+{
+	display: none;
+}
+#helpUI
+{
+	display: none;
+}
+#leaderboardsUI
+{
+	display: none;
+}
+#disconnectUI
+{
+	display: none;
+}
+#loadLevelUI
+{
+	display: none;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+UPGRADE SCREEN*/
+.upgradeTitle
+{
+	position: absolute;
+	top: 2.5vh;
+	left: 1.5vh;
+	height: 4%;
+	z-index: 11;
+}
+
+.upgradeTitle img
+{
+	position: absolute;
+	height: 100%;
+}
+
+#upgradeResetButton
+{
+	position:absolute;
+	width: 50%;
+	top: 2.6vh;
+	right: -11%;
+	height: 3.7%;
+	background-color: black;
+}
+
+.upgradeResetButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2.9vh;
+	color: white;
+	-webkit-transform: skewX(-25deg) translate(0%, -50%);
+	-moz-transform: skewX(-25deg) translate(0%, -50%);
+	-ms-transform: skewX(-25deg) translate(0%, -50%);
+	-o-transform: skewX(-25deg) translate(0%, -50%);
+	transform: skewX(-25deg) translate(0%, -50%);
+	top: 61%;
+	left: 6%;
+	letter-spacing: 1vw;
+}
+
+#upgradeHelp
+{
+	position:fixed;
+	width: 100%;
+	height: 100%;
+	display: none;
+	z-index: 10;
+}
+
+.upgradeHelpBG
+{
+	position: absolute;
+	height: 100%;
+	width:100%;
+}
+
+.upgradeHelpBG img
+{
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+.upgradeHelpImage
+{
+	position: absolute;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+	top: 21%;
+	left: 50%;
+	height: 62%;
+}
+
+.upgradeHelpImage img
+{
+	height: 100%;
+}
+
+#upgradeHelpButton
+{
+	top: 10%;
+	height: 6%;
+	z-index: 11;
+}
+
+#skillPtsUpgrade
+{
+	top: 11%;
+	right: 11%;
+}
+
+.upgradeStatContainer
+{
+	position: absolute;
+	right: 0%;
+	height: 6.5%;
+	width: 100%;
+}
+
+.upgradeStatText
+{
+	position:absolute;
+	font-size: 2.9vh;
+	text-align: left;
+	top: 40%;
+	left: 102%;
+	font-family:Source_Sans_Bold;
+}
+
+.upgradeButton
+{
+	position: absolute;
+	left: 72%;
+	background-color: rgba(0,0,0,0.15);
+	height: 100%;
+}
+
+.upgradeStatButtonText
+{
+	position: absolute;
+	font-family: Source_Sans_Bold;
+	-webkit-transform: skewX(30deg) translate(-50%, -50%);
+	-moz-transform: skewX(30deg) translate(-50%, -50%);
+	-ms-transform: skewX(30deg) translate(-50%, -50%);
+	-o-transform: skewX(30deg) translate(-50%, -50%);
+	transform: skewX(30deg) translate(-50%, -50%);
+	left: 13%;
+	top: 50%;
+	font-size: 6vh;
+}
+
+#upgradeStatContainer0
+{
+	top: 19.3%;
+}
+#upgradeStatContainer1
+{
+	top: 33.1%;
+}
+#upgradeStatContainer2
+{
+	top: 46.9%;
+}
+#upgradeStatContainer3
+{
+	top: 60.7%;
+}
+#upgradeStatContainer4
+{
+	top: 74.5%;
+}
+
+.upgradeStatHeader
+{
+	position: absolute;
+	right: 41%;
+	top: 23%;
+	font-size: 3vh;
+}
+
+#upgradeContinueButton
+{
+	background-color: black;
+}
+
+.playerPose
+{
+	position: absolute;
+	height: 100%;
+}
+
+.playerPose img
+{
+	height: 100%;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+UPGRADE WAITING SCREEN*/
+.upgradeWaitingHeader
+{
+	position: absolute;
+	font-family: Disolve_Light;
+	font-size: 7vh;
+	width: 90%;
+	text-align: center;
+	letter-spacing: 3vw;
+	line-height: 11vh;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+	left: 50%;
+	top: 15%;
+}
+
+#advanceSessionButton
+{
+	position:absolute;
+	height:86%;
+	width: 100%;
+	left: 110.5%;
+	top: 0%;
+	background-color: black;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+ITEM SELECTION SCREEN*/
+.itemSelectHeaderShadow
+{
+	position: absolute;
+	top: 39%;
+	right: 12%;
+	height: 23.5%;
+	background-color: white;
+	/*display: none;*/
+}
+
+.itemSelectionDescription
+{
+	position: absolute;
+	height: 2.3%;
+	left: 50%;
+	top: 14%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.itemSelectionDescription img
+{
+	height: 100%;
+}
+
+.itemSelect
+{
+	position: absolute;
+	height: 17%;
+	width: 100%;
+}
+
+.itemIconContainer
+{
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	height: 23.5%;
+	width: 100%;
+	pointer-events: none;
+}
+
+.itemIcon
+{
+	position:absolute;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform: translate(0%, -50%);
+	-o-transform: translate(0%, -50%);
+	transform: translate(0%, -50%);
+	top:60%;
+	left: 1.5%;
+	width: 15%;
+}
+
+.itemIcon img
+{
+	width: 100%;
+}
+
+.itemCompareButton
+{
+	position: absolute;
+	top: 0%;
+	right: -5.5%;
+	height: 27.5%;
+	width: 18%;
+	background-color: black;
+}
+
+.itemCompareButton img
+{
+	position: absolute;
+	top: 50%;
+	height: 69%;
+	left: 12%;
+	-webkit-transform: translate(0%, -50%) skewX(35deg);
+	-moz-transform: translate(0%, -50%) skewX(35deg);
+	-ms-transform: translate(0%, -50%) skewX(35deg);
+	-o-transform: translate(0%, -50%) skewX(35deg);
+	transform: translate(0%, -50%) skewX(35deg);
+}
+
+.itemCompareOverlay
+{
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0%;
+	display:none;
+	background-color: rgba(0,0,0,0.5);  
+}
+
+#itemCompareOverlayTop
+{
+	top: 0%;
+}
+
+#itemCompareOverlayBottom
+{
+	top: 0%;
+}
+
+.itemGunStatsContainer
+{
+	position: absolute;
+	width: 100%;
+	top: 30%;
+}
+
+.itemSelectHeader
+{
+	position: absolute;
+	top: 0%;
+	left: 19%;
+	height: 23.5%;
+	width: 66%;
+	background-color: black;
+}
+
+.itemSelectHeaderShadow
+{
+	position: absolute;
+	top: 4%;
+	left: 20%;
+	height: 23.5%;
+	width: 66%;
+	/*display: none;*/
+}
+
+#itemContainer0
+{
+	top: 21%;
+}
+
+#itemContainer1
+{
+	top: 37.5%;
+}
+
+#itemContainer2
+{
+	top: 54%;
+}
+
+#itemContainer3
+{
+	top: 70.5%;
+}
+
+#itemContainer4
+{
+	top: 6.7%;
+}
+
+#itemDescriptionText4
+{
+	top: 37%;
+}
+
+#itemGunStatsContainer4
+{
+	top: 37%;
+}
+
+.itemSelectNameText
+{
+	position: absolute;
+	color: white;
+	letter-spacing: 1vw;
+	font-family: Disolve_Light;
+	font-size: 2.4vh;
+	right: 2%;
+	top: 24.5%;
+	-webkit-transform: skewX(35deg);
+	-moz-transform: skewX(35deg);
+	-ms-transform: skewX(35deg);
+	-o-transform: skewX(35deg);
+	transform: skewX(35deg);
+}
+
+.itemIconBackgroundContainer
+{
+	position: absolute;
+	top: 0%;
+	right: 81.5%;
+	height: 30%;
+	width: 23%;
+	background-color: rgba(0,0,0,0.3); 
+}
+
+.itemIconBackgroundPiece
+{
+	position: absolute;
+	height: 100%;
+	width: 33.3%;
+	background-color: rgba(0,0,0,0.3);
+}
+
+#itemIconBackgroundPieceOne
+{
+	left: -2%;
+}
+
+#itemIconBackgroundPieceTwo
+{
+	left: 34%;
+}
+
+#itemIconBackgroundPieceThree
+{
+	left: 70%;
+}
+
+.itemSelectHeaderDescriptionText
+{
+	position:absolute;
+	left: 10vh;
+	top: 30%;
+	width: 64%;
+	text-align: right;
+	font-family: Source_Sans_Light;
+	font-size: 2.2vh;
+}
+
+.itemGunStat
+{
+	position:absolute;
+	font-family: Source_Sans_Light;
+	font-size: 2.2vh;
+}
+
+.itemGunStat0
+{
+	left: 17%;
+}
+
+.itemGunStat1
+{
+	left: 33%;
+}
+
+.itemGunStat2
+{
+	left: 49%;
+}
+
+.itemGunStat3
+{
+	left: 65%;
+}
+
+#itemGunStatText3
+{
+	font-size: 3vh;
+}
+
+#itemConfirmButton
+{
+	position:absolute;
+	height:86%;
+	width: 100%;
+	left: 39.5%;
+	top: 0%;
+	background-color: black;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+GAME OVER SCREEN*/
+.gameOverTitle
+{
+	position: absolute;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+	left: 50%;
+	top: 11%;
+	height: 27%;
+}
+
+.gameOverTitle img
+{
+	height: 100%;
+}
+
+.gameOverStatContainer
+{
+	position: absolute;
+	width: 100%;
+	height: 3.5vh;
+}
+
+#gameOverStatContainer0
+{
+	top: 51%;
+}
+
+#gameOverStatContainer1
+{
+	top: 61%;
+}
+
+#gameOverStatContainer2
+{
+	top: 67%;
+}
+
+.gameOverStatName
+{
+	position:absolute;
+	font-size: 3.5vh;
+	height: 3.5vh;
+	width: 64%;
+	left: 9%;
+	text-align: left;
+}
+
+.gameOverStatValue
+{
+	position:absolute;
+	font-size: 3.5vh;
+	height: 3.5vh;
+	width: 20%;
+	text-align: left;
+	top: 23%;
+	right: 27%;
+	font-family:Source_Sans_Bold;
+	-webkit-transform: translate(100%, 0%);
+	-moz-transform: translate(100%, 0%);
+	-ms-transform: translate(100%, 0%);
+	-o-transform: translate(100%, 0%);
+	transform: translate(100%, 0%);
+}
+
+#gameOverContinueButton
+{
+	position:absolute;
+	height: 5.3%;
+	width: 100%;
+	left: 39.5%;
+	bottom: 6%;
+	background-color: black;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+PREGAME SCREEN*/
+.difficultyTitle
+{
+	position: absolute;
+	top: 7%;
+	left:50%;
+	height: 11.5%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.difficultyTitle img
+{
+	height: 100%;
+}
+
+.difficultyImageContainer
+{
+	position: absolute;
+	top: 24%;
+	left: 50%;
+	height: 23%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+#difficultyImage
+{
+	height: 100%;
+}
+
+#difficultySettingContainer
+{
+	top: 54%;
+}
+
+#difficultySettingText
+{
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	font-size: 4vh;
+	text-align: center;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+#difficultyFloorDescriptionText
+{
+	position: absolute;
+	top: 72%;
+	width: 100%;
+	font-size: 4vh;
+	text-align: center;
+}
+
+#storyContinueButton
+{
+	position:absolute;
+	height: 5.3%;
+	width: 100%;
+	left: 39.5%;
+	bottom: 6%;
+	background-color: black;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+DEAD SCREEN*/
+.deadTitle
+{
+	position: absolute;
+	top: 11%;
+	left: 50%;
+	height: 40%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.deadTitle img
+{
+	height: 100%;
+}
+
+.reviveCounter
+{
+	position:absolute;
+	font-size: 2.9vh;
+	height: 7%;
+	top: 64%;
+	left: 17%;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform:translate(0%, -50%);
+	-o-transform:translate(0%, -50%);
+	transform:translate(0%, -50%);
+	z-index: 6;
+}
+
+.reviveCounter img
+{
+	height: 100%;
+}
+
+.reviveCounterHeader
+{
+	top: 21.9%;
+	left: 45.5%;
+}
+
+#reviveCounterTextHeader
+{
+	top: 35%;
+}
+
+.reviveCounterText
+{
+	position:absolute;
+	font-size: 2.9vh;
+	text-align: left;
+	top: 43%;
+	left: 93%;
+	font-family:Source_Sans_Bold;
+}
+
+#reviveButton
+{
+	position:absolute;
+	height: 5.3%;
+	width: 100%;
+	left: 46%;
+	top: 61%;
+	background-color: black;
+}
+
+.reviveText
+{
+	position: absolute;
+	width: 90%;
+	left: 50%;
+	font-size: 2.9vh;
+	text-align: center;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform:translate(-50%, 0%);
+	-o-transform:translate(-50%, 0%);
+	transform:translate(-50%, 0%);
+}
+
+#reviveOrText
+{
+	top: 73%;
+}
+
+#reviveWaitText
+{
+	top: 82%;
+}
+
+#reviveNoneText
+{
+	top: 62%;
+	left: 66%;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+OPTIONS SCREEN*/
+.optionsTitle
+{
+	position: absolute;
+	height: 4%;
+	max-width: 100%;
+	top: 3%;
+	left: 4%;
+}
+
+.optionsTitle img
+{
+	height: 100%;
+}
+
+#mainMenuButton
+{
+	position: absolute;
+	top: 2%;
+	left: 59%;
+	height: 3%;
+	background-color: black;
+}
+
+.mainMenuButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 56%;
+	right: -1%;
+	letter-spacing: 0.6vw;
+}
+
+.optionsSettingContainer
+{
+	position: absolute;
+	width: 100%;
+	height: 6.5%;
+}
+
+#optionsSettingContainer0
+{
+	top: 22%;
+}
+
+#optionsSettingContainer1
+{
+	top: 39%;
+}
+
+#optionsSettingContainer2
+{
+	top: 56%;
+}
+
+.optionsRightButton
+{
+	position: absolute;
+	left: 72%;
+	background-color: rgba(0,0,0,0.15);
+	height: 100%;
+}
+
+.optionsLeftButton
+{
+	position: absolute;
+	right: 72%;
+	background-color: rgba(0,0,0,0.15);
+	height: 100%;
+}
+
+.optionsLeftButtonText
+{
+	position: absolute;
+	-webkit-transform: skewX(-30deg) translate(-50%, -50%);
+	-moz-transform: skewX(-30deg) translate(-50%, -50%);
+	-ms-transform: skewX(-30deg) translate(-50%, -50%);
+	-o-transform: skewX(-30deg) translate(-50%, -50%);
+	transform: skewX(-30deg) translate(-50%, -50%);
+	right: 5%;
+	top: 50%;
+	height: 7%;
+	width: 5%;
+	background-color: black;
+}
+
+.optionsRightButtonText
+{
+	position: absolute;
+	font-family: Source_Sans_Bold;
+	-webkit-transform: skewX(30deg) translate(-50%, -50%);
+	-moz-transform: skewX(30deg) translate(-50%, -50%);
+	-ms-transform: skewX(30deg) translate(-50%, -50%);
+	-o-transform: skewX(30deg) translate(-50%, -50%);
+	transform: skewX(30deg) translate(-50%, -50%);
+	left: 13%;
+	top: 50%;
+	font-size: 6vh;
+}
+
+.optionsSettingText
+{
+	position:absolute;
+	font-size: 3.5vh;
+	top: -18%;
+	left: 50%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+.optionsSettingValue
+{
+	position: absolute;
+	font-size: 3vh;
+	right: 37%;
+	text-align: right;
+	font-family: Source_Sans_Bold;
+	bottom: 0%;
+}
+
+#optionsHelpButton
+{
+	top: 10%;
+	height: 6%;
+}
+
+#creditsButton
+{
+	background-color: black;
+	top: 70%;
+	height: 4%;
+	right: 47%;
+}
+
+.creditsButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2.5vh;
+	color: white;
+	-webkit-transform: skewX(30deg) translate(0%, -50%);
+	-moz-transform: skewX(30deg) translate(0%, -50%);
+	-ms-transform: skewX(30deg) translate(0%, -50%);
+	-o-transform: skewX(30deg) translate(0%, -50%);
+	transform: skewX(30deg) translate(0%, -50%);
+	top: 58%;
+	right: 2%;
+	text-align: right;
+	letter-spacing: 1vw;
+}
+
+#leaderboardsButton
+{
+	background-color: black;
+	top: 78%;
+	height: 4%;
+	left: 47%;
+}
+
+.leaderboardsButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2.5vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 58%;
+	left: 2%;
+	text-align: left;
+	letter-spacing: 1vw;
+}
+
+.optionsResumeText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	color: white;
+	-webkit-transform: skewX(-25deg) translate(0%, -50%);
+	-moz-transform: skewX(-25deg) translate(0%, -50%);
+	-ms-transform: skewX(-25deg) translate(0%, -50%);
+	-o-transform: skewX(-25deg) translate(0%, -50%);
+	transform: skewX(-25deg) translate(0%, -50%);
+	top: 57%;
+	left: 4%;
+	letter-spacing: 1vw;
+}
+
+#optionsResumeButton
+{
+	background-color: black;
+}
+
+.quitCheckTitle
+{
+	position: absolute;
+	left: 50%;
+	top: 25%;
+	height: 18%;
+	-webkit-transform: translate(-50%);
+	-moz-transform: translate(-50%);
+	-ms-transform: translate(-50%);
+	-o-transform: translate(-50%);
+	transform: translate(-50%);
+}
+
+.quitCheckTitle img
+{
+	height: 100%;
+}
+
+#quitCheckNoButton
+{
+	background-color: black;
+	top: 62%;
+	height: 5%;
+	right: 62%;
+}
+
+.quitCheckYesButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 58%;
+	left: 2%;
+	text-align: left;
+	letter-spacing: 1vw;
+}
+
+#quitCheckYesButton
+{
+	background-color: black;
+	top: 72%;
+	height: 5%;
+	left: 62%;
+}
+
+.quitCheckNoButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	color: white;
+	-webkit-transform: skewX(30deg) translate(0%, -50%);
+	-moz-transform: skewX(30deg) translate(0%, -50%);
+	-ms-transform: skewX(30deg) translate(0%, -50%);
+	-o-transform: skewX(30deg) translate(0%, -50%);
+	transform: skewX(30deg) translate(0%, -50%);
+	top: 58%;
+	right: 2%;
+	text-align: right;
+	letter-spacing: 1vw;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+HELP SCREEN*/
+.helpDot
+{
+	position: absolute;
+	left: 50%;
+	top: 26%;
+	height: 3%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+#helpDotLeft
+{
+	left: 46%;
+}
+
+#helpDotRight
+{
+	left: 54%;
+}
+
+.helpDot img
+{
+	height: 100%;
+}
+
+#helpBackButton
+{
+	position: absolute;
+	top: 2%;
+	left: 70%;
+	height: 3%;
+	background-color: black;
+}
+
+.helpBackButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 56%;
+	right: -2%;
+	letter-spacing: 0.6vw;
+}
+
+#helpNextButton
+{
+	background-color: black;
+	top: 77%;
+	height: 4%;
+	left: 47%;
+}
+
+.helpNextButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2.5vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 58%;
+	left: 2%;
+	text-align: left;
+	letter-spacing: 1vw;
+}
+
+#helpPreviousButton
+{
+	background-color: black;
+	top: 68%;
+	height: 4%;
+	right: 47%;
+}
+
+.helpPreviousButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2.5vh;
+	color: white;
+	-webkit-transform: skewX(30deg) translate(0%, -50%);
+	-moz-transform: skewX(30deg) translate(0%, -50%);
+	-ms-transform: skewX(30deg) translate(0%, -50%);
+	-o-transform: skewX(30deg) translate(0%, -50%);
+	transform: skewX(30deg) translate(0%, -50%);
+	top: 58%;
+	right: 2%;
+	text-align: right;
+	letter-spacing: 1vw;
+}
+
+#helpText
+{
+	position: absolute;
+	font-family:Disolve_Light;
+	width: 100%;
+	left: 50%;
+	top: 31%;
+	text-align: center;
+	letter-spacing: 1vw;
+	font-size: 4.7vh;
+	line-height: 11vh;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+SPECTATE SCREEN*/
+#spectatingImage
+{
+	height: 100%;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+LEADERBOARDS SCREEN*/
+.leaderboardsTitle
+{
+	position: absolute;
+	height: 4.1%;
+	max-width: 100%;
+	top: 7vh;
+	left: 4%;
+}
+
+.leaderboardsTitle img
+{
+	height: 100%;
+}
+
+.leaderboardsBackText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	color: white;
+	-webkit-transform: skewX(-25deg) translate(0%, -50%);
+	-moz-transform: skewX(-25deg) translate(0%, -50%);
+	-ms-transform: skewX(-25deg) translate(0%, -50%);
+	-o-transform: skewX(-25deg) translate(0%, -50%);
+	transform: skewX(-25deg) translate(0%, -50%);
+	top: 57%;
+	left: 4%;
+	letter-spacing: 1vw;
+}
+
+#leaderboardsBackButton
+{
+	background-color: black;
+}
+
+.leaderboardContainer
+{
+	position: absolute;
+	width: 100%;
+	height: 16%;
+}
+
+#leaderboardContianer0
+{
+	top: 32%;
+}
+
+#leaderboardContianer1
+{
+	top: 52%;
+}
+
+.leaderboardOpenButton
+{
+	background-color: black;
+	top: 0%;
+	height: 25%;
+	right: 58%;
+}
+
+.leaderboardsOpenText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 2.5vh;
+	color: white;
+	-webkit-transform: skewX(30deg) translate(0%, -50%);
+	-moz-transform: skewX(30deg) translate(0%, -50%);
+	-ms-transform: skewX(30deg) translate(0%, -50%);
+	-o-transform: skewX(30deg) translate(0%, -50%);
+	transform: skewX(30deg) translate(0%, -50%);
+	top: 58%;
+	right: 2%;
+	text-align: right;
+	letter-spacing: 1vw;
+}
+
+.leaderboardNameContainer
+{
+	position: absolute;
+	top: 0%;
+	height: 25%;
+	left: 42%;
+	width: 58%;
+}
+
+.leaderboardNameText
+{
+	position: absolute;
+	top: 50%;
+	left: 6%;
+	font-size: 2.4vh;
+	letter-spacing: .5vw;
+	font-family: Source_Sans_Bold;
+	text-align: left;
+	-webkit-transform: translate(0%, -50%);
+	-moz-transform: translate(0%, -50%);
+	-ms-transform: translate(0%, -50%);
+	-o-transform: translate(0%, -50%);
+	transform: translate(0%, -50%);
+}
+
+.leaderboardIcon
+{
+	position: absolute;
+	top: 30%;
+	right: 6%;
+	height: 44%;
+}
+
+.leaderboardIcon img
+{
+	height: 100%;
+}
+/*--------------------------------------------*/
+
+
+/*--------------------------------------------
+DISCONNECT SCREEN*/
+.disconnectButtonText
+{
+	position: relative;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	color: white;
+	-webkit-transform: skewX(-30deg) translate(0%, -50%);
+	-moz-transform: skewX(-30deg) translate(0%, -50%);
+	-ms-transform: skewX(-30deg) translate(0%, -50%);
+	-o-transform: skewX(-30deg) translate(0%, -50%);
+	transform: skewX(-30deg) translate(0%, -50%);
+	top: 58%;
+	left: 2%;
+	text-align: left;
+	letter-spacing: 1vw;
+}
+
+.disconnectButton
+{
+	background-color: black;
+	top: 72%;
+	height: 5%;
+	left: 62%;
+}
+
+.disconnectText
+{
+	position: absolute;
+	text-align: center;
+	color: black;
+	left: 50%;
+	width: 90%;
+	-webkit-transform: translate(-50%, 0%);
+	-moz-transform: translate(-50%, 0%);
+	-ms-transform: translate(-50%, 0%);
+	-o-transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%);
+}
+
+#disconnectName
+{
+	top: 26%;
+	font-family:Disolve_Light;
+	font-size: 5vh;
+	letter-spacing: 1vw;
+}
+
+#disconnectHeader
+{
+	top: 32%;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	letter-spacing: .3vw;
+	color: black;
+	width: 90%;
+}
+
+#disconnectMaster
+{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+#disconnectSlave
+{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+
+#disconnectMasterText
+{
+	bottom: 32%;
+	font-family:Source_Sans_Light;
+	font-size: 4vh;
+	letter-spacing: 0vw;
+	line-height: 4vh;
+}
+
+#disconnectSlaveText
+{
+	bottom: 26%;
+	font-family:Disolve_Light;
+	font-size: 4vh;
+	letter-spacing: .5vw;
+	line-height: 5vh;
+}
+/*--------------------------------------------*/
