@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <!--PLANNING SCREEN-->
+    <!--PLANNING SCREEN-->  
 	<div id="planning" class="view">
         <div id="map_switch" class="button map_button">
 			<div class="map_amount">
@@ -27,8 +27,8 @@
 			</div>
 		</div>
 		
-		<div id="planned_actions_area" class="planning_area" onclick="plannedActionButton(0)" style="left: 20%">
-			<div id="planned_action_1" class="button action_button" style="left: 13%">
+		<div id="planned_actions_area" class="planning_area" style="left: 20%">
+			<div id="planned_action_1" class="button action_button" onclick="plannedActionButton(0)"  style="left: 13%">
 				1
 			</div>
 			<div id="planned_action_2" class="button action_button" onclick="plannedActionButton(1)" style="left: 69%">
@@ -37,19 +37,19 @@
         </div>
         <div id="action_button_area" class="planning_area" style="top: 31%">
           
-            <div id="move_down_button" class="button action_button" onclick="setAction(possible_actions.move_down, action_selector)" style="left: 34%">
+            <div id="move_down_button" class="button action_button" onclick="setAction(3, action_selector)" style="left: 34%">
                 
             </div>
-            <div id="move_up_button" class="button action_button" onclick="setAction(possible_actions.move_up, action_selector)" style="left: 2%">
+            <div id="move_up_button" class="button action_button" onclick="setAction(2, action_selector)" style="left: 2%">
                
             </div>
-            <div id="move_left_button" class="button action_button" onclick="setAction(possible_actions.move_left, action_selector)" style="left: 2%">
+            <div id="move_left_button" class="button action_button" onclick="setAction(0, action_selector)" style="left: 2%">
                
             </div>
-            <div id="move_right_button" class="button action_button" onclick="setAction(possible_actions.move_right, action_selector)" style="left: 34%">
+            <div id="move_right_button" class="button action_button" onclick="setAction(1, action_selector)" style="left: 34%">
                 
             </div>
-            <div id="interact_button" class="button action_button" onclick="setAction(possible_actions.interact, action_selector)" style="left: 74%">
+            <div id="interact_button" class="button action_button" onclick="setAction(4, action_selector)" style="left: 74%">
                 
             </div>
         </div>
@@ -185,29 +185,13 @@
         <div id="combat_result_won" class="view">YOU WON</div>
         <div id="combat_result_lost" class="view">YOU LOST</div>
     </div>
-	
-	<div class="preload-img" style="background-image: url(attackbutton_1.png)"></div>
-    <div class="preload-img" style="background-image: url(attackbutton_2.png)"></div>
-    <div class="preload-img" style="background-image: url(attackbutton_3.png)"></div>
     
     <script type="text/javascript">
 
-       //code for splash screen
-            $("#splash").show();
-            setTimeout(function () {
-                $("#splash").fadeOut();
-            }, 2500);
-
-	   var airconsole;
+        var airconsole;
         var vm;
-        var possible_actions_array = ["move_down", "move_up", "move_left", "move_right", "attack"];
-        var possible_actions = {
-            move_down : 0,
-            move_up : 1,
-            move_left : 2,
-            move_right : 3,
-            attack : 4
-        };
+        var possible_actions = ["left_down", "right_down", "left_up", "right_up", "interact "];
+
         var actions = [];
         var action_selector = 0;
 
@@ -250,7 +234,6 @@
                             randomPosition("3", 0);
                             randomPosition("2", 1);
                             randomPosition("1", 2);
-							console.log('randomPosition done');
                             vm.show('combat');
 
                             $("#splash").show();
@@ -280,6 +263,7 @@
         };
 
         function plannedActionButton(selector) {
+            console.log("plannedactionbutton" + selector);
             action_selector = selector;
         }
 
@@ -291,8 +275,6 @@
 		};
 
         function executeTurn() {
-
-            console.log("Action 1: " + possible_actions[actions[0]] + ", index" + actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
             sendMessage(AirConsole.SCREEN, 'turn_action', 'action_1', actions[0], 'action_2', actions[1]);
 
             your_turn = false;
@@ -307,7 +289,6 @@
 
         function randomPosition(id, index) {
             var d = GetElementInsideContainer("start_combat", id);
-			console.log("rand index" + index);
             assignRandom(d, index);
         }
 
@@ -315,15 +296,10 @@
         function assignRandom(d, index) {
             var button_width = (d.offsetWidth / window.innerWidth) * 100;
             var button_height = (d.offsetHeight / window.innerHeight) * 100;
-			var img_id = index + 1;
             var left = getRandomArbitrary(10, 100 - button_width);
             var top = getRandomArbitrary(10, 100 - button_height);
             d.style.left = left + '%';
             d.style.top = top + '%';
-			d.style.backgroundImage = "url('/img/attackbutton_" + img_id + ".png')";
-			
-			console.log("left: " + d.style.left);
-			console.log("top: " + d.style.top);
             if (!checkBoundaries(combat_button_param_arr, left, left + button_width, top, top + button_height)) {
                 assignRandom(d, index);
             }
