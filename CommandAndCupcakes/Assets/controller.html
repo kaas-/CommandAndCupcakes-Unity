@@ -7,117 +7,11 @@
     <script type="text/javascript"
             src="airconsole-view-manager.js"></script>
     
+	<link rel="stylesheet" type="text/css" href="controllerStyle.css">
 </head>
 
 <body onload="setup()">
-
-    <style type="text/css">
-
-        body {
-            background-color    : burlywood;
-            text-align          : center;
-        }
-
-        .view {
-            position    		: absolute;
-            display     		: block;
-			background-size		: 100% 100%;
-            background-position	: center;
-            background-repeat	: no-repeat;
-           	height      		: 100%;
-            width       		: 100%;
-			top					: 0px;
-			left				: 0px;
-			max-height			: 100%;
-			max-width			: 100%;
-        }
-
-        .button {
-            position            : absolute;
-            display             : block;
-            background-color    : rgba(0, 0, 0, 0.05);
-            background-repeat   : no-repeat;
-            top                 : 7%;
-        }
-
-        /*START SCREEN*/    
-        #start_button {
-            padding : 10px, 20px;
-            display : block;
-            width   : 60vw;
-            height  : 10vw;
-        }
-
-        /*PLANNING SCREEN*/
-        .planning_area {
-            position: absolute;
-            width   : 90%;
-            height  : 27%;
-        }
-
-        #planned_actions_area {
-
-            background-color    : aquamarine;
-            top                 : 0%;
-        }
-
-        #action_button_area {
-            background-color    : darkgray;
-            top                 : 33%;
-        }
-
-        #execute_turn_button_area {
-            background-color    : blueviolet;
-            top                 : 67%;
-        }
-
-        .action_button{
-            width           : 7vw;
-            height          : 7vw;
-        }
- 
-        .action_indicator{
-
-        }
-
-        #execute_turn_button{
-            background-image    : url('/img/do_It.png');
-            width               : 50%;
-            height              : 7vw;
-             
-        }
-
-        #move_left_button{
-            background-image    : url('/img/move_left.png');
-        }
-
-        #move_right_button{
-            background-image    : url('/img/move_right.png');
-        }
-
-        #move_up_button{
-            background-image    : url('/img/move_up.png');
-        }
-
-        #move_down_button {
-            background-image    : url('/img/move_down.png');
-        }
-
-        #interact_button{
-            background-image    : url('/img/interact.png');
-        }
-
-        #attack_button {
-            background-image    : url('/img/attack.png');
-        }
-
-        #dig_button{
-            background-image    : url('/img/dig.png');
-        }
-               
-
-    </style>
-    <!--START GAME SCREEN-->
+	<!--START GAME SCREEN-->
     <div id="start" class="view">
         <div id="start_button" class="startbutton">
             Start game!
@@ -125,99 +19,177 @@
     </div>
 
     <!--PLANNING SCREEN-->
-    <div id="planning" class="view">
-        <div id="planned_actions_area" class="planning_area" style="top: 4%">
-			<div id="planned_action_1" class="button action_button" style="left: 9%">
-				ACTION 1
+	<div id="planning" class="view default-view">
+        <div id="map_switch" class="button map_button">
+			<div class="map_amount">
+				<span id="map_current" class="map_text">0</span>
+				<span id="map_max" class="map_text">/ 9</span>
 			</div>
-			<div id="planned_action_2" class="button action_button" style="left: 49%">
-				ACTION 2
+		</div>
+		
+		<div id="planned_actions_area" class="planning_area" style="left: 20%">
+			<div id="planned_action_1" class="button action_button" style="left: 13%">
+				1
+			</div>
+			<div id="planned_action_2" class="button action_button" style="left: 69%">
+				2
 			</div>
         </div>
         <div id="action_button_area" class="planning_area" style="top: 31%">
           
-            <div id="move_down_button" class="button action_button" style="left: 10%">
-                DOWN
+            <div id="move_down_button" class="button action_button" style="left: 34%">
+                
             </div>
-            <div id="move_up_button" class="button action_button" style="left: 18%">
-                UP
+            <div id="move_up_button" class="button action_button" style="left: 2%">
+               
             </div>
-            <div id="move_left_button" class="button action_button" style="left: 26%">
-                LEFT
+            <div id="move_left_button" class="button action_button" style="left: 2%">
+               
             </div>
             <div id="move_right_button" class="button action_button" style="left: 34%">
-                RIGHT
+                
             </div>
-            <div id="attack_button" class="button action_button" style="left: 42%">
-                ATTACK
-            </div>
-            <div id="dig_button" class="button action_button" style="left: 50%">
-                DIG
-            </div>
-            <div id="interact_button" class="button action_button" style="left: 58%">
-                INTERACT
+            
+            <!-- <div id="dig_button" class="button action_button" style="left: 74%"> -->
+                
+            <!-- </div> -->
+            <div id="interact_button" class="button action_button" style="left: 74%">
+                
             </div>
         </div>
         <div id="execute_turn_button_area" class="planning_area">
-            <div id="execute_turn_button" class="button" style="left: 33%">
-                TURN
+            <div id="execute_turn_button" class="button" style="left: 10%">
+                
             </div>
         </div>
         
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-    <div id="waiting" class="view default-view">
-        <div class="planning_area" style="top: 4%">
-			<div class="button action_button" style="left: 9%">
-				ACTION 1
+	<div id="waiting" class="view">
+        <div id="waiting_map_switch" class="button map_button">
+			<div class="map_amount">
+				<span id="map_current_wait" class="map_text">0</span>
+				<span id="map_max_wait" class="map_text">/ 9</span>
 			</div>
-			<div class="button action_button" style="left: 49%">
-				ACTION 2
+		</div>
+		<div id="planned_actions_area_wait" class="planning_area" style="left: 20%">
+			<div id="planned_action_1_wait" class="button action_button" style="left: 13%">
+				1
 			</div>
+			<div id="planned_action_2_wait" class="button action_button" style="left: 69%">
+				2
+			</div>
+			
         </div>
-        <div class="planning_area" style="top: 31%">
+        <div id="action_button_area_wait" class="planning_area" style="top: 31%">
           
-            <div class="button action_button" style="left: 10%">
-                DOWN
+            <div id="move_down_button_wait" class="button action_button" style="left: 34%">
+               
             </div>
-            <div class="button action_button" style="left: 18%">
-                UP
+            <div id="move_up_button_wait" class="button action_button" style="left: 2%">
+              
             </div>
-            <div class="button action_button" style="left: 26%">
-                LEFT
+            <div id="move_left_button_wait" class="button action_button" style="left: 2%">
+                
             </div>
-            <div class="button action_button" style="left: 34%">
-                RIGHT
+            <div id="move_right_button_wait" class="button action_button" style="left: 34%">
+                
             </div>
-            <div class="button action_button" style="left: 42%">
-                ATTACK
-            </div>
-            <div class="button action_button" style="left: 50%">
-                DIG
-            </div>
-            <div class="button action_button" style="left: 58%">
-                INTERACT
+            
+            <!-- <div id="dig_button_wait" class="button action_button" style="left: 74%"> -->
+               
+            <!-- </div> -->
+            <div id="interact_button_wait" class="button action_button" style="left: 74%">
+                
             </div>
         </div>
-        <div class="planning_area">
-            <div class="button" style="left: 33%">
-                TURN
+        <div id="execute_turn_button_area_wait" class="planning_area">
+            <div id="execute_turn_button_wait" class="button" style="left: 10%">
+                
             </div>
+			
         </div>
-	
+		<div id="waiting_image">
+				 WAITING 
+			</div>
+        
     </div>
+	
+	<!-- MAP SCREEN -->
+	<div id="map_screen" class="view" >
+		<div id="map_return" class="button map_button">
+			
+		</div>
+		<div class="map_area">
+			<div id="map_1" class="map_piece" style="left: 21%">
+				
+			</div>
+			<div id="no_map_1" class="map_piece" style="left: 21%">
+				MAP PIECE TOP LEFT
+			</div>
+			<div id="map_2" class="map_piece"	style="left: 40%">
+				
+			</div>
+			<div id="no_map_2" class="map_piece"	style="left: 40%">
+				MAP PIECE TOP MIDDLE
+			</div>
+			<div id="map_3" class="map_piece" style="left: 59%">
+				
+			</div>
+			<div id="no_map_3" class="map_piece" style="left: 59%">
+				MAP PIECE TOP RIGHT
+			</div>
+			<div id="map_4" class="map_piece"	style="left: 21%">
+				
+			</div>
+			<div id="no_map_4" class="map_piece"	style="left: 21%">
+				MAP PIECE MIDDLE LEFT
+			</div>
+			<div id="map_5" class="map_piece"	style="left: 40%">
+			
+			</div>
+			<div id="no_map_5" class="map_piece"	style="left: 40%">
+				MAP PIECE MIDDLE
+			</div>
+			<div id="map_6" class="map_piece"	style="left: 59%">
+				
+			</div>
+			<div id="no_map_6" class="map_piece"	style="left: 59%">
+				MAP PIECE MIDDLE RIGHT
+			</div>
+			<div id="map_7" class="map_piece"	style="left: 21%">
 
-
+			</div>
+			<div id="no_map_7" class="map_piece"	style="left: 21%">
+				MAP PIECE BOTTOM LEFT
+			</div>
+			<div id="map_8" class="map_piece"	style="left: 40%">
+				
+			</div>
+			<div id="no_map_8" class="map_piece"	style="left: 40%">
+				MAP PIECE BOTTOM MIDDLE
+			</div>
+			<div id="map_9" class="map_piece" style="left: 59%">
+				
+			</div>
+			<div id="no_map_9" class="map_piece" style="left: 59%">
+				MAP PIECE BOTTOM RIGHT
+			</div>
+		</div>
+	</div>
     
     <script type="text/javascript">
 
         var airconsole;
         var vm;
 
-        var possible_actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
+        var possible_actions = ["left_down", "right_down", "left_up", "right_up", "interact", "attack", "dig"];
         var actions = [];
 		var action_selector = 0;
+		var your_turn = false;
+		var map_element = document.getElementById("map_current");
+		var map_element_wait = document.getElementById("map_current_wait");
 
         //Start menu buttons
         var start_button = document.getElementById("start_button");
@@ -227,13 +199,19 @@
         var move_down_button = document.getElementById("move_down_button");
         var move_left_button = document.getElementById("move_left_button");
         var move_right_button = document.getElementById("move_right_button");
-        var attack_button = document.getElementById("attack_button");
+        /*var attack_button = document.getElementById("attack_button");*/
         var interact_button = document.getElementById("interact_button");
-        var dig_button = document.getElementById("dig_button");
+        var dig_button = document.getElementById("dig_button"); 
 		
 		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 		
         var execute_turn_button = document.getElementById("execute_turn_button");
+		
+		var planning_map_button = document.getElementById("map_switch");
+		
+		var waiting_map_button = document.getElementById("waiting_map_switch");
+		
+		var map_return = document.getElementById("map_return");
 
 		
 		function setup() {
@@ -264,7 +242,6 @@
 			        }
 					
 			    };
-
 
 			}
 		};
@@ -298,13 +275,13 @@
 			vm.show('waiting');
 		});*/
 		
-		move_left_button.addEventListener('click', function () { setAction(0, action_selector); });
-		move_right_button.addEventListener('click', function () { setAction(1, action_selector); });
-		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
-		move_down_button.addEventListener('click', function () { setAction(3, action_selector); });
-		interact_button.addEventListener('click', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('click', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('click', function () { setAction(6, action_selector); });
+		move_left_button.addEventListener('click', function () { setAction(0, action_selector); if(actions[1]==null){action_selector = 1;} });
+		move_right_button.addEventListener('click', function () { setAction(1, action_selector); if(actions[1]==null){action_selector = 1;} });
+		move_up_button.addEventListener('click', function () { setAction(2, action_selector); if(actions[1]==null){action_selector = 1;} });
+		move_down_button.addEventListener('click', function () { setAction(3, action_selector); if(actions[1]==null){action_selector = 1;} });
+		interact_button.addEventListener('click', function () { setAction(4, action_selector); if(actions[1]==null){action_selector = 1;} });
+		/*attack_button.addEventListener('click', function () { setAction(5, action_selector); });*/
+		dig_button.addEventListener('click', function () { setAction(5/*6*/, action_selector); });
 
 		planned_action_buttons[0].addEventListener('click', function () {
 			action_selector = 0;
@@ -326,6 +303,9 @@
 
 
 			vm.show('waiting');
+			your_turn = false;
+			
+		
 		});
 		
 		function setAction(action, action_selector)
