@@ -32,11 +32,13 @@ class GridMove : MonoBehaviour
     public void Update()
     {
         //Debug.Log("Action iterator: " + actionIterator);
+
         if (actionIterator != 2 && !isMoving)
         {
             Debug.Log("Starting action: " + actions[actionIterator]);
             switch (actions[actionIterator])
             {
+                //TODO: input vectors don't match movement
                 case "move_left":
                     input = new Vector2(1, 0);
                     StartCoroutine(move(transform));

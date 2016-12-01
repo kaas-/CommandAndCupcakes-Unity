@@ -227,6 +227,7 @@
     <Compile Include="Assets\AirConsole\scripts\Settings.cs" />
     <Compile Include="Assets\AirConsole\scripts\WebsocketListener.cs" />
     <Compile Include="Assets\Scripts\AnimationController.cs" />
+    <Compile Include="Assets\Scripts\Combat.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\GridMove.cs" />
     <Compile Include="Assets\Scripts\GridMoveTest.cs" />

@@ -41,7 +41,7 @@
         }
 
         /*START SCREEN*/    
-        #start_button {
+        #next_combat_button {
             padding : 10px, 20px;
             display : block;
             width   : 60vw;
@@ -114,12 +114,34 @@
         #dig_button{
             background-image    : url('/img/dig.png');
         }
+        /*COMBAT SCREEN*/
+        #splash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #ffffff;
+        }
+
+        .b {
+            position: absolute;
+            transition: .5s ease;
+            left: 9px;
+            top: 17px;
+            background-color: white;
+            color: black;
+            display: block;
+            height: 90px;
+            width: 90px;
+            text-align: center;
+        }
                
 
     </style>
     <!--START GAME SCREEN-->
     <div id="start" class="view">
-        <div id="start_button" class="startbutton">
+        <div id="next_combat_button" class="startbutton">
             Start game!
         </div>
     </div>
@@ -127,43 +149,43 @@
     <!--PLANNING SCREEN-->
     <div id="planning" class="view">
         <div id="planned_actions_area" class="planning_area" style="top: 4%">
-			<div id="planned_action_1" class="button action_button" style="left: 9%">
-				ACTION 1
-			</div>
-			<div id="planned_action_2" class="button action_button" style="left: 49%">
-				ACTION 2
-			</div>
+            <div id="planned_action_1" class="button action_button" onclick="plannedActionButton(0)" style="left: 9%">
+                ACTION 1
+            </div>
+            <div id="planned_action_2" class="button action_button" onclick="plannedActionButton(1)" style="left: 49%">
+                ACTION 2
+            </div>
         </div>
         <div id="action_button_area" class="planning_area" style="top: 31%">
-          
-            <div id="move_down_button" class="button action_button" style="left: 10%">
+
+            <div id="move_down_button" class="button action_button" onclick="setAction(0, action_selector)" style="left: 10%">
                 DOWN
             </div>
-            <div id="move_up_button" class="button action_button" style="left: 18%">
+            <div id="move_up_button" class="button action_button" onclick="setAction(1, action_selector)" style="left: 18%">
                 UP
             </div>
-            <div id="move_left_button" class="button action_button" style="left: 26%">
+            <div id="move_left_button" class="button action_button" onclick="setAction(2, action_selector)" style="left: 26%">
                 LEFT
             </div>
-            <div id="move_right_button" class="button action_button" style="left: 34%">
+            <div id="move_right_button" class="button action_button" onclick="setAction(3, action_selector)" style="left: 34%">
                 RIGHT
             </div>
-            <div id="attack_button" class="button action_button" style="left: 42%">
+            <div id="attack_button" class="button action_button" onclick="setAction(4, action_selector)" style="left: 42%">
                 ATTACK
             </div>
-            <div id="dig_button" class="button action_button" style="left: 50%">
+            <div id="dig_button" class="button action_button" onclick="setAction(5, action_selector)" style="left: 50%">
                 DIG
             </div>
-            <div id="interact_button" class="button action_button" style="left: 58%">
+            <div id="interact_button" class="button action_button" onclick="setAction(6, action_selector)" style="left: 58%">
                 INTERACT
             </div>
         </div>
-        <div id="execute_turn_button_area" class="planning_area">
+        <div id="execute_turn_button_area" onclick="executeTurn()" class="planning_area">
             <div id="execute_turn_button" class="button" style="left: 33%">
                 TURN
             </div>
         </div>
-        
+
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
@@ -207,6 +229,19 @@
         </div>
 	
     </div>
+    <!--COMBAT SCREEN-->
+    <div id="combat" class="view">
+        <div id="splash"> READY STEADY GO </div>
+
+        <div id="start_combat">
+            <div id="1" class="b" onclick="press(this.id)">1</div>
+            <div id="2" class="b" onclick="press(this.id)">2</div>
+            <div id="3" class="b" onclick="press(this.id)">3</div>
+        </div>
+
+        <div id="combat_result_won" class="view">YOU WON</div>
+        <div id="combat_result_lost" class="view">YOU LOST</div>
+    </div>
 
 
     
@@ -215,125 +250,226 @@
         var airconsole;
         var vm;
 
-        var possible_actions = ["move_left", "move_right", "move_up", "move_down", "interact", "attack", "dig"];
+        var possible_actions = ["move_down", "move_up", "move_left", "move_right", "attack", "dig", "interact"];
         var actions = [];
-		var action_selector = 0;
+        var action_selector = 0;
 
-        //Start menu buttons
-        var start_button = document.getElementById("start_button");
+        var whole_map = "000000000";
 
-        //Planning phase buttons
-        var move_up_button = document.getElementById("move_up_button");
-        var move_down_button = document.getElementById("move_down_button");
-        var move_left_button = document.getElementById("move_left_button");
-        var move_right_button = document.getElementById("move_right_button");
-        var attack_button = document.getElementById("attack_button");
-        var interact_button = document.getElementById("interact_button");
-        var dig_button = document.getElementById("dig_button");
-		
-		var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
-		
-        var execute_turn_button = document.getElementById("execute_turn_button");
+        var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 
-		
-		function setup() {
-		
-			airconsole = new AirConsole({"orientation": "landscape"});
-		
-			airconsole.onReady = function () {
-				vm = new AirConsoleViewManager(airconsole);
-			}
+        /*COMBAT BUTTONS*/
+        //determines the number of buttons present
+        var num_buttons = 3;
 
-			airconsole.onMessage = function (device_id, data) {
-			    console.log("Received message: " + data);
-			    if (device_id == AirConsole.SCREEN) 
-			    {
+        //the button with this value should be clicked first
+        var next_combat_button = 1;
 
-			        switch (data['action']) {
-			            case 'turn':
-			                vm.show('planning');
-			                break;
-			            case 'map_piece':
-			                var map_no = data['map_no'];
-			                var map_piece = data['map_piece'];
-                            //TODO: apply map piece
-			                break;
-			            case 'combat_loss':
-                            //TODO: send map piece to server
-			                break;
-			        }
-					
-			    };
+        //number of combat_button_parameters for position (left_start, left_end, top_start, top_end)
+        var combat_button_param = 4;
+        /****/
 
+        function setup() {
 
-			}
-		};
+            airconsole = new AirConsole({ "orientation": "landscape" });
 
-        /*move_left_button.addEventListener('touchstart', function () { setAction(0, action_selector); });
-        move_right_button.addEventListener('touchstart', function () { setAction(1, action_selector); }); 
-		move_up_button.addEventListener('touchstart', function () { setAction(2, action_selector); });
-        move_down_button.addEventListener('touchstart', function () { setAction(3, action_selector); });
-        interact_button.addEventListener('touchstart', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('touchstart', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('touchstart', function () { setAction(6, action_selector); });
-        
-        planned_action_buttons[0].addEventListener('touchstart', function () {
-			action_selector = 0;
-		});
-		planned_action_buttons[1].addEventListener('touchstart', function () { 
-			action_selector = 1;
-		});
-        
-        execute_turn_button.addEventListener('touchstart', function () {
+            airconsole.onReady = function () {
+                vm = new AirConsoleViewManager(airconsole);
+                sendMessage(AirConsole.SCREEN, "test_message", "test_name_1", "test_param_1");
+            }
 
-		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = { 
-		        'action_1': actions[0], 
-		        'action_2': actions[1]};
+            airconsole.onMessage = function (device_id, data) {
+                if (device_id == AirConsole.SCREEN)
+                {
+                    switch(data.action)
+                    {
+                        case 'turn':
+                            vm.show('planning');
+                            break;
+                        case 'attack':
+                            randomPosition("3", 0);
+                            randomPosition("2", 1);
+                            randomPosition("1", 2);
+                            vm.show('combat');
 
-		    airconsole.message(AirConsole.SCREEN, message);
+                            $("#splash").show();
+                            setTimeout(function () {
+                                $("#splash").fadeOut();
+                            }, 2500);
 
+                            break;
+                        case 'combat_result_won':
+                            vm.show('combat_result_won');
+                            getOtherMapPiece(data.map);
+                            sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
+                            break;
+                        case 'combat_result_loss':
+                            vm.show('combat_result_lost');
+                            sendMessage(AirConsole.SCREEN, "map_piece_loss", "map", whole_map);
+                            break;
+                        case 'map_piece_found':
+                            var map_piece = data['map_piece'];
+                            console.log('map_piece: ' + map_piece);
+                            whole_map = whole_map.replaceAt(map_piece, '1');
+                            console.log('whole_map: ' + whole_map);
+                            break;
+                    }
+                }
+            }
+        };
 
+        function plannedActionButton(selector) {
+            action_selector = selector;
+        }
 
-			vm.show('waiting');
-		});*/
-		
-		move_left_button.addEventListener('click', function () { setAction(0, action_selector); });
-		move_right_button.addEventListener('click', function () { setAction(1, action_selector); });
-		move_up_button.addEventListener('click', function () { setAction(2, action_selector); });
-		move_down_button.addEventListener('click', function () { setAction(3, action_selector); });
-		interact_button.addEventListener('click', function () { setAction(4, action_selector); });
-		attack_button.addEventListener('click', function () { setAction(5, action_selector); });
-		dig_button.addEventListener('click', function () { setAction(6, action_selector); });
-
-		planned_action_buttons[0].addEventListener('click', function () {
-			action_selector = 0;
-		});
-		planned_action_buttons[1].addEventListener('click', function () { 
-			action_selector = 1;
-		});
-		
-		execute_turn_button.addEventListener('click', function () {
-
-		    console.log("Action 1: " + possible_actions[actions[0]] + ", index"  +  actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
-		    var message = {
-                'action' : 'turn_action',
-		        'action_1': actions[0], 
-		        'action_2': actions[1]};
-
-		    airconsole.message(AirConsole.SCREEN, message);
-
-
-
-			vm.show('waiting');
-		});
-		
-		function setAction(action, action_selector)
+        		function setAction(action, action_selector)
 		{
 		    console.log("Action: " + possible_actions[action] + " Set image to /img/" + possible_actions[action_selector] + ".png");
 			actions[action_selector] = possible_actions[action];
 			planned_action_buttons[action_selector].style.backgroundImage = "url('/img/" + possible_actions[action] + ".png')";
 		};
+
+        function executeTurn() {
+
+            console.log("Action 1: " + possible_actions[actions[0]] + ", index" + actions[0] + " Action 2: " + possible_actions[actions[1]] + " index " + actions[1]);
+            sendMessage(AirConsole.SCREEN, 'turn_action', 'action_1', actions[0], 'action_2', actions[1]);
+
+            vm.show('waiting');
+        }
+
+        //create 2D array to store previous "button" positions in
+        var combat_button_param_arr = new Array(num_buttons);
+        for (var i = 0; i < num_buttons; i++) {
+            combat_button_param_arr[i] = new Array(combat_button_param);
+        }
+
+        function randomPosition(id, index) {
+            var d = GetElementInsideContainer("start_combat", id);
+            assignRandom(d, index);
+        }
+
+        //assings random position to a button
+        function assignRandom(d, index) {
+            var button_width = (d.offsetWidth / window.innerWidth) * 100;
+            var button_height = (d.offsetHeight / window.innerHeight) * 100;
+            var left = getRandomArbitrary(10, 100 - button_width);
+            var top = getRandomArbitrary(10, 100 - button_height);
+            d.style.left = left + '%';
+            d.style.top = top + '%';
+            if (!checkBoundaries(combat_button_param_arr, left, left + button_width, top, top + button_height)) {
+                assignRandom(d, index);
+            }
+            else {
+                combat_button_param_arr[index] = [left, left + button_width, top, top + button_height];
+            }
+        }
+
+        //checks if the "button" overlaps existing "button"
+        function checkBoundaries(arr, fromWidth, toWidth, fromHeight, toHeight) {
+            for (var i = 0; i < arr.length; i++) {
+                //a beatiful if statement ^^
+                if (((arr[i][0] >= fromWidth && arr[i][0] <= toWidth) ||
+                    (arr[i][1] >= fromWidth && arr[i][1] <= toWidth)) &&
+                    ((arr[i][2] >= fromHeight && arr[i][2] <= toHeight) ||
+                    (arr[i][3] >= fromHeight && arr[i][3] <= toHeight))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //executes when the "button" is pressed
+        function press(clicked_id) {
+            eraseButton(clicked_id);
+            //checks if "buttons" are pressed in correct order
+            if (clicked_id == next_combat_button) {
+                if (num_buttons == next_combat_button) {
+                    sendMessage(AirConsole.SCREEN, "attack_response_success");
+                }
+
+                next_combat_button++;
+            }
+            else {
+                sendMessage(AirConsole.SCREEN, "attack_response_failure", "map", whole_map);
+            }
+        }
+
+        function eraseButton(id) {
+            var d = GetElementInsideContainer("start_combat", id);
+            d.style.display = "none";
+        }
+
+        //checks other player map pieces and "steals" one of them
+        function getOtherMapPiece(mapPieces) {
+            
+            //go through other player map pieces
+            for (var i = 0; i < mapPieces.length; i++) {
+                //if other player has a map piece this player does not have, then steal it
+                if (mapPieces[i] == '1' && whole_map[i] == '0') {
+                    whole_map = whole_map.replaceAt(i, '1');
+                    console.log('map piece inserted at ' + i);
+                    console.log('new map: ' + whole_map);
+                    break;
+                }
+            }
+        }
+		
+
+
+		function sendMessage(device, action, param_1_name, param_1, param_2_name, param_2)
+		{
+		    var message = {
+		        'action': action
+		    };
+		    switch (arguments.length) {
+		        case 4:
+		            message = message_param_1(message, param_1_name, param_1);
+		            break;
+		        case 6:
+		            message = message_param_2(message, param_1_name, param_1, param_2_name, param_2);
+		            break;
+		    }
+		    console.log("Sending message to " + AirConsole.SCREEN + " with action " + message.action);
+		    airconsole.message(device, message);
+		}
+
+		function message_param_1(message, param_1_name, param_1)
+		{
+		    message[param_1_name] = param_1;
+		    console.log("message has custom parameter " + message[param_1_name]);
+		    return message;
+		}
+        
+		function message_param_2(message, param_1_name, param_1, param_2_name, param_2)
+		{
+		    message[param_1_name] = param_1;
+		    message[param_2_name] = param_1;
+
+		    console.log("message has custom parameters " + message[param_1_name] + " and " + message[param_2_name]);
+		    return message;
+		}
+
+		// Returns a random number between min (inclusive) and max (exclusive)
+		function getRandomArbitrary(min, max) {
+		    return Math.random() * (max - min) + min;
+		}
+
+		//get the div inside a div
+		function GetElementInsideContainer(containerID, childID) {
+		    var elm = {};
+		    var elms = document.getElementById(containerID).getElementsByTagName("*");
+		    for (var i = 0; i < elms.length; i++) {
+		        if (elms[i].id === childID) {
+		            elm = elms[i];
+		            break;
+		        }
+		    }
+		    return elm;
+		}
+
+		String.prototype.replaceAt = function (index, character) {
+		    return this.substr(0, index) + character + this.substr(index + character.length);
+		}
     </script>
 
 </body>
