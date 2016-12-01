@@ -5,8 +5,12 @@ using System.Linq;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 
 public class GameManager : MonoBehaviour {
+
+    //path to the text file that logs information for evaluation testing
+    string log_path;
 
     [Range(2, 4)][SerializeField] int playerCount = 4;
 
@@ -48,6 +52,13 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+
+        //get current time
+        DateTime localDate = DateTime.Now;
+        //store current time in ceparate string
+        string time = localDate.ToString("yyyyMMdd");
+        //create a path where the logged information will be stored in
+        log_path = @"C:\Users\Margo\Desktop\Log\Log_" + time + ".txt";
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -205,6 +216,7 @@ public class GameManager : MonoBehaviour {
         {
             count++; //increase turn counter
             currentPlayer = turnOrder[count]; //update current player
+            
             //cameraTemp[count] = cameras[currentPlayer];
             /*for (int i = 0; i < 4; i++)
             {
@@ -213,7 +225,7 @@ public class GameManager : MonoBehaviour {
             StartCoroutine("wait");
             print(currentPlayer);
             //Debug.LogWarning(cameras[currentPlayer]);
-
+            SendLogMessageToFile("Turnorder changed, current player is " + currentPlayer);
         }
         else //turn order is depleted
         {
@@ -513,6 +525,16 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
+    //Sends log message to text file
+    void SendLogMessageToFile(string message)
+    {
+        // This text is always added, making the file longer over time
+        // if it is not deleted.
+        using (StreamWriter sw = File.AppendText(log_path))
+        {
+            sw.WriteLine(message);
+        }
+    }
     
 
 }
