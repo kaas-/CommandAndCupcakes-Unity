@@ -30,13 +30,17 @@ public class GameManager : MonoBehaviour {
     //waiting for turn to execute
     private bool isMoving = false;
 
-
+    //used for calculating tiles
     private float plane_length_x;
     private float plane_length_z;
 
+    //width/length of the arena, tile-wise
     private long num_tiles = 5;
+
+    //2d array to manage which tiles have map pieces
     private bool[,] board;
 
+    //for combat code
     private bool first_attack_received;
     private int first_attack_player;
     private int combat_player_1, combat_player_2;
@@ -44,6 +48,7 @@ public class GameManager : MonoBehaviour {
     private int map_no;
     private int map_piece_no;
 
+    //used for various random assignments
     private System.Random rnd;
 
     // Use this for initialization
@@ -54,19 +59,22 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.onConnect += OnConnect;
         AirConsole.instance.onDisconnect += OnDisconnect;
 
-
+        //length and width of arena
         plane_length_x = this.GetComponent<Renderer>().bounds.size.x;
         plane_length_z = this.GetComponent<Renderer>().bounds.size.z;
 
         //Debug.Log("bound.size.x: " + plane_length_x);
         //Debug.Log("bound.size.z: " + plane_length_z);
 
+        //define length and width of board array
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
         RandomiseTiles();
 
         //Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
-        playerObjects = GameObject.FindGameObjectsWithTag("Player"); //Add all players to an array
+
+        //Add all players to an array
+        playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
         currentPlayer = 0;
         turnOrder = new int[] { 0, 1, 2, 4 };
 
@@ -129,6 +137,7 @@ public class GameManager : MonoBehaviour {
         //number of tiles with a map piece/pieces 
         int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
 
+        //find interactable objects on the board
         GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("interactable");
 
         //checks if there is not enough tiles with objects to assign map pieces to
@@ -159,17 +168,21 @@ public class GameManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Determines on which tile the player is
+    /// Determines on which tile a gameobject is. Returns a 2D array.
     /// </summary>
+    /// <param name="g">GameObject we find the position of.</param>
     int[] CalculateTile(GameObject g)
     {
-        //Debug.Log("Calculating tile: " + g);
+        Debug.Log("Calculating tile: " + g);
         float pirate_x = g.transform.position.x;
         float pirate_z = g.transform.position.z;
 
         int[] tiles = new int[2];
+
         tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
         tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
+
+        Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1]);
 
         return tiles;
     }
@@ -181,7 +194,13 @@ public class GameManager : MonoBehaviour {
         return (int)Mathf.Floor((pos / length) * steps);
     }
 
-
+    /// <summary>
+    /// Finds whether a tile has an interactable object
+    /// </summary>
+    /// <param name="tile_x">x-coodinate of tile</param>
+    /// <param name="tile_z">z-coordinate of tile</param>
+    /// <param name="int_objects">All interactable objects to check against</param>
+    /// <returns></returns>
     bool IsObject(int tile_x, int tile_z, GameObject[] int_objects)
     {
         foreach (GameObject inter_obj in int_objects)
@@ -195,7 +214,9 @@ public class GameManager : MonoBehaviour {
         }
         return false;
     }
-
+    /// <summary>
+    /// Switches turn to next player. Update turn order if needed
+    /// </summary>
     private void nextTurn()
     {
         lastPlayer = currentPlayer; //update last player
@@ -233,7 +254,9 @@ public class GameManager : MonoBehaviour {
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
-    //method to scramble the turn order
+    /// <summary>
+    /// Scramble turnorder
+    /// </summary>
     void UpdateOrder()
     {
         System.Random random = new System.Random();
@@ -253,6 +276,7 @@ public class GameManager : MonoBehaviour {
         
     }
 
+    
     IEnumerator wait()
     {
         //cameraTemp[count].enabled = true;
@@ -262,6 +286,11 @@ public class GameManager : MonoBehaviour {
         Debug.LogWarning("wait done");
     }
 
+    /// <summary>
+    /// Send Action to playerobject
+    /// </summary>
+    /// <param name="player">Index of the playerObject array</param>
+    /// <param name="actions">Actions to send</param>
     private void Action(int player, string[] actions)
     {
         //Actions to be executed are sent to the appropriate player object.
@@ -270,8 +299,11 @@ public class GameManager : MonoBehaviour {
         playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
-    //handles messages from controllers, gets called whenever a controller does something
-    //device_id; the controller that did the thing, data; whatever it did
+    /// <summary>
+    /// handles messages from controllers, gets called whenever a controller does something
+    /// </summary>
+    /// <param name="device_id">the controller that did the thing</param>
+    /// <param name="data">whatever it did</param>
     void OnMessage(int device_id, JToken data)
     {
         //data gets logged to console for dev reasons
@@ -286,7 +318,8 @@ public class GameManager : MonoBehaviour {
                 StartGame();
             }
         }
-        else if ((string)data["action"] == "turn_action") //if the game has started, the message will be actions for turns
+        //if the game has started, the message will be actions for turns
+        else if ((string)data["action"] == "turn_action") 
         {
             //Debug.Log("Turn action received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
             //If the controller that sent the message corresponds to active player
@@ -312,35 +345,32 @@ public class GameManager : MonoBehaviour {
                 //wtf how did you do that!?
             }
         }
+        /****COMBAT HANDLING****/
+        //A player successfully pushed the correct buttons and is the first to do so
         else if ((string)data["action"] == "attack_response_success" && !first_attack_received)
         {
             first_attack_received = true;
             first_attack_player = device_id;
 
+            //Send loss message to appropriate player
             if (device_id != combat_player_1)
                 SendAirConsoleMessage(combat_player_1, "combat_result_loss");
             else
                 SendAirConsoleMessage(combat_player_2, "combat_result_loss");
 
         }
+        //A player messed up and is the first to do so. This message includes that player's map
         else if((string)data["action"] == "attack_response_failure" && !first_attack_received)
         {
             first_attack_received = true;
-            var message_winner = new
-            {
-                action = "combat_result_won",
-                map = data["map"]
-            };
-            var message_loser = new
-            {
-                action = "action"
-            };
 
+            //Send win message and map to appropriate player
             if (device_id != combat_player_1)
                 SendAirConsoleMessage(combat_player_1, "combat_result_won", "map", data["map"]);
             else
                 SendAirConsoleMessage(combat_player_2, "combat_result_won", "map", data["map"]);
         }
+        //Response to "combat_result_loss" message. Losing player sends their map
         else if ((string)data["action"] == "map_piece_loss")
         {
             first_attack_received = false;
@@ -348,6 +378,7 @@ public class GameManager : MonoBehaviour {
             SendAirConsoleMessage(first_attack_player, "combat_result_won", "map", data["map"]);
             isMoving = false;
         }
+        //Final response. Resets combat variable and starts the next turn.
         else if ((string)data["action"] == "combat_result_acknowledged")
         {
             first_attack_received = false;
@@ -355,11 +386,14 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Playerobject calls this method when they have finished moving.
+    /// </summary>
     void OnPlayerFinishedMoving()
     {
-        //gets called by the player object - ends the turn
 
-
+        Debug.Log("Player" + currentPlayer + " finished moving");
+        //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
             isMoving = false;
         else
@@ -371,18 +405,33 @@ public class GameManager : MonoBehaviour {
            
     }
 
+    /// <summary>
+    /// Check for combat. Sends combat message to each player.
+    /// </summary>
+    /// <param name="player">playerObjects index of player</param>
+    /// <returns>Whether combat is initiated</returns>
     bool checkAttackAction(int player)
     {
+        //Debug.Log("Checking for combat");
+        
+        //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        for(int i = 0; i < playerCount; i++)
+        //Debug.Log("Current player position: " + currentPlayerPosition);
+
+        //for each player
+        for (int i = 0; i < playerCount; i++)
         {
-            if(currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
+            //Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
+
+            //Compare player positions on grid. If they match, initiate combat.
+            if (currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
             {
 
-
+                Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
                 combat_player_2 = AirConsole.instance.ConvertPlayerNumberToDeviceId(player);
 
+                Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
                 SendAirConsoleMessage(combat_player_2, "attack");
 
@@ -392,12 +441,17 @@ public class GameManager : MonoBehaviour {
         return false;
     }
 
+
+    /// <summary>
+    /// Gets called by playerobject when they interact with a tile. Compares players current position against the board array.
+    /// </summary>
     void OnPlayerInteractWithTile()
     {
         //Debug.Log("Player checking for map piece");
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
         if (HasMapPiece(tile[0], tile[1]))
         {
+            //If the tile has a map piece, send it to the phone.
             SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found", "map_piece", map_piece_no);
             board[tile[0], tile[1]] = false;
             map_piece_no++;
@@ -408,17 +462,22 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    //<summary>
-    //Check whether tile has map piece
-    //</summary>
-    //
+    /// <summary>
+    /// Check whether given tile has a map piece
+    /// </summary>
+    /// <param name="tile_x">x-coordinate of tile</param>
+    /// <param name="tile_z">z-coordinate of tile</param>
+    /// <returns>boolean value of 2D position of tile in board array</returns>
     bool HasMapPiece(int tile_x, int tile_z)
     {
         //check if the player is on the tile that contains a map piece
         return board[tile_x, tile_z];
     }
 
-    //When a device connects to the game
+    /// <summary>
+    /// When a device connects to the game
+    /// </summary>
+    /// <param name="device_id"></param>
     void OnConnect(int device_id)
     {
         //Debug.Log("Device no. " + device_id + " connected");
@@ -430,6 +489,7 @@ public class GameManager : MonoBehaviour {
             {
                 //too many players
             }
+            //Start the game at 4 players
             else if(AirConsole.instance.GetControllerDeviceIds().Count == 4)
             {
                 StartGame();
@@ -451,7 +511,8 @@ public class GameManager : MonoBehaviour {
     {
         //pause
         isPaused = true;
-        Debug.Log("Device no " + device_id + " disconnected");
+
+        //Debug.Log("Device no " + device_id + " disconnected");
     }
 
     //do we need this? probably not. Not sure under what circumstances this would be called.
@@ -475,6 +536,11 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Send generic message to airconsole device
+    /// </summary>
+    /// <param name="device_id"></param>
+    /// <param name="m_action"></param>
     void SendAirConsoleMessage(int device_id, string m_action)
     {
 
@@ -486,6 +552,13 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
+    /// <summary>
+    /// Send generic message to airconsole device with one custom parameter.
+    /// </summary>
+    /// <param name="device_id"></param>
+    /// <param name="m_action"></param>
+    /// <param name="param_name_1">Name of the first custom parameter</param>
+    /// <param name="param_1">Content of the first custom parameter</param>
     void SendAirConsoleMessage(int device_id, string m_action, string param_name_1, object param_1)
     {
 
@@ -499,6 +572,15 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
+    /// <summary>
+    /// Send generic message to airconsole device with two custom parameters
+    /// </summary>
+    /// <param name="device_id"></param>
+    /// <param name="m_action"></param>
+    /// <param name="param_name_1">Name of the first custom parameter</param>
+    /// <param name="param_1">Content of the first custom parameter</param>
+    /// <param name="param_name_2">Name of the second custom parameter</param>
+    /// <param name="param_2">Content of the second custom parameter</param>
     void SendAirConsoleMessage(int device_id, string m_action, string param_name_1, object param_1, string param_name_2, object param_2)
     {
         JProperty action_param = new JProperty("action", m_action);
