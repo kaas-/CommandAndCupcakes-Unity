@@ -13,7 +13,9 @@ public class GameManager : MonoBehaviour {
     static GameObject[] playerObjects = new GameObject[4];
 
     private int currentPlayer;
-
+    public Camera[] cameras = new Camera[5]; //an array with all the cameras in the game, [red, blue, green, yellow, game]
+    private Camera[] cameraTemp = new Camera[5];
+    private float t;
     private int lastPlayer;
     private int count = 0;
     private int[] turnOrder;
@@ -70,6 +72,8 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Start log");
 
+        Array.Copy(cameras, cameraTemp, 4);
+
     }
 
     //<summary
@@ -95,6 +99,18 @@ public class GameManager : MonoBehaviour {
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
+        for (int i = 0; i < 4; i++)
+        {
+            cameraTemp[i].enabled = false;
+        }
+        cameraTemp[0] = cameras[currentPlayer];
+        for (int i = 0; i < 3; i++)
+        {
+            cameraTemp[count].enabled = true;
+        }
+        StartCoroutine("wait");
+        Debug.LogWarning(cameraTemp[currentPlayer]);
+        
 
             Debug.Log("Player count: " + playerCount);
 
@@ -190,14 +206,26 @@ public class GameManager : MonoBehaviour {
         {
             count++; //increase turn counter
             currentPlayer = turnOrder[count]; //update current player
+            cameraTemp[count] = cameras[currentPlayer];
+            for (int i = 0; i < 4; i++)
+            {
+                        cameraTemp[i].enabled = false;
+            }
+            StartCoroutine("wait");
             print(currentPlayer);
+            Debug.LogWarning(cameras[currentPlayer]);
+
         }
         else //turn order is depleted
         {
+            print("Running else in the nextturn");
             UpdateOrder(); //scramble order
             currentPlayer = turnOrder[0]; //update current player
-
-            count = 1; //reset turn counter
+            Debug.LogWarning(currentPlayer);
+            count = 0; //reset turn counter
+            cameraTemp[count] = cameras[currentPlayer];
+            StartCoroutine("wait");
+            Debug.LogWarning(cameraTemp[currentPlayer]);
         }
 
         //send message to controller of next player
@@ -228,6 +256,16 @@ public class GameManager : MonoBehaviour {
             turnOrder[0] = turnOrder[1];
             turnOrder[1] = temp;
         }
+        
+    }
+
+    IEnumerator wait()
+    {
+        cameraTemp[count].enabled = true;
+        Debug.LogWarning("wait started");
+        yield return new WaitForSecondsRealtime(3);
+        cameraTemp[count].enabled = false;
+        Debug.LogWarning("wait done");
     }
 
     private void Action(int player, string[] actions)
@@ -417,6 +455,10 @@ public class GameManager : MonoBehaviour {
         //isMoving == false, means active player is not moving,
         //isWaiting == false, means active player has executed their turn
         //isPaused == false, because we don't want to continue if paused
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            nextTurn();
+        }
         if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
             //nextTurn();
