@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Start log");
 
 
-        //Array.Copy(cameras, cameraTemp, cameras.Length);
+        Array.Copy(cameras, cameraTemp, cameras.Length);
         //StartGame();
     }
 
@@ -124,13 +124,13 @@ public class GameManager : MonoBehaviour {
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
-        /*
-        for (int i = 0; i < cameraTemp.Length; i++)
+        
+        for (int i = 0; i < cameraTemp.Length-1; i++)
         {
             cameraTemp[i].enabled = false;
         }
         cameraTemp[0] = cameras[currentPlayer];
-        cameraTemp[count].enabled = true;*/
+        cameraTemp[count].enabled = true;
         StartCoroutine("wait");
         //Debug.LogWarning(cameraTemp[currentPlayer]);
 
@@ -243,10 +243,10 @@ public class GameManager : MonoBehaviour {
             currentPlayer = turnOrder[count]; //update current player
             
             //cameraTemp[count] = cameras[currentPlayer];
-            /*for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                         cameraTemp[i].enabled = false;
-            }*/
+            }
             StartCoroutine("wait");
             print(currentPlayer);
             //Debug.LogWarning(cameras[currentPlayer]);
@@ -295,10 +295,10 @@ public class GameManager : MonoBehaviour {
     
     IEnumerator wait()
     {
-        //cameraTemp[count].enabled = true;
+        cameraTemp[count].enabled = true;
         Debug.LogWarning("wait started");
         yield return new WaitForSecondsRealtime(3);
-        //cameraTemp[count].enabled = false;
+        cameraTemp[count].enabled = false;
         Debug.LogWarning("wait done");
     }
 
