@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviour {
 
         playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
+        isWaiting = true;
         isStarted = true;
 
         //initialise turn order
@@ -350,8 +351,8 @@ public class GameManager : MonoBehaviour {
                 Action(currentPlayer, actions);
 
                 //so that the game knows the player has executed their turn
-                //isWaiting = false;
-                nextTurn();
+                isMoving = true;
+                isWaiting = false;
                 //Debug.Log("nextturn started");
             }
             else
@@ -398,6 +399,7 @@ public class GameManager : MonoBehaviour {
         {
             first_attack_received = false;
             isMoving = false;
+            Debug.Log("Combat finished, starting new turn");
         }
     }
 
@@ -409,7 +411,9 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
-        if (!checkAttackAction(currentPlayer))
+        bool attackAction = checkAttackAction(currentPlayer);
+        Debug.Log("attackAction: " + attackAction);
+        if (!attackAction)
             isMoving = false;
         else
         {
@@ -431,15 +435,17 @@ public class GameManager : MonoBehaviour {
         
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        Debug.Log("Current player position: " + currentPlayerPosition);
+        Debug.Log("Current player position: " + currentPlayerPosition[0] + ", " + currentPlayerPosition[1]);
 
         //for each player
         for (int i = 0; i < playerCount; i++)
         {
-            Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
+            int[] otherPlayerPosition = CalculateTile(playerObjects[i]);
+            Debug.Log("Other player position: " + otherPlayerPosition[0] + " ," + otherPlayerPosition[1]);
+            Debug.Log("Checking player " + currentPlayer + " against player " + i);
 
             //Compare player positions on grid. If they match, initiate combat.
-            if (currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
+            if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1] && i != player)
             {
 
                 Debug.Log("Combat!");
@@ -546,7 +552,7 @@ public class GameManager : MonoBehaviour {
         //isPaused == false, because we don't want to continue if paused
         if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
-            //nextTurn();
+            nextTurn();
             isWaiting = true;
         }
     }
