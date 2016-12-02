@@ -8,6 +8,7 @@ public class moveAnimation : MonoBehaviour
     int attackhash = Animator.StringToHash("Attack");
     int searchhash = Animator.StringToHash("Search");
     int stophash = Animator.StringToHash("Stopped");
+    float move;
     // Use this for initialization
     void Start()
     {
@@ -17,7 +18,6 @@ public class moveAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float move = Mathf.Abs(Input.GetAxis("Vertical") + Mathf.Abs(Input.GetAxis("Horizontal")));
         anim.SetFloat("Speed", move);
         if (move == 0)
         {
@@ -43,6 +43,18 @@ public class moveAnimation : MonoBehaviour
         {
             anim.SetBool(attackhash, true);
         }
+    }
+
+    void setMove(float move)
+    {
+        this.move = move;
+    }
+
+    void setAllFalse()
+    {
+        anim.SetBool(movehash, false);
+        anim.SetBool(attackhash, false);
+        anim.SetBool(searchhash, false);
     }
 
     //Get message when combat is down to turn attackhash to false. 

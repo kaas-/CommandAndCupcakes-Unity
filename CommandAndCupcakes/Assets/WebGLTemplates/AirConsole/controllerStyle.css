@@ -450,9 +450,9 @@
 			z-index				: 1;
 		}
 		
-		 #splash {
+		 #combat_splash {
 			position			: absolute;
-			text-align			: centre;
+			text-align			: center;
 			top					: 20vmax;
 			font-family			: pirate;
 			font-size			: 15vmax;
