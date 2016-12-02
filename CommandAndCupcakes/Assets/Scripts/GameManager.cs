@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour {
     private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
-    private int map_no;
-    private int map_piece_no;
+   
+    private int map_piece_no = 0;
 
     //used for various random assignments
     private System.Random rnd;
@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviour {
         currentPlayer = 0;
         turnOrder = new int[] { 0, 1, 2, 4 };
 
-        Debug.Log("Start log");
+       // Debug.Log("Start log");
 
 
         //Array.Copy(cameras, cameraTemp, cameras.Length);
@@ -172,7 +172,7 @@ public class GameManager : MonoBehaviour {
             // and iterates only through those tiles that contain objects
             if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
             {
-                //Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
+                Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
                 board[pos_x, pos_z] = true;
                 i++;
             }
@@ -308,8 +308,8 @@ public class GameManager : MonoBehaviour {
     private void Action(int player, string[] actions)
     {
         //Actions to be executed are sent to the appropriate player object.
-        //Debug.Log("Current player: " + currentPlayer);
-        //Debug.Log("Actions: " + actions[0] + ", " + actions[1]);
+        Debug.Log("Current player: " + currentPlayer);
+        Debug.Log("Actions: " + actions[0] + ", " + actions[1]);
         playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
@@ -321,8 +321,8 @@ public class GameManager : MonoBehaviour {
     void OnMessage(int device_id, JToken data)
     {
         //data gets logged to console for dev reasons
-        Debug.Log("Received data: " + data + " from device: " + device_id);
-        Debug.Log("Message type is: " + data["action"]);
+       // Debug.Log("Received data: " + data + " from device: " + device_id);
+        //Debug.Log("Message type is: " + data["action"]);
 
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
@@ -406,7 +406,7 @@ public class GameManager : MonoBehaviour {
     void OnPlayerFinishedMoving()
     {
 
-        Debug.Log("Player" + currentPlayer + " finished moving");
+        //Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
             isMoving = false;
@@ -441,11 +441,11 @@ public class GameManager : MonoBehaviour {
             if (currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
             {
 
-                Debug.Log("Combat!");
+                //Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
                 combat_player_2 = AirConsole.instance.ConvertPlayerNumberToDeviceId(player);
 
-                Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
+               // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
                 SendAirConsoleMessage(combat_player_2, "attack");
 
@@ -461,12 +461,14 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     void OnPlayerInteractWithTile()
     {
-        //Debug.Log("Player checking for map piece");
+        Debug.Log("Player checking for map piece");
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
+        Debug.Log("PLAYER IS ON " + tile[0] + " " + tile[1]);
         if (HasMapPiece(tile[0], tile[1]))
         {
             //If the tile has a map piece, send it to the phone.
             SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found", "map_piece", map_piece_no);
+            Debug.Log("MAP PIECE FOUND AND SENT " + map_piece_no);
             board[tile[0], tile[1]] = false;
             map_piece_no++;
         }

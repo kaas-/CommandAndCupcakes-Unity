@@ -21,10 +21,8 @@
     <!--PLANNING SCREEN-->  
 	<div id="planning" class="view">
         <div id="map_switch" class="button map_button">
-			<div class="map_amount">
-				<span id="map_current" class="map_text">0</span>
-				<span id="map_max" class="map_text">/ 9</span>
-			</div>
+			<span id="map_current" class="map_text">0 </span>
+			<span id="map_max" class="map_text">/ 9</span>
 		</div>
 		
 		<div id="planned_actions_area" class="planning_area" style="left: 20%">
@@ -190,7 +188,7 @@
 
         var airconsole;
         var vm;
-        var possible_actions = ["left_down", "right_down", "left_up", "right_up", "interact "];
+        var possible_actions = ["left_down", "right_down", "left_up", "right_up", "interact"];
 
         var actions = [];
         var action_selector = 0;
@@ -199,6 +197,7 @@
         var map_element_wait = document.getElementById("map_current_wait");
 
         var whole_map = "000000000";
+        var total_map_pieces = 0;
 
         var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 
@@ -214,7 +213,7 @@
         /****/
 
         function setup() {
-
+            
             airconsole = new AirConsole({ "orientation": "landscape" });
 
             airconsole.onReady = function () {
@@ -254,14 +253,28 @@
                             break;
                         case 'map_piece_found':
                             var map_piece = data['map_piece'];
-                            console.log('map_piece: ' + map_piece);
+                            console.log('MAP PIECE: ' + map_piece);
                             whole_map = whole_map.replaceAt(map_piece, '1');
                             console.log('whole_map: ' + whole_map);
+                            //increases the number of map pieces on the screen
+                            increaceCurrentMapPiece();
                             break;
                     }
                 }
             }
+
+            
         };
+
+       
+
+        function increaceCurrentMapPiece() {
+            total_map_pieces++;
+            var value = GetElementInsideContainer("waiting", "map_current_wait");
+            value.textContent = total_map_pieces.toString();
+            var current_value = GetElementInsideContainer("map_switch", "map_current");
+            current_value.textContent = total_map_pieces.toString();
+        }
 
         function plannedActionButton(selector) {
             console.log("plannedactionbutton" + selector);
