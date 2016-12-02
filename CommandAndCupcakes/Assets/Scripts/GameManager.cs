@@ -61,7 +61,6 @@ public class GameManager : MonoBehaviour {
         //get current time
         DateTime localDate = DateTime.Now;
         //store current time in ceparate string
-        //CHANGE ToString LATER
         string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
         log_path = @"C:\Users\Margo\Desktop\Log\Log_" + time + ".txt";
@@ -94,7 +93,7 @@ public class GameManager : MonoBehaviour {
 
 
         //Array.Copy(cameras, cameraTemp, cameras.Length);
-        //StartGame();
+        
     }
 
     //<summary

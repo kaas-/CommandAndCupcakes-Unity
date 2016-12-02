@@ -273,6 +273,12 @@
 		    console.log("Action: " + possible_actions[action] + " Set image to /img/" + possible_actions[action_selector] + ".png");
 			actions[action_selector] = possible_actions[action];
 			planned_action_buttons[action_selector].style.backgroundImage = "url('/img/" + possible_actions[action] + ".png')";
+
+			if (actions[0] != null && actions[1] == null)
+			{
+			    action_selector = 1;
+			    plannedActionButton(action_selector);
+			}
 		};
 
         function executeTurn() {

@@ -35,24 +35,29 @@ class GridMove : MonoBehaviour
 
         if (actionIterator != 2 && !isMoving)
         {
-            Debug.Log("Starting action: " + actions[actionIterator]);
+            Debug.Log("Gridmove: actionIterator: " + actionIterator);
+            Debug.Log("Gridmove: Starting action: " + actions[actionIterator]);
             switch (actions[actionIterator])
             {
                 //TODO: input vectors don't match movement
                 case "left_down":
                     input = new Vector2(0, -1);
+                    transform.localEulerAngles = new Vector3(0, -180, 0);
                     StartCoroutine(move(transform));
                     break;
                 case "right_down":
                     input = new Vector2(1, 0);
+                    transform.localEulerAngles = new Vector3(0, -270, 0);
                     StartCoroutine(move(transform));
                     break;
                 case "left_up":
                     input = new Vector2(-1, 0);
+                    transform.localEulerAngles = new Vector3(0, -90, 0);
                     StartCoroutine(move(transform));
                     break;
                 case "right_up":
                     input = new Vector2(0, 1);
+                    transform.localEulerAngles = new Vector3(0, 0, 0);
                     StartCoroutine(move(transform));
                     break;
                 case "interact":
@@ -63,6 +68,7 @@ class GridMove : MonoBehaviour
                     break;
                 default:
                     input = new Vector2(0, 0);
+                    StartCoroutine(move(transform));
                     break;
             }
 
@@ -91,17 +97,17 @@ class GridMove : MonoBehaviour
              {
                  StartCoroutine(move(transform));
              }
-         } 
+         } */
 
-         //code to control what way the character is facing. 
-         if (Input.GetKeyDown(KeyCode.D))
+        //code to control what way the character is facing. 
+        if (Input.GetKeyDown(KeyCode.D))
          {
-             transform.localEulerAngles = new Vector3(0, 45, 0);     
+             transform.localEulerAngles = new Vector3(0, -90, 0);     
          }
 
          if (Input.GetKeyDown(KeyCode.A))
          {
-             transform.localEulerAngles = new Vector3(0, -45, 0);
+             transform.localEulerAngles = new Vector3(0, -270, 0);
          }
 
          if (Input.GetKeyDown(KeyCode.W))
@@ -111,8 +117,8 @@ class GridMove : MonoBehaviour
 
          if (Input.GetKeyDown(KeyCode.S))
          {
-             transform.localEulerAngles = new Vector3(0, 90, 0);
-         }*/
+             transform.localEulerAngles = new Vector3(0, -180, 0);
+         }
 
     }
 
@@ -121,6 +127,15 @@ class GridMove : MonoBehaviour
         isMoving = true;
         startPosition = transform.position;
         t = 0;
+
+        if (input.x != 0 || input.y != 0)
+        {
+            this.SendMessage("setMove", 1);
+        }
+        else
+        {
+            this.SendMessage("setMove", 0);
+        }
 
         if (gridOrientation == Orientation.Horizontal)
         {
