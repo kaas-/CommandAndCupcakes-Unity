@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour {
         //store current time in ceparate string
         string time = localDate.ToString("yyyyMMdd");
         //create a path where the logged information will be stored in
-        log_path = @"C:\Users\Margo\Desktop\Log\Log_" + time + ".txt";
+        log_path = @".\log\" + time + ".txt";
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -112,14 +112,16 @@ public class GameManager : MonoBehaviour {
 
         //initialise turn order
         turnOrder = new int[playerCount];
-        /*for (int i = 0; i < playerCount; i++)
+        for (int i = 0; i < playerCount; i++)
         {
             turnOrder[i] = i; //fill array with players
         }
+        
+
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
-
+        /*
         for (int i = 0; i < cameraTemp.Length; i++)
         {
             cameraTemp[i].enabled = false;
@@ -128,9 +130,8 @@ public class GameManager : MonoBehaviour {
         cameraTemp[count].enabled = true;
         StartCoroutine("wait");*/
         //Debug.LogWarning(cameraTemp[currentPlayer]);
-        
-        //Debug.Log("Player count: " + playerCount);
 
+        //Debug.Log("Player count: " + playerCount);
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
@@ -428,12 +429,12 @@ public class GameManager : MonoBehaviour {
         
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        //Debug.Log("Current player position: " + currentPlayerPosition);
+        Debug.Log("Current player position: " + currentPlayerPosition);
 
         //for each player
         for (int i = 0; i < playerCount; i++)
         {
-            //Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
+            Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
 
             //Compare player positions on grid. If they match, initiate combat.
             if (currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
@@ -607,7 +608,10 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
-    //Sends log message to text file
+    /// <summary>
+    /// Sends log message to text file
+    /// </summary>
+    /// <param name="message">Message to be logged to file</param>
     void SendLogMessageToFile(string message)
     {
         // This text is always added, making the file longer over time
