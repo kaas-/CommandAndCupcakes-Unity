@@ -61,9 +61,10 @@ public class GameManager : MonoBehaviour {
         //get current time
         DateTime localDate = DateTime.Now;
         //store current time in ceparate string
-        string time = localDate.ToString("yyyyMMdd");
+        //CHANGE ToString LATER
+        string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
-        log_path = @"C:\Users\Margo\Desktop\Log\Log_" + time + ".txt";
+        log_path = @".\log\" + time + ".txt";
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -92,8 +93,8 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Start log");
 
 
-        Array.Copy(cameras, cameraTemp, 6);
-
+        //Array.Copy(cameras, cameraTemp, cameras.Length);
+        //StartGame();
     }
 
     //<summary
@@ -106,6 +107,7 @@ public class GameManager : MonoBehaviour {
         //Debug.Log("Game started");
         //Debug.Log("Player 1: " + playerObjects[0]);
         //Debug.Log("Player 2: " + playerObjects[1]);
+
         playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
@@ -116,21 +118,22 @@ public class GameManager : MonoBehaviour {
         {
             turnOrder[i] = i; //fill array with players
         }
+        
+
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
-
-        for (int i = 0; i < 5; i++)
+        /*
+        for (int i = 0; i < cameraTemp.Length; i++)
         {
             cameraTemp[i].enabled = false;
         }
         cameraTemp[0] = cameras[currentPlayer];
-        cameraTemp[count].enabled = true;
+        cameraTemp[count].enabled = true;*/
         StartCoroutine("wait");
         //Debug.LogWarning(cameraTemp[currentPlayer]);
-        
-        //Debug.Log("Player count: " + playerCount);
 
+        //Debug.Log("Player count: " + playerCount);
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
@@ -184,7 +187,7 @@ public class GameManager : MonoBehaviour {
     /// <param name="g">GameObject we find the position of.</param>
     int[] CalculateTile(GameObject g)
     {
-        Debug.Log("Calculating tile: " + g);
+        //Debug.Log("Calculating tile: " + g);
         float pirate_x = g.transform.position.x;
         float pirate_z = g.transform.position.z;
 
@@ -193,7 +196,7 @@ public class GameManager : MonoBehaviour {
         tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
         tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
 
-        Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1]);
+        //Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1]);
 
         return tiles;
     }
@@ -253,9 +256,9 @@ public class GameManager : MonoBehaviour {
             print("Running else in the nextturn");
             UpdateOrder(); //scramble order
             currentPlayer = turnOrder[0]; //update current player
-            Debug.LogWarning(currentPlayer);
+            //Debug.LogWarning(currentPlayer);
             count = 0; //reset turn counter
-            cameraTemp[count] = cameras[currentPlayer];
+            //cameraTemp[count] = cameras[currentPlayer];
             StartCoroutine("wait");
             //Debug.LogWarning(cameraTemp[currentPlayer]);
         }
@@ -291,10 +294,10 @@ public class GameManager : MonoBehaviour {
     
     IEnumerator wait()
     {
-        cameraTemp[count].enabled = true;
+        //cameraTemp[count].enabled = true;
         Debug.LogWarning("wait started");
         yield return new WaitForSecondsRealtime(3);
-        cameraTemp[count].enabled = false;
+        //cameraTemp[count].enabled = false;
         Debug.LogWarning("wait done");
     }
 
@@ -428,12 +431,12 @@ public class GameManager : MonoBehaviour {
         
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        //Debug.Log("Current player position: " + currentPlayerPosition);
+        Debug.Log("Current player position: " + currentPlayerPosition);
 
         //for each player
         for (int i = 0; i < playerCount; i++)
         {
-            //Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
+            Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
 
             //Compare player positions on grid. If they match, initiate combat.
             if (currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
@@ -607,7 +610,10 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
-    //Sends log message to text file
+    /// <summary>
+    /// Sends log message to text file
+    /// </summary>
+    /// <param name="message">Message to be logged to file</param>
     void SendLogMessageToFile(string message)
     {
         // This text is always added, making the file longer over time
