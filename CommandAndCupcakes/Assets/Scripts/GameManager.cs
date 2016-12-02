@@ -120,8 +120,13 @@ public class GameManager : MonoBehaviour {
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
-        /*
-        for (int i = 0; i < cameraTemp.Length; i++)
+
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(2), "player_color", "color", "green");
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
+        
+        /*for (int i = 0; i < cameraTemp.Length-1; i++)
         {
             cameraTemp[i].enabled = false;
         }
@@ -135,6 +140,7 @@ public class GameManager : MonoBehaviour {
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+
     }
 
     /// <summary>

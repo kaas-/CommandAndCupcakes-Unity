@@ -286,6 +286,9 @@
                             //increases the number of map pieces on the screen
                             increaceCurrentMapPiece();
                             break;
+                        case 'player_color':
+                            document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
+                            
                     }
                 }
             }
