@@ -254,7 +254,7 @@ public class GameManager : MonoBehaviour {
             StartCoroutine("wait");
             print(currentPlayer);
             //Debug.LogWarning(cameras[currentPlayer]);
-            SendLogMessageToFile("Turnorder changed, current player is " + currentPlayer);
+            
         }
         else //turn order is depleted
         {
@@ -268,6 +268,7 @@ public class GameManager : MonoBehaviour {
             //Debug.LogWarning(cameraTemp[currentPlayer]);
         }
 
+        SendLogMessageToFile(0, currentPlayer.ToString());
         //send message to controller of next player
         //Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
 
@@ -404,6 +405,10 @@ public class GameManager : MonoBehaviour {
             first_attack_received = false;
             isMoving = false;
         }
+        else if ((string)data["action"] == "overall_win")
+        {
+            Debug.Log("PLAYER NUMBER " + currentPlayer + "WON");
+        }
     }
 
     /// <summary>
@@ -447,6 +452,8 @@ public class GameManager : MonoBehaviour {
             //Compare player positions on grid. If they match, initiate combat.
             if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1]  && i != player)
             {
+                string combat_log = currentPlayer.ToString() + " " + i.ToString();
+                SendLogMessageToFile(1, combat_log);
 
                 //Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
@@ -622,8 +629,25 @@ public class GameManager : MonoBehaviour {
     }
 
     //Sends log message to text file
-    void SendLogMessageToFile(string message)
+    void SendLogMessageToFile(int ind, string add_message)
     {
+        //get current time
+        DateTime currDate = DateTime.Now;
+        //store current time in ceparate string
+        string time_log = currDate.ToString("hh:mm:ss");
+        string ev;
+        switch (ind){
+            case 0:
+                ev = "turn_changed";
+                break;
+            case 1:
+                ev = "combat_started";
+                break;
+            default:
+                ev = "case_not_specified";
+                break;
+        }
+        string message = time_log + "\t" + ev + "\t" + add_message;
         // This text is always added, making the file longer over time
         // if it is not deleted.
         using (StreamWriter sw = File.AppendText(log_path))
