@@ -260,9 +260,9 @@
                             getOtherMapPiece(data.map);
 
                             //respond to screen
-                            sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
                             setTimeout(function () {
                                 vm.show('waiting');
+                                sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
                             }, 2500);
                             break;
                         case 'combat_result_loss':
