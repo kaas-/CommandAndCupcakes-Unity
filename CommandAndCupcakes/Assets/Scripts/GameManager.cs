@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour {
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
 
-        for (int i = 0; i < cameraTemp.Length; i++)
+        for (int i = 0; i < 6; i++)
         {
             cameraTemp[i].enabled = false;
         }
