@@ -61,7 +61,8 @@ public class GameManager : MonoBehaviour {
         //get current time
         DateTime localDate = DateTime.Now;
         //store current time in ceparate string
-        string time = localDate.ToString("yyyyMMdd");
+        //CHANGE ToString LATER
+        string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
         log_path = @".\log\" + time + ".txt";
 
@@ -93,7 +94,7 @@ public class GameManager : MonoBehaviour {
 
 
         //Array.Copy(cameras, cameraTemp, cameras.Length);
-
+        //StartGame();
     }
 
     //<summary
@@ -106,6 +107,7 @@ public class GameManager : MonoBehaviour {
         //Debug.Log("Game started");
         //Debug.Log("Player 1: " + playerObjects[0]);
         //Debug.Log("Player 2: " + playerObjects[1]);
+
         playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
@@ -127,8 +129,8 @@ public class GameManager : MonoBehaviour {
             cameraTemp[i].enabled = false;
         }
         cameraTemp[0] = cameras[currentPlayer];
-        cameraTemp[count].enabled = true;
-        StartCoroutine("wait");*/
+        cameraTemp[count].enabled = true;*/
+        StartCoroutine("wait");
         //Debug.LogWarning(cameraTemp[currentPlayer]);
 
         //Debug.Log("Player count: " + playerCount);
@@ -185,7 +187,7 @@ public class GameManager : MonoBehaviour {
     /// <param name="g">GameObject we find the position of.</param>
     int[] CalculateTile(GameObject g)
     {
-        Debug.Log("Calculating tile: " + g);
+        //Debug.Log("Calculating tile: " + g);
         float pirate_x = g.transform.position.x;
         float pirate_z = g.transform.position.z;
 
@@ -194,7 +196,7 @@ public class GameManager : MonoBehaviour {
         tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
         tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
 
-        Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1]);
+        //Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1]);
 
         return tiles;
     }
@@ -254,7 +256,7 @@ public class GameManager : MonoBehaviour {
             print("Running else in the nextturn");
             UpdateOrder(); //scramble order
             currentPlayer = turnOrder[0]; //update current player
-            Debug.LogWarning(currentPlayer);
+            //Debug.LogWarning(currentPlayer);
             count = 0; //reset turn counter
             //cameraTemp[count] = cameras[currentPlayer];
             StartCoroutine("wait");
