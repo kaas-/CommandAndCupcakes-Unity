@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour {
         Debug.Log("Start log");
 
 
-        //Array.Copy(cameras, cameraTemp, cameras.Length);
+        Array.Copy(cameras, cameraTemp, 6);
 
     }
 
@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour {
 
         //initialise turn order
         turnOrder = new int[playerCount];
-        /*for (int i = 0; i < playerCount; i++)
+        for (int i = 0; i < playerCount; i++)
         {
             turnOrder[i] = i; //fill array with players
         }
@@ -120,13 +120,13 @@ public class GameManager : MonoBehaviour {
         currentPlayer = turnOrder[0];
 
 
-        for (int i = 0; i < cameraTemp.Length; i++)
+        for (int i = 0; i < 5; i++)
         {
             cameraTemp[i].enabled = false;
         }
         cameraTemp[0] = cameras[currentPlayer];
         cameraTemp[count].enabled = true;
-        StartCoroutine("wait");*/
+        StartCoroutine("wait");
         //Debug.LogWarning(cameraTemp[currentPlayer]);
         
         //Debug.Log("Player count: " + playerCount);
@@ -255,7 +255,7 @@ public class GameManager : MonoBehaviour {
             currentPlayer = turnOrder[0]; //update current player
             Debug.LogWarning(currentPlayer);
             count = 0; //reset turn counter
-            //cameraTemp[count] = cameras[currentPlayer];
+            cameraTemp[count] = cameras[currentPlayer];
             StartCoroutine("wait");
             //Debug.LogWarning(cameraTemp[currentPlayer]);
         }
@@ -291,10 +291,10 @@ public class GameManager : MonoBehaviour {
     
     IEnumerator wait()
     {
-        //cameraTemp[count].enabled = true;
+        cameraTemp[count].enabled = true;
         Debug.LogWarning("wait started");
         yield return new WaitForSecondsRealtime(3);
-        //cameraTemp[count].enabled = false;
+        cameraTemp[count].enabled = false;
         Debug.LogWarning("wait done");
     }
 
