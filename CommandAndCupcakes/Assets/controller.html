@@ -175,9 +175,9 @@
     <div id="combat" class="view">
 
         <div id="start_combat">
-            <div id="1" class="b" onclick="press(this.id)">1</div>
-            <div id="2" class="b" onclick="press(this.id)">2</div>
-            <div id="3" class="b" onclick="press(this.id)">3</div>
+            <div id="1" class="b" onclick="press(this.id)"></div>
+            <div id="2" class="b" onclick="press(this.id)"></div>
+            <div id="3" class="b" onclick="press(this.id)"></div>
         </div>
     </div>
     <!--COMBAT RESULT SCREENS-->
@@ -223,6 +223,8 @@
                 vm = new AirConsoleViewManager(airconsole);
                 sendMessage(AirConsole.SCREEN, "test_message", "test_name_1", "test_param_1");
             }
+
+            //assignRandom("1", 0);
 
             //messages received from screen
             airconsole.onMessage = function (device_id, data) {
@@ -347,14 +349,30 @@
         //assings random position to a button
         function assignRandom(d, index) {
             //for making sure the button doesn't go out of bounds
-            var button_width = (d.offsetWidth / window.innerWidth) * 100;
-            var button_height = (d.offsetHeight / window.innerHeight) * 100;
+            //var button_width = (100 / window.innerWidth) * 100;
+            //var button_height = (100 / window.innerHeight) * 100;
+            var button_width = 20;
+            var button_height = 20;
 
+            console.log("button_width: " + button_width);
+            console.log("window_width: " + window.innerWidth);
             //random position
             var left = getRandomArbitrary(10, 100 - button_width);
             var top = getRandomArbitrary(10, 100 - button_height);
 
-            var imgnum = index + 1;
+            var imgnum;
+
+            switch (index) {
+                case 0:
+                    imgnum = 3;
+                    break;
+                case 1:
+                    imgnum = 2;
+                    break;
+                case 2:
+                    imgnum = 1;
+                    break;
+            }
 
             d.style.left = left + '%';
             d.style.top = top + '%';

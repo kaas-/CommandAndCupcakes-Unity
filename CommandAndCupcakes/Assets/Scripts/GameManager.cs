@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour {
         //store current time in ceparate string
         string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
-        log_path = @"C:\Users\Margo\Desktop\Log\Log_" + time + ".txt";
+        log_path = @".\log\" + time + ".txt";
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -140,6 +140,7 @@ public class GameManager : MonoBehaviour {
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        isWaiting = true;
 
     }
 
@@ -354,8 +355,8 @@ public class GameManager : MonoBehaviour {
                 Action(currentPlayer, actions);
 
                 //so that the game knows the player has executed their turn
-                //isWaiting = false;
-                nextTurn();
+                isWaiting = false;
+                isMoving = true;
                 //Debug.Log("nextturn started");
             }
             else
@@ -441,9 +442,10 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < playerCount; i++)
         {
             //Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
+            int[] otherPlayerPosition = CalculateTile(playerObjects[i]);
 
             //Compare player positions on grid. If they match, initiate combat.
-            if (currentPlayerPosition == CalculateTile(playerObjects[i]) && i != player)
+            if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1]  && i != player)
             {
 
                 //Debug.Log("Combat!");
@@ -550,9 +552,12 @@ public class GameManager : MonoBehaviour {
         //isMoving == false, means active player is not moving,
         //isWaiting == false, means active player has executed their turn
         //isPaused == false, because we don't want to continue if paused
+
+        Debug.Log(isWaiting + ", " + isMoving);
+
         if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
-            //nextTurn();
+            nextTurn();
             isWaiting = true;
         }
     }
