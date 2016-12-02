@@ -284,6 +284,9 @@
                             whole_map = whole_map.replaceAt(map_piece, '1');
                             console.log('whole_map: ' + whole_map);
                             break;
+                        case 'player_color':
+                            document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
+                            
                     }
                 }
             }
