@@ -87,6 +87,12 @@ public class GameManager : MonoBehaviour {
 
         //Add all players to an array
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
+
+        foreach (GameObject playerObject in playerObjects)
+        {
+            playerObject.SendMessage("setBoundary", plane_length_x);
+        }
+
         currentPlayer = 0;
 
        // Debug.Log("Start log");
@@ -421,7 +427,7 @@ public class GameManager : MonoBehaviour {
         //Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
-            isMoving = false;
+            isMoving = false;   
     }
 
     /// <summary>
