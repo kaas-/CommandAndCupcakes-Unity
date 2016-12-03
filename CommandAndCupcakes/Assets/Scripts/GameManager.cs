@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour {
         string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
         log_path = @".\log\" + time + ".txt";
+        Debug.Log("log_path: " + log_path);
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -87,7 +88,6 @@ public class GameManager : MonoBehaviour {
         //Add all players to an array
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
         currentPlayer = 0;
-        turnOrder = new int[] { 0, 1, 2, 4 };
 
        // Debug.Log("Start log");
 
@@ -397,7 +397,6 @@ public class GameManager : MonoBehaviour {
             first_attack_received = false;
 
             SendAirConsoleMessage(first_attack_player, "combat_result_won", "map", data["map"]);
-            isMoving = false;
         }
         //Final response. Resets combat variable and starts the next turn.
         else if ((string)data["action"] == "combat_result_acknowledged")
@@ -423,13 +422,6 @@ public class GameManager : MonoBehaviour {
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
             isMoving = false;
-        else
-        {
-            count = 5;
-            StartCoroutine("wait");
-            count = 0;
-        }
-           
     }
 
     /// <summary>
