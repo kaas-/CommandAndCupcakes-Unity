@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour {
         }
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
-
+        isWaiting = true;
 
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
@@ -147,9 +147,6 @@ public class GameManager : MonoBehaviour {
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
-        SetSplashScreen(currentPlayer, splashType.turn);
-        StartCoroutine("ChangeCamera");
-        isWaiting = true;
 
     }
 

@@ -28,6 +28,7 @@
 			max-height			: 100%;
 			max-width			: 100%;
         }
+		
 
        /*.view {
             position    		: absolute;
@@ -95,7 +96,11 @@
 
       
 		/*PLANNING SCREEN*/
-      
+		#turn_splash {
+			background-size: 100%;
+			background-repeat: no-repeat;
+			position: fixed;
+		}
 		
 		#planned_actions_area {
             

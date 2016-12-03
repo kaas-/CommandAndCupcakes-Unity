@@ -113,7 +113,10 @@
 			</div>
         
     </div>
-	
+	<!--TURN SPLASH SCREEN-->
+    <div id="turn_splash" class="view">
+
+    </div>
 	<!-- MAP SCREEN -->
 	<div id="map_screen" class="view" >
 		<div id="map_return" class="button map_button">
@@ -239,7 +242,11 @@
                         case 'turn':
                             //your turn
                             clearTimeout();
-                            vm.show('planning');
+                            vm.show('turn_splash');
+                            setTimeout(function () {
+                                vm.show('planning');
+                            }, 2500);
+
                             //start timer for the turn
                             your_turn = true;
                             timer();
@@ -300,6 +307,8 @@
                             break;
                         case 'player_color':
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
+                            var splash = document.getElementById("turn_splash");
+                            splash.style.backgroundImage = "url('/img/" + data.color + "turn.png')";
                             
                     }
                 }
