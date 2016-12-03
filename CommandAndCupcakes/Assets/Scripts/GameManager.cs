@@ -401,7 +401,9 @@ public class GameManager : MonoBehaviour {
         //if a player wins the game
         else if ((string)data["action"] == "overall_win")
         {
-            Debug.Log("PLAYER NUMBER " + currentPlayer + " WON");
+            StartCoroutine("ChangeCamera");
+            SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id), splashType.end);
+            Debug.Log("PLAYER NUMBER " + AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) + " WON");
             //TODO needs splash screen
         }
     }
