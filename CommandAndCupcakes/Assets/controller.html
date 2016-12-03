@@ -238,6 +238,7 @@
                     {
                         case 'turn':
                             //your turn
+                            clearTimeout();
                             vm.show('planning');
                             //start timer for the turn
                             your_turn = true;
@@ -272,6 +273,7 @@
                             setTimeout(function () {
                                 vm.show('waiting');
                                 sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
+                                resetButtons();
                             }, 2500);
                             break;
                         case 'combat_result_loss':
@@ -282,6 +284,7 @@
                             sendMessage(AirConsole.SCREEN, "map_piece_loss", "map", whole_map);
                             setTimeout(function () {
                                 vm.show('waiting');
+                                resetButtons();
                             }, 2500);
                             break;
                         case 'map_piece_found':
@@ -315,6 +318,7 @@
         function subtract() {
             seconds--;
             time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+
             if (!your_turn)
                 return;
 
@@ -466,14 +470,23 @@
                 sendMessage(AirConsole.SCREEN, "attack_response_failure", "map", whole_map);
                 vm.show('combat_result_lost');
                 setTimeout(function () {
-                    vm.show('waiting');
-                }, 2500);
+                    vm.show('waiting')
+                }, 3000);
             }
         }
 
         function eraseButton(id) {
             var d = GetElementInsideContainer("start_combat", id);
             d.style.display = "none";
+        }
+
+        function resetButtons() {
+            for (var i = 1; i <= 3; ++i)
+            {
+                var d = GetElementInsideContainer("start_combat", ""+i);
+                d.style.display = "block";
+                next_combat_button = 1;
+            }
         }
 
         //checks other player map pieces and "steals" one of them

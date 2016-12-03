@@ -6,6 +6,7 @@ using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
@@ -17,8 +18,12 @@ public class GameManager : MonoBehaviour {
     static GameObject[] playerObjects = new GameObject[4];
 
     private int currentPlayer;
-    public Camera[] cameras = new Camera[6]; //an array with all the cameras in the game, [red, blue, green, yellow, game, battleStart]
-    private Camera[] cameraTemp = new Camera[6];
+    public Image imageToChange;
+    public Sprite[] players = new Sprite[4];
+    public Sprite[] combat = new Sprite[6];
+    public Sprite[] endGame = new Sprite[4];
+    public Camera mainCamera;
+    public Camera splashCamera;
     private float t;
     private int lastPlayer;
     private int count = 0;
@@ -49,7 +54,12 @@ public class GameManager : MonoBehaviour {
     private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
-   
+    private enum splashType
+    {
+        turn,
+        battle,
+        end
+    };
     private int map_piece_no = 0;
 
     //used for various random assignments
@@ -64,6 +74,7 @@ public class GameManager : MonoBehaviour {
         string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
         log_path = @".\log\" + time + ".txt";
+        Debug.Log("log_path: " + log_path);
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -86,13 +97,18 @@ public class GameManager : MonoBehaviour {
 
         //Add all players to an array
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
+
+        foreach (GameObject playerObject in playerObjects)
+        {
+            playerObject.SendMessage("setBoundary", plane_length_x);
+        }
+
         currentPlayer = 0;
-        turnOrder = new int[] { 0, 1, 2, 4 };
+
+        mainCamera.enabled = true;
+        splashCamera.enabled = false;
 
        // Debug.Log("Start log");
-
-
-        //Array.Copy(cameras, cameraTemp, cameras.Length);
         
     }
 
@@ -126,20 +142,13 @@ public class GameManager : MonoBehaviour {
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(2), "player_color", "color", "green");
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
         
-        /*for (int i = 0; i < cameraTemp.Length-1; i++)
-        {
-            cameraTemp[i].enabled = false;
-        }
-        cameraTemp[0] = cameras[currentPlayer];
-        cameraTemp[count].enabled = true;*/
-        StartCoroutine("wait");
-        //Debug.LogWarning(cameraTemp[currentPlayer]);
-        
         //Debug.Log("Player count: " + playerCount);
 
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        SetSplashScreen(currentPlayer, splashType.turn);
+        StartCoroutine("ChangeCamera");
         isWaiting = true;
 
     }
@@ -245,16 +254,7 @@ public class GameManager : MonoBehaviour {
         {
             count++; //increase turn counter
             currentPlayer = turnOrder[count]; //update current player
-            
-            //cameraTemp[count] = cameras[currentPlayer];
-            /*for (int i = 0; i < 4; i++)
-            {
-                        cameraTemp[i].enabled = false;
-            }*/
-            StartCoroutine("wait");
             print(currentPlayer);
-            //Debug.LogWarning(cameras[currentPlayer]);
-            
         }
         else //turn order is depleted
         {
@@ -263,10 +263,10 @@ public class GameManager : MonoBehaviour {
             currentPlayer = turnOrder[0]; //update current player
             //Debug.LogWarning(currentPlayer);
             count = 0; //reset turn counter
-            //cameraTemp[count] = cameras[currentPlayer];
-            StartCoroutine("wait");
-            //Debug.LogWarning(cameraTemp[currentPlayer]);
         }
+
+        //StartCoroutine("ChangeCamera");
+        //SetSplashScreen(currentPlayer, splashType.turn);
 
         SendLogMessageToFile(0, currentPlayer.ToString());
         //send message to controller of next player
@@ -295,16 +295,6 @@ public class GameManager : MonoBehaviour {
             turnOrder[1] = temp;
         }
         
-    }
-
-    
-    IEnumerator wait()
-    {
-        //cameraTemp[count].enabled = true;
-        Debug.LogWarning("wait started");
-        yield return new WaitForSecondsRealtime(3);
-        //cameraTemp[count].enabled = false;
-        Debug.LogWarning("wait done");
     }
 
     /// <summary>
@@ -387,9 +377,16 @@ public class GameManager : MonoBehaviour {
 
             //Send win message and map to appropriate player
             if (device_id != combat_player_1)
+            {
                 SendAirConsoleMessage(combat_player_1, "combat_result_won", "map", data["map"]);
+                //SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_1), splashType.battle);
+            }
             else
+            {
                 SendAirConsoleMessage(combat_player_2, "combat_result_won", "map", data["map"]);
+                //SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_2), splashType.battle);
+            }
+
         }
         //Response to "combat_result_loss" message. Losing player sends their map
         else if ((string)data["action"] == "map_piece_loss")
@@ -397,7 +394,6 @@ public class GameManager : MonoBehaviour {
             first_attack_received = false;
 
             SendAirConsoleMessage(first_attack_player, "combat_result_won", "map", data["map"]);
-            isMoving = false;
         }
         //Final response. Resets combat variable and starts the next turn.
         else if ((string)data["action"] == "combat_result_acknowledged")
@@ -408,7 +404,9 @@ public class GameManager : MonoBehaviour {
         //if a player wins the game
         else if ((string)data["action"] == "overall_win")
         {
-            Debug.Log("PLAYER NUMBER " + currentPlayer + " WON");
+            StartCoroutine("ChangeCamera");
+            SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id), splashType.end);
+            Debug.Log("PLAYER NUMBER " + AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) + " WON");
             //TODO needs splash screen
         }
     }
@@ -422,14 +420,7 @@ public class GameManager : MonoBehaviour {
         //Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
-            isMoving = false;
-        else
-        {
-            count = 5;
-            StartCoroutine("wait");
-            count = 0;
-        }
-           
+            isMoving = false;   
     }
 
     /// <summary>
@@ -662,6 +653,30 @@ public class GameManager : MonoBehaviour {
             sw.WriteLine(message);
         }
     }
-    
 
+    void SetSplashScreen(int player, splashType splash)
+    {
+        switch (splash)
+        {
+            case splashType.battle:
+                imageToChange.sprite = combat[player];
+                break;
+            case splashType.turn:
+                imageToChange.sprite = players[player];
+                break;
+            case splashType.end:
+                imageToChange.sprite = endGame[player];
+                break;
+        }
+   }
+
+    IEnumerator ChangeCamera()
+    {
+        mainCamera.enabled = !mainCamera.enabled;
+        splashCamera.enabled = !splashCamera.enabled;
+        yield return new WaitForSecondsRealtime(3);
+        mainCamera.enabled = !mainCamera.enabled;
+        splashCamera.enabled = !splashCamera.enabled;
+    }
+    
 }
