@@ -1,67 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class SplashScreen : MonoBehaviour
 {
-    public Camera game;
-    public Camera red;
-    public Camera blue;
-    public Camera green;
-    public Camera yellow;
+    public Sprite[] splashScreens = new Sprite[9];
+    public Image imageToChange;
+    private int i = 0;
+
     void Start()
     {
-        //camera = GetComponent<Camera>();    //Find attached Camera Component
-        //camera2 = GetComponent<Camera>();
-        game.enabled = true;
-        red.enabled = false;
-        blue.enabled = false;
-        green.enabled = false;
-        yellow.enabled = false;
-
+        imageToChange.sprite = splashScreens[i];
     }
+
+
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            blue.enabled = true;
-            red.enabled = false;
-            green.enabled = false;
-            yellow.enabled = false;
-
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            blue.enabled = false;
-            red.enabled = true;
-            green.enabled = false;
-            yellow.enabled = false;
-
-        }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            blue.enabled = false;
-            red.enabled = false;
-            green.enabled = true;
-            yellow.enabled = false;
-
+            i++;
+            imageToChange.sprite = splashScreens[i];
         }
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            blue.enabled = false;
-            red.enabled = false;
-            green.enabled = false;
-            yellow.enabled = true;
-
+            i--;
+            imageToChange.sprite = splashScreens[i];
         }
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            blue.enabled = false;
-            red.enabled = false;
-            green.enabled = false;
-            yellow.enabled = false;
-        }
-
     }
 }
