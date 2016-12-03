@@ -240,6 +240,7 @@
                             //your turn
                             vm.show('planning');
                             //start timer for the turn
+                            your_turn = true;
                             timer();
                             break;
                         case 'attack':
@@ -307,12 +308,16 @@
         /*****TIMER CODE*****/
         //right now a player has 11 seconds to complete the turn
         var time = document.getElementById('time'),
-        seconds = 11,
+        turn_time = 11,
+        seconds = turn_time,
         t;
 
         function subtract() {
             seconds--;
             time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+            if (!your_turn)
+                return;
+
             timer();
             if (seconds == 0) {
                 clearTimeout(t);
@@ -369,7 +374,13 @@
             //send turn actions to screen
             sendMessage(AirConsole.SCREEN, 'turn_action', 'action_1', actions[0], 'action_2', actions[1]);
 
+            actions = [null, null];
+            planned_action_buttons[0].style.backgroundImage = "none";
+            planned_action_buttons[1].style.backgroundImage = "none";
+            action_selector = 0;
+
             your_turn = false;
+            seconds = turn_time;
             vm.show('waiting');
         }
 
