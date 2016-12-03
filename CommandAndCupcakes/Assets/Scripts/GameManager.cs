@@ -250,8 +250,6 @@ public class GameManager : MonoBehaviour {
             currentPlayer = turnOrder[count]; //update current player
             StartCoroutine("wait");
             print(currentPlayer);
-            StartCoroutine("ChangeCamera");
-            SetSplashScreen(currentPlayer, splashType.turn);
         }
         else //turn order is depleted
         {
@@ -263,6 +261,8 @@ public class GameManager : MonoBehaviour {
             StartCoroutine("wait");
         }
 
+        StartCoroutine("ChangeCamera");
+        SetSplashScreen(currentPlayer, splashType.turn);
         SendLogMessageToFile(0, currentPlayer.ToString());
         //send message to controller of next player
         //Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
@@ -374,11 +374,13 @@ public class GameManager : MonoBehaviour {
             if (device_id != combat_player_1)
             {
                 SendAirConsoleMessage(combat_player_1, "combat_result_won", "map", data["map"]);
+                StartCoroutine("ChangeCamera");
                 SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_1), splashType.battle);
             }
             else
             {
                 SendAirConsoleMessage(combat_player_2, "combat_result_won", "map", data["map"]);
+                StartCoroutine("ChangeCamera");
                 SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_2), splashType.battle);
             }
 
@@ -448,6 +450,9 @@ public class GameManager : MonoBehaviour {
                // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
                 SendAirConsoleMessage(combat_player_2, "attack");
+
+                StartCoroutine("ChangeCamera");
+                SetSplashScreen(5, splashType.battle);
 
                 return true;
             }
