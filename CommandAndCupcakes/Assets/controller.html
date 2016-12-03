@@ -29,7 +29,7 @@
 		
 		<div id="planned_actions_area" class="planning_area" style="left: 20%">
             
-            <div id="time" class="button action_button" style="left: 107%">11</div>
+            <div id="time" class="button action_button" style="left: 107%">TIME&#13;&#10;LEFT&#13;&#10;11</div>
 
 			<div id="planned_action_1" class="button action_button" onclick="plannedActionButton(0)"  style="left: 13%">
 				1
@@ -207,7 +207,7 @@
         var map_element_wait = document.getElementById("map_current_wait");
         var whole_map = "000000000";
         var total_map_pieces = 0;
-        var all_map_pieces = 1;
+        var all_map_pieces = 9;
 
         /*COMBAT BUTTONS*/
         //determines the number of buttons present
@@ -239,6 +239,7 @@
                         case 'turn':
                             //your turn
                             vm.show('planning');
+                            //start timer for the turn
                             timer();
                             break;
                         case 'attack':
@@ -303,19 +304,20 @@
             
         };
 
-        //timer code
+        /*****TIMER CODE*****/
+        //right now a player has 11 seconds to complete the turn
         var time = document.getElementById('time'),
         seconds = 11,
         t;
 
         function subtract() {
             seconds--;
-            time.textContent = (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+            time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
             timer();
             if (seconds == 0) {
                 clearTimeout(t);
                 seconds = 11;
-                time.textContent = (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+                time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
                 executeTurn();
             }
         }
@@ -324,7 +326,7 @@
             t = setTimeout(subtract, 1000);
         }
         
-        //end of timer code
+        /*****END OF TIMER CODE*****/
 
         function increaceCurrentMapPiece() {
             total_map_pieces++;

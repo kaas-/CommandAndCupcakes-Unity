@@ -405,9 +405,11 @@ public class GameManager : MonoBehaviour {
             first_attack_received = false;
             isMoving = false;
         }
+        //if a player wins the game
         else if ((string)data["action"] == "overall_win")
         {
-            Debug.Log("PLAYER NUMBER " + currentPlayer + "WON");
+            Debug.Log("PLAYER NUMBER " + currentPlayer + " WON");
+            //TODO needs splash screen
         }
     }
 
@@ -560,7 +562,7 @@ public class GameManager : MonoBehaviour {
         //isWaiting == false, means active player has executed their turn
         //isPaused == false, because we don't want to continue if paused
 
-        Debug.Log(isWaiting + ", " + isMoving);
+       // Debug.Log(isWaiting + ", " + isMoving);
 
         if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
@@ -628,7 +630,12 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
-    //Sends log message to text file
+   
+    /// <summary>
+    /// Sends log message to text file
+    /// </summary>
+    /// <param name="ind">determines what message to send, either turn_changed, or combat_started</param>
+    /// <param name="add_message">if turnorder changed, then insert current player index, if combat started, then write who participates in it</param>
     void SendLogMessageToFile(int ind, string add_message)
     {
         //get current time

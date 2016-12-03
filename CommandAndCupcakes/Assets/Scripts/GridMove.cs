@@ -128,6 +128,7 @@ class GridMove : MonoBehaviour
         startPosition = transform.position;
         t = 0;
 
+        /*
         if (input.x != 0 || input.y != 0)
         {
             this.SendMessage("setMove", 1);
@@ -136,6 +137,7 @@ class GridMove : MonoBehaviour
         {
             this.SendMessage("setMove", 0);
         }
+        */
 
         if (gridOrientation == Orientation.Horizontal)
         {
