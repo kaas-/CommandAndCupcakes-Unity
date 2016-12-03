@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour {
     private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
-    private int map_no;
-    private int map_piece_no;
+   
+    private int map_piece_no = 0;
 
     //used for various random assignments
     private System.Random rnd;
@@ -61,7 +61,6 @@ public class GameManager : MonoBehaviour {
         //get current time
         DateTime localDate = DateTime.Now;
         //store current time in ceparate string
-        //CHANGE ToString LATER
         string time = localDate.ToString("dd.hh.mm");
         //create a path where the logged information will be stored in
         log_path = @".\log\" + time + ".txt";
@@ -90,11 +89,11 @@ public class GameManager : MonoBehaviour {
         currentPlayer = 0;
         turnOrder = new int[] { 0, 1, 2, 4 };
 
-        Debug.Log("Start log");
+       // Debug.Log("Start log");
 
 
-        Array.Copy(cameras, cameraTemp, cameras.Length);
-        //StartGame();
+        //Array.Copy(cameras, cameraTemp, cameras.Length);
+        
     }
 
     //<summary
@@ -110,7 +109,6 @@ public class GameManager : MonoBehaviour {
 
         playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
-        isWaiting = true;
         isStarted = true;
 
         //initialise turn order
@@ -119,10 +117,9 @@ public class GameManager : MonoBehaviour {
         {
             turnOrder[i] = i; //fill array with players
         }
-        
-
         UpdateOrder(); //scramble order
         currentPlayer = turnOrder[0];
+
 
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
@@ -137,11 +134,13 @@ public class GameManager : MonoBehaviour {
         cameraTemp[count].enabled = true;*/
         StartCoroutine("wait");
         //Debug.LogWarning(cameraTemp[currentPlayer]);
-
+        
         //Debug.Log("Player count: " + playerCount);
+
 
         //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        isWaiting = true;
 
     }
 
@@ -179,7 +178,7 @@ public class GameManager : MonoBehaviour {
             // and iterates only through those tiles that contain objects
             if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
             {
-                //Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
+                Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
                 board[pos_x, pos_z] = true;
                 i++;
             }
@@ -251,11 +250,11 @@ public class GameManager : MonoBehaviour {
             /*for (int i = 0; i < 4; i++)
             {
                         cameraTemp[i].enabled = false;
-            }
-            StartCoroutine("wait");*/
+            }*/
+            StartCoroutine("wait");
             print(currentPlayer);
             //Debug.LogWarning(cameras[currentPlayer]);
-            SendLogMessageToFile("Turnorder changed, current player is " + currentPlayer);
+            
         }
         else //turn order is depleted
         {
@@ -269,6 +268,7 @@ public class GameManager : MonoBehaviour {
             //Debug.LogWarning(cameraTemp[currentPlayer]);
         }
 
+        SendLogMessageToFile(0, currentPlayer.ToString());
         //send message to controller of next player
         //Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
 
@@ -315,8 +315,8 @@ public class GameManager : MonoBehaviour {
     private void Action(int player, string[] actions)
     {
         //Actions to be executed are sent to the appropriate player object.
-        //Debug.Log("Current player: " + currentPlayer);
-        //Debug.Log("Actions: " + actions[0] + ", " + actions[1]);
+        Debug.Log("Current player: " + currentPlayer);
+        Debug.Log("Actions: " + actions[0] + ", " + actions[1]);
         playerObjects[currentPlayer].SendMessage("Action", actions);
     }
 
@@ -328,8 +328,8 @@ public class GameManager : MonoBehaviour {
     void OnMessage(int device_id, JToken data)
     {
         //data gets logged to console for dev reasons
-        Debug.Log("Received data: " + data + " from device: " + device_id);
-        Debug.Log("Message type is: " + data["action"]);
+       // Debug.Log("Received data: " + data + " from device: " + device_id);
+        //Debug.Log("Message type is: " + data["action"]);
 
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
@@ -356,8 +356,8 @@ public class GameManager : MonoBehaviour {
                 Action(currentPlayer, actions);
 
                 //so that the game knows the player has executed their turn
-                isMoving = true;
                 isWaiting = false;
+                isMoving = true;
                 //Debug.Log("nextturn started");
             }
             else
@@ -404,7 +404,12 @@ public class GameManager : MonoBehaviour {
         {
             first_attack_received = false;
             isMoving = false;
-            Debug.Log("Combat finished, starting new turn");
+        }
+        //if a player wins the game
+        else if ((string)data["action"] == "overall_win")
+        {
+            Debug.Log("PLAYER NUMBER " + currentPlayer + " WON");
+            //TODO needs splash screen
         }
     }
 
@@ -414,11 +419,9 @@ public class GameManager : MonoBehaviour {
     void OnPlayerFinishedMoving()
     {
 
-        Debug.Log("Player" + currentPlayer + " finished moving");
+        //Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
-        bool attackAction = checkAttackAction(currentPlayer);
-        Debug.Log("attackAction: " + attackAction);
-        if (!attackAction)
+        if (!checkAttackAction(currentPlayer))
             isMoving = false;
         else
         {
@@ -440,24 +443,25 @@ public class GameManager : MonoBehaviour {
         
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        Debug.Log("Current player position: " + currentPlayerPosition[0] + ", " + currentPlayerPosition[1]);
+        //Debug.Log("Current player position: " + currentPlayerPosition);
 
         //for each player
         for (int i = 0; i < playerCount; i++)
         {
+            //Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
             int[] otherPlayerPosition = CalculateTile(playerObjects[i]);
-            Debug.Log("Other player position: " + otherPlayerPosition[0] + " ," + otherPlayerPosition[1]);
-            Debug.Log("Checking player " + currentPlayer + " against player " + i);
 
             //Compare player positions on grid. If they match, initiate combat.
-            if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1] && i != player)
+            if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1]  && i != player)
             {
+                string combat_log = currentPlayer.ToString() + " " + i.ToString();
+                SendLogMessageToFile(1, combat_log);
 
-                Debug.Log("Combat!");
+                //Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
                 combat_player_2 = AirConsole.instance.ConvertPlayerNumberToDeviceId(player);
 
-                Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
+               // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
                 SendAirConsoleMessage(combat_player_2, "attack");
 
@@ -473,12 +477,14 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     void OnPlayerInteractWithTile()
     {
-        //Debug.Log("Player checking for map piece");
+        Debug.Log("Player checking for map piece");
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
+        Debug.Log("PLAYER IS ON " + tile[0] + " " + tile[1]);
         if (HasMapPiece(tile[0], tile[1]))
         {
             //If the tile has a map piece, send it to the phone.
             SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found", "map_piece", map_piece_no);
+            Debug.Log("MAP PIECE FOUND AND SENT " + map_piece_no);
             board[tile[0], tile[1]] = false;
             map_piece_no++;
         }
@@ -555,6 +561,9 @@ public class GameManager : MonoBehaviour {
         //isMoving == false, means active player is not moving,
         //isWaiting == false, means active player has executed their turn
         //isPaused == false, because we don't want to continue if paused
+
+       // Debug.Log(isWaiting + ", " + isMoving);
+
         if (!isMoving && !isWaiting && !isPaused && isStarted)
         {
             nextTurn();
@@ -621,12 +630,31 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
+   
     /// <summary>
     /// Sends log message to text file
     /// </summary>
-    /// <param name="message">Message to be logged to file</param>
-    void SendLogMessageToFile(string message)
+    /// <param name="ind">determines what message to send, either turn_changed, or combat_started</param>
+    /// <param name="add_message">if turnorder changed, then insert current player index, if combat started, then write who participates in it</param>
+    void SendLogMessageToFile(int ind, string add_message)
     {
+        //get current time
+        DateTime currDate = DateTime.Now;
+        //store current time in ceparate string
+        string time_log = currDate.ToString("hh:mm:ss");
+        string ev;
+        switch (ind){
+            case 0:
+                ev = "turn_changed";
+                break;
+            case 1:
+                ev = "combat_started";
+                break;
+            default:
+                ev = "case_not_specified";
+                break;
+        }
+        string message = time_log + "\t" + ev + "\t" + add_message;
         // This text is always added, making the file longer over time
         // if it is not deleted.
         using (StreamWriter sw = File.AppendText(log_path))
