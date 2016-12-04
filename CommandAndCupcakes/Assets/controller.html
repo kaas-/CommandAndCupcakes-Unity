@@ -239,6 +239,7 @@
                         case 'turn':
                             //your turn
                             clearTimeout();
+                            navigator.vibrate(200);
                             vm.show('planning');
                             //start timer for the turn
                             your_turn = true;
@@ -247,7 +248,7 @@
                         case 'attack':
                             //initiate combat
                             console.log("attack message received");
-
+                            navigator.vibrate(200);
                             //place random buttons
                             randomPosition("3", 0);
                             randomPosition("2", 1);
