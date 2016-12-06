@@ -366,10 +366,18 @@ public class GameManager : MonoBehaviour {
 
             //Send loss message to appropriate player
             if (device_id != combat_player_1)
+            {
+                SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_2), splashType.battle);
+                StartCoroutine("ChangeCamera");
                 SendAirConsoleMessage(combat_player_1, "combat_result_loss");
+            }
             else
+            {
                 SendAirConsoleMessage(combat_player_2, "combat_result_loss");
+                SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_1), splashType.battle);
+                StartCoroutine("ChangeCamera");
 
+            }
         }
         //A player messed up and is the first to do so. This message includes that player's map
         else if((string)data["action"] == "attack_response_failure" && !first_attack_received)
