@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
     private int currentPlayer;
     public Image imageToChange;
     public Sprite[] players = new Sprite[4];
-    public Sprite[] combat = new Sprite[6];
+    public Sprite[] combat = new Sprite[5];
     public Sprite[] endGame = new Sprite[4];
     public Camera mainCamera;
     public Camera splashCamera;
@@ -380,15 +380,15 @@ public class GameManager : MonoBehaviour {
             if (device_id != combat_player_1)
             {
                 SendAirConsoleMessage(combat_player_1, "combat_result_won", "map", data["map"]);
-                StartCoroutine("ChangeCamera");
                 SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_1), splashType.battle);
+                StartCoroutine("ChangeCamera");
 
             }
             else
             {
                 SendAirConsoleMessage(combat_player_2, "combat_result_won", "map", data["map"]);
-                StartCoroutine("ChangeCamera");
                 SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_2), splashType.battle);
+                StartCoroutine("ChangeCamera");
             }
 
         }
@@ -461,7 +461,7 @@ public class GameManager : MonoBehaviour {
                 SendAirConsoleMessage(combat_player_2, "attack");
 
                 StartCoroutine("ChangeCamera");
-                SetSplashScreen(5, splashType.battle);
+                SetSplashScreen(4, splashType.battle);
 
                 return true;
             }
