@@ -157,10 +157,11 @@ public class GameManager : MonoBehaviour {
     {
         int i = 0;
         //defines what percent of tiles contains a map piece
-        float percentage = 0.25f;
+        //float percentage = 0.25f;
 
         //number of tiles with a map piece/pieces 
-        int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
+        //int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
+        int true_pos = 9;
 
         //find interactable objects on the board
         GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("interactable");
@@ -401,7 +402,9 @@ public class GameManager : MonoBehaviour {
         //if a player wins the game
         else if ((string)data["action"] == "overall_win")
         {
-            Debug.Log("PLAYER NUMBER " + currentPlayer + " WON");
+            StartCoroutine("ChangeCamera");
+            SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id), splashType.end);
+            Debug.Log("PLAYER NUMBER " + AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) + " WON");
             //TODO needs splash screen
         }
     }
