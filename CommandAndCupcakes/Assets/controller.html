@@ -254,7 +254,8 @@
                         case 'attack':
                             //initiate combat
                             console.log("attack message received");
-
+							
+							resetButtons();
                             //place random buttons
                             randomPosition("3", 0);
                             randomPosition("2", 1);
@@ -280,7 +281,6 @@
                             setTimeout(function () {
                                 vm.show('waiting');
                                 sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
-                                resetButtons();
                             }, 2500);
                             break;
                         case 'combat_result_loss':
@@ -291,7 +291,6 @@
                             sendMessage(AirConsole.SCREEN, "map_piece_loss", "map", whole_map);
                             setTimeout(function () {
                                 vm.show('waiting');
-                                resetButtons();
                             }, 2500);
                             break;
                         case 'map_piece_found':
