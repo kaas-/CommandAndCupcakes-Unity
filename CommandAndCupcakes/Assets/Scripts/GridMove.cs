@@ -24,6 +24,8 @@ class GridMove : MonoBehaviour
     private int actionIterator = 2;
     private string[] actions;
 
+    public int boundary;
+
     public void Start()
     {
         gameManager = GameObject.FindGameObjectWithTag("GameController");
@@ -159,6 +161,9 @@ class GridMove : MonoBehaviour
             factor = 1f;
         }
 
+        if (endPosition.x < 0 || endPosition.x > boundary || endPosition.z < 0 || endPosition.z > boundary)
+            endPosition = startPosition;
+
         while (t < 1f)
         {
             t += Time.deltaTime * (moveSpeed / gridSize) * factor;
@@ -184,37 +189,9 @@ class GridMove : MonoBehaviour
         this.actions = actions;
     }
 
-    public void OnTriggerStay (Collider other) //Runs code as long as the object is touching the trigger
+    void setBoundary (int boundary)
     {
-        if (other.gameObject.CompareTag("interactable") && Input.GetKeyDown(KeyCode.E)) //checks if the game object being touched is tagged "interactable" and if the E key is pressed down
-        { //checks the object that is hit what the objects tag is. if it in this case is untagged it decreasse the speed by 5
-            gameObject.tag = "test";
-        }
-    }
-    
-    public void OnTriggerExit (Collider other) //Runs the code when the colider exits.
-    {//Checks if the game object which is being touched is tagged ""
-
-        if (other.gameObject.CompareTag("sea")) 
-        {
-            endPosition = startPosition;
-        }
-        if (other.gameObject.CompareTag("interactable"))
-        { //checks the object that is hit what the objects tag is.
-            gameObject.tag = "Untagged";
-        }
-        if (other.gameObject.CompareTag("Player2"))
-        {
-            gameObject.tag = "Untagged";
-        }
+        this.boundary = boundary;
     }
 
-    public void OnTriggerEnter (Collider other) //Runs code when the colider enters.
-    {
-
-        if (other.gameObject.CompareTag("Player2"))
-        {
-            gameObject.tag = "battle";
-        }
-    }
 }

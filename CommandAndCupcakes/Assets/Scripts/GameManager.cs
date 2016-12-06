@@ -97,6 +97,12 @@ public class GameManager : MonoBehaviour {
 
         //Add all players to an array
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
+
+        foreach (GameObject playerObject in playerObjects)
+        {
+            playerObject.SendMessage("setBoundary", plane_length_x);
+        }
+
         currentPlayer = 0;
 
         mainCamera.enabled = true;
@@ -154,10 +160,11 @@ public class GameManager : MonoBehaviour {
     {
         int i = 0;
         //defines what percent of tiles contains a map piece
-        float percentage = 0.25f;
+        //float percentage = 0.25f;
 
         //number of tiles with a map piece/pieces 
-        int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
+        //int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
+        int true_pos = 9;
 
         //find interactable objects on the board
         GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("interactable");
@@ -248,7 +255,6 @@ public class GameManager : MonoBehaviour {
         {
             count++; //increase turn counter
             currentPlayer = turnOrder[count]; //update current player
-            StartCoroutine("wait");
             print(currentPlayer);
         }
         else //turn order is depleted
@@ -258,11 +264,11 @@ public class GameManager : MonoBehaviour {
             currentPlayer = turnOrder[0]; //update current player
             //Debug.LogWarning(currentPlayer);
             count = 0; //reset turn counter
-            StartCoroutine("wait");
         }
 
         StartCoroutine("ChangeCamera");
         SetSplashScreen(currentPlayer, splashType.turn);
+
         SendLogMessageToFile(0, currentPlayer.ToString());
         //send message to controller of next player
         //Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
@@ -376,6 +382,7 @@ public class GameManager : MonoBehaviour {
                 SendAirConsoleMessage(combat_player_1, "combat_result_won", "map", data["map"]);
                 StartCoroutine("ChangeCamera");
                 SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_1), splashType.battle);
+
             }
             else
             {
@@ -417,7 +424,7 @@ public class GameManager : MonoBehaviour {
         //Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
-            isMoving = false;
+            isMoving = false;   
     }
 
     /// <summary>

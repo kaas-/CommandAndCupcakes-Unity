@@ -378,8 +378,13 @@
             //send turn actions to screen
             sendMessage(AirConsole.SCREEN, 'turn_action', 'action_1', actions[0], 'action_2', actions[1]);
 
-            seconds = turn_time;
+            actions = [null, null];
+            planned_action_buttons[0].style.backgroundImage = "none";
+            planned_action_buttons[1].style.backgroundImage = "none";
+            action_selector = 0;
+
             your_turn = false;
+            seconds = turn_time;
             vm.show('waiting');
         }
 

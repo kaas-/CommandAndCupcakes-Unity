@@ -21,13 +21,16 @@
     <!--PLANNING SCREEN-->  
 	<div id="planning" class="view">
         <div id="map_switch" class="button map_button">
-			<div class="map_amount">
-				<span id="map_current" class="map_text">0</span>
-				<span id="map_max" class="map_text">/ 9</span>
-			</div>
+			<span id="map_current" class="map_text">0 </span>
+			<span id="map_max" class="map_text">/ 9</span>
 		</div>
+
+        
 		
 		<div id="planned_actions_area" class="planning_area" style="left: 20%">
+            
+            <div id="time" class="button action_button" style="left: 107%">TIME&#13;&#10;LEFT&#13;&#10;11</div>
+
 			<div id="planned_action_1" class="button action_button" onclick="plannedActionButton(0)"  style="left: 13%">
 				1
 			</div>
@@ -177,9 +180,9 @@
     <div id="combat" class="view">
 
         <div id="start_combat">
-            <div id="1" class="b" onclick="press(this.id)">1</div>
-            <div id="2" class="b" onclick="press(this.id)">2</div>
-            <div id="3" class="b" onclick="press(this.id)">3</div>
+            <div id="1" class="b" onclick="press(this.id)"></div>
+            <div id="2" class="b" onclick="press(this.id)"></div>
+            <div id="3" class="b" onclick="press(this.id)"></div>
         </div>
     </div>
     <!--COMBAT RESULT SCREENS-->
@@ -192,8 +195,9 @@
         var airconsole;
         var vm;
 
+        var possible_actions = ["left_down", "right_down", "left_up", "right_up", "interact"];
+
         //for handling actions
-        var possible_actions = ["left_down", "right_down", "left_up", "right_up", "interact "];
         var actions = [];
         var action_selector = 0;
         var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
@@ -202,6 +206,8 @@
         var map_element = document.getElementById("map_current");
         var map_element_wait = document.getElementById("map_current_wait");
         var whole_map = "000000000";
+        var total_map_pieces = 0;
+        var all_map_pieces = 9;
 
         /*COMBAT BUTTONS*/
         //determines the number of buttons present
@@ -232,7 +238,11 @@
                     {
                         case 'turn':
                             //your turn
+                            clearTimeout();
                             vm.show('planning');
+                            //start timer for the turn
+                            your_turn = true;
+                            timer();
                             break;
                         case 'attack':
                             //initiate combat
@@ -263,6 +273,7 @@
                             setTimeout(function () {
                                 vm.show('waiting');
                                 sendMessage(AirConsole.SCREEN, 'combat_result_acknowledged');
+                                resetButtons();
                             }, 2500);
                             break;
                         case 'combat_result_loss':
@@ -273,6 +284,7 @@
                             sendMessage(AirConsole.SCREEN, "map_piece_loss", "map", whole_map);
                             setTimeout(function () {
                                 vm.show('waiting');
+                                resetButtons();
                             }, 2500);
                             break;
                         case 'map_piece_found':
@@ -283,6 +295,8 @@
                             //place map piece in the correct position of the string
                             whole_map = whole_map.replaceAt(map_piece, '1');
                             console.log('whole_map: ' + whole_map);
+                            //increases the number of map pieces on the screen
+                            increaceCurrentMapPiece();
                             break;
                         case 'player_color':
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
@@ -290,7 +304,55 @@
                     }
                 }
             }
+
+            
         };
+
+        /*****TIMER CODE*****/
+        //right now a player has 11 seconds to complete the turn
+        var time = document.getElementById('time'),
+        turn_time = 11,
+        seconds = turn_time,
+        t;
+
+        function subtract() {
+            seconds--;
+            time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+
+            if (!your_turn)
+                return;
+
+            timer();
+            if (seconds == 0) {
+                clearTimeout(t);
+                seconds = 11;
+                time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+                executeTurn();
+            }
+        }
+
+        function timer() {
+            t = setTimeout(subtract, 1000);
+        }
+        
+        /*****END OF TIMER CODE*****/
+
+        function increaceCurrentMapPiece() {
+            total_map_pieces++;
+            var value = GetElementInsideContainer("waiting", "map_current_wait");
+            value.textContent = total_map_pieces.toString();
+            var current_value = GetElementInsideContainer("map_switch", "map_current");
+            current_value.textContent = total_map_pieces.toString();
+            
+            //checks if the player won the game
+            checkOverallWin();
+        }
+
+        function checkOverallWin() {
+            if (total_map_pieces == all_map_pieces) {
+                sendMessage(AirConsole.SCREEN, 'overall_win');
+            }
+        }
 
         //when player clicks plannedAction button
         function plannedActionButton(selector) {
@@ -316,7 +378,13 @@
             //send turn actions to screen
             sendMessage(AirConsole.SCREEN, 'turn_action', 'action_1', actions[0], 'action_2', actions[1]);
 
+            actions = [null, null];
+            planned_action_buttons[0].style.backgroundImage = "none";
+            planned_action_buttons[1].style.backgroundImage = "none";
+            action_selector = 0;
+
             your_turn = false;
+            seconds = turn_time;
             vm.show('waiting');
         }
 
@@ -335,14 +403,30 @@
         //assings random position to a button
         function assignRandom(d, index) {
             //for making sure the button doesn't go out of bounds
-            var button_width = (d.offsetWidth / window.innerWidth) * 100;
-            var button_height = (d.offsetHeight / window.innerHeight) * 100;
+            //var button_width = (100 / window.innerWidth) * 100;
+            //var button_height = (100 / window.innerHeight) * 100;
+            var button_width = 20;
+            var button_height = 20;
 
+            console.log("button_width: " + button_width);
+            console.log("window_width: " + window.innerWidth);
             //random position
             var left = getRandomArbitrary(10, 100 - button_width);
             var top = getRandomArbitrary(10, 100 - button_height);
 
-            var imgnum = index + 1;
+            var imgnum;
+
+            switch (index) {
+                case 0:
+                    imgnum = 3;
+                    break;
+                case 1:
+                    imgnum = 2;
+                    break;
+                case 2:
+                    imgnum = 1;
+                    break;
+            }
 
             d.style.left = left + '%';
             d.style.top = top + '%';
@@ -386,14 +470,23 @@
                 sendMessage(AirConsole.SCREEN, "attack_response_failure", "map", whole_map);
                 vm.show('combat_result_lost');
                 setTimeout(function () {
-                    vm.show('waiting');
-                }, 2500);
+                    vm.show('waiting')
+                }, 3000);
             }
         }
 
         function eraseButton(id) {
             var d = GetElementInsideContainer("start_combat", id);
             d.style.display = "none";
+        }
+
+        function resetButtons() {
+            for (var i = 1; i <= 3; ++i)
+            {
+                var d = GetElementInsideContainer("start_combat", ""+i);
+                d.style.display = "block";
+                next_combat_button = 1;
+            }
         }
 
         //checks other player map pieces and "steals" one of them
@@ -406,6 +499,7 @@
                     whole_map = whole_map.replaceAt(i, '1');
                     console.log('map piece inserted at ' + i);
                     console.log('new map: ' + whole_map);
+                    increaceCurrentMapPiece();
                     break;
                 }
             }

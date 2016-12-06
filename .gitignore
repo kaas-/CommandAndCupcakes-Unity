@@ -31,6 +31,5 @@ obj/
 ehthumbs.db
 Thumbs.db
 
-*.meta
 
 CommandAndCupcakes/log/*.txt
