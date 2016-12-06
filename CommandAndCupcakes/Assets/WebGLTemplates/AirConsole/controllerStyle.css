@@ -459,6 +459,26 @@
 			z-index				: 3;
 			color				: white;
         }
+				
+		#you_win_message {
+			position			: absolute;
+			text-align			: center;
+			top					: -20vmax;
+			font-family			: pirate;
+			font-size			: 15vmax;
+			z-index				: 3;
+			color				: white;
+		}
+		
+		#you_lost_message {
+			position			: absolute;
+			text-align			: center;
+			top					: -20vmax;
+			font-family			: pirate;
+			font-size			: 15vmax;
+			z-index				: 3;
+			color				: white;
+		}
 
         .b {
             position			: absolute;
