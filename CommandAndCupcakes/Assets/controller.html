@@ -113,68 +113,6 @@
 			</div>
         
     </div>
-	
-	<!-- MAP SCREEN -->
-	<div id="map_screen" class="view" >
-		<div id="map_return" class="button map_button">
-			
-		</div>
-		<div class="map_area">
-			<div id="map_1" class="map_piece" style="left: 21%">
-				
-			</div>
-			<div id="no_map_1" class="map_piece" style="left: 21%">
-				MAP PIECE TOP LEFT
-			</div>
-			<div id="map_2" class="map_piece"	style="left: 40%">
-				
-			</div>
-			<div id="no_map_2" class="map_piece"	style="left: 40%">
-				MAP PIECE TOP MIDDLE
-			</div>
-			<div id="map_3" class="map_piece" style="left: 59%">
-				
-			</div>
-			<div id="no_map_3" class="map_piece" style="left: 59%">
-				MAP PIECE TOP RIGHT
-			</div>
-			<div id="map_4" class="map_piece"	style="left: 21%">
-				
-			</div>
-			<div id="no_map_4" class="map_piece"	style="left: 21%">
-				MAP PIECE MIDDLE LEFT
-			</div>
-			<div id="map_5" class="map_piece"	style="left: 40%">
-			
-			</div>
-			<div id="no_map_5" class="map_piece"	style="left: 40%">
-				MAP PIECE MIDDLE
-			</div>
-			<div id="map_6" class="map_piece"	style="left: 59%">
-				
-			</div>
-			<div id="no_map_6" class="map_piece"	style="left: 59%">
-				MAP PIECE MIDDLE RIGHT
-			</div>
-			<div id="map_7" class="map_piece"	style="left: 21%">
-			</div>
-			<div id="no_map_7" class="map_piece"	style="left: 21%">
-				MAP PIECE BOTTOM LEFT
-			</div>
-			<div id="map_8" class="map_piece"	style="left: 40%">
-				
-			</div>
-			<div id="no_map_8" class="map_piece"	style="left: 40%">
-				MAP PIECE BOTTOM MIDDLE
-			</div>
-			<div id="map_9" class="map_piece" style="left: 59%">
-				
-			</div>
-			<div id="no_map_9" class="map_piece" style="left: 59%">
-				MAP PIECE BOTTOM RIGHT
-			</div>
-		</div>
-	</div>
     <!--COMBAT SCREEN-->
     <div id="combat_splash" class="view"> READY STEADY GO </div>
     <div id="combat" class="view">
@@ -209,7 +147,6 @@
         //for handling map
         var map_element = document.getElementById("map_current");
         var map_element_wait = document.getElementById("map_current_wait");
-        var whole_map = "000000000";
         var total_map_pieces = 0;
         var all_map_pieces = 9;
 
@@ -231,7 +168,6 @@
 
             airconsole.onReady = function () {
                 vm = new AirConsoleViewManager(airconsole);
-                sendMessage(AirConsole.SCREEN, "test_message", "test_name_1", "test_param_1");
             }
 
             //messages received from screen
@@ -562,11 +498,6 @@
 		        }
 		    }
 		    return elm;
-		}
-
-        //for replacing a single character in a string
-		String.prototype.replaceAt = function (index, character) {
-		    return this.substr(0, index) + character + this.substr(index + character.length);
 		}
     </script>
 

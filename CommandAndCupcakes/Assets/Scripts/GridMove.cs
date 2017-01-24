@@ -20,7 +20,6 @@ class GridMove : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 endPosition;
     private float t;
-    private float factor;
     private int actionIterator = 2;
     private string[] actions;
 
@@ -37,8 +36,6 @@ class GridMove : MonoBehaviour
 
         if (actionIterator != 2 && !isMoving)
         {
-            Debug.Log("Gridmove: actionIterator: " + actionIterator);
-            Debug.Log("Gridmove: Starting action: " + actions[actionIterator]);
             switch (actions[actionIterator])
             {
                 //TODO: input vectors don't match movement
@@ -77,51 +74,6 @@ class GridMove : MonoBehaviour
             actionIterator++;
             
         }
-
-        //REAL-TIME CONTROLLER CODE FOR TESTING ONLY
-
-        /* if (!isMoving)
-         {
-             input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-             if (!allowDiagonals)
-             {
-                 if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-                 {
-                     input.y = 0;
-                 }
-                 else
-                 {
-                     input.x = 0;
-                 }
-             }
-
-             if (input != Vector2.zero)
-             {
-                 StartCoroutine(move(transform));
-             }
-         } */
-
-        //code to control what way the character is facing. 
-        if (Input.GetKeyDown(KeyCode.D))
-         {
-             transform.localEulerAngles = new Vector3(0, -90, 0);     
-         }
-
-         if (Input.GetKeyDown(KeyCode.A))
-         {
-             transform.localEulerAngles = new Vector3(0, -270, 0);
-         }
-
-         if (Input.GetKeyDown(KeyCode.W))
-         {
-             transform.localEulerAngles = new Vector3(0, 0, 0);
-         }
-
-         if (Input.GetKeyDown(KeyCode.S))
-         {
-             transform.localEulerAngles = new Vector3(0, -180, 0);
-         }
-
     }
 
     public IEnumerator move(Transform transform)
@@ -152,21 +104,12 @@ class GridMove : MonoBehaviour
                 startPosition.y + System.Math.Sign(input.y) * gridSize, startPosition.z);
         }
 
-        if (allowDiagonals && correctDiagonalSpeed && input.x != 0 && input.y != 0)
-        {
-            factor = 0.7071f;
-        }
-        else
-        {
-            factor = 1f;
-        }
-
         if (endPosition.x < 0 || endPosition.x > boundary || endPosition.z < 0 || endPosition.z > boundary)
             endPosition = startPosition;
 
         while (t < 1f)
         {
-            t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+            t += Time.deltaTime * (moveSpeed / gridSize);
             transform.position = Vector3.Lerp(startPosition, endPosition, t);
             foreach (Transform child in transform)
             {

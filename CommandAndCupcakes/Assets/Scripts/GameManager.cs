@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,34 +8,20 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
-    //path to the text file that logs information for evaluation testing
-    string log_path;
 
     [Range(2, 4)][SerializeField] int playerCount = 4;
 
     static GameObject[] playerObjects = new GameObject[4];
 
     private int currentPlayer;
-    public Image imageToChange;
-    public Sprite[] players = new Sprite[4];
-    public Sprite[] combat = new Sprite[6];
-    public Sprite[] endGame = new Sprite[4];
-    public Camera mainCamera;
-    public Camera splashCamera;
-    private float t;
-    private int lastPlayer;
-    private int count = 0;
     private int[] turnOrder;
 
     //Variables used to control the game state
-    //IsWaiting; waiting for player to make their turn
-    private bool isWaiting = false;
-    //isPaused; game is paused because of disconnect
-    private bool isPaused = false;
+    //IsNextTurn; go to next turn
+    private bool isNextTurn = false;
     //isStarted; game has started
     private bool isStarted = false;
-    //waiting for turn to execute
-    private bool isMoving = false;
+    private bool isPaused = false;
 
     //used for calculating tiles
     private float plane_length_x;
@@ -54,27 +38,11 @@ public class GameManager : MonoBehaviour {
     private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
-    private enum splashType
-    {
-        turn,
-        battle,
-        end
-    };
-    private int map_piece_no = 0;
-
     //used for various random assignments
     private System.Random rnd;
 
     // Use this for initialization
     void Start () {
-
-        //get current time
-        DateTime localDate = DateTime.Now;
-        //store current time in ceparate string
-        string time = localDate.ToString("dd.hh.mm");
-        //create a path where the logged information will be stored in
-        log_path = @".\log\" + time + ".txt";
-        Debug.Log("log_path: " + log_path);
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -105,9 +73,6 @@ public class GameManager : MonoBehaviour {
 
         currentPlayer = 0;
 
-        mainCamera.enabled = true;
-        splashCamera.enabled = false;
-
        // Debug.Log("Start log");
         
     }
@@ -119,37 +84,18 @@ public class GameManager : MonoBehaviour {
     {
         //Start the game with a certain amount of players. playerCount defines the amount of players.
         //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
-        //Debug.Log("Game started");
-        //Debug.Log("Player 1: " + playerObjects[0]);
-        //Debug.Log("Player 2: " + playerObjects[1]);
 
         playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         AirConsole.instance.SetActivePlayers(playerCount);
         isStarted = true;
-
-        //initialise turn order
-        turnOrder = new int[playerCount];
-        for (int i = 0; i < playerCount; i++)
-        {
-            turnOrder[i] = i; //fill array with players
-        }
-        UpdateOrder(); //scramble order
-        currentPlayer = turnOrder[0];
-
 
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(2), "player_color", "color", "green");
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
         
-        //Debug.Log("Player count: " + playerCount);
-
-
-        //Debug.Log("Starting game for device no. " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
-        SetSplashScreen(currentPlayer, splashType.turn);
-        StartCoroutine("ChangeCamera");
-        isWaiting = true;
+        isNextTurn = false;
 
     }
 
@@ -159,11 +105,8 @@ public class GameManager : MonoBehaviour {
     void RandomiseTiles()
     {
         int i = 0;
-        //defines what percent of tiles contains a map piece
-        //float percentage = 0.25f;
 
         //number of tiles with a map piece/pieces 
-        //int true_pos = (int)((board.GetLength(0) * board.GetLength(1)) * percentage);
         int true_pos = 9;
 
         //find interactable objects on the board
@@ -183,7 +126,6 @@ public class GameManager : MonoBehaviour {
             //gets the random position for the z direction
             int pos_z = rnd.Next(0, board.GetLength(1));
 
-            //Debug.Log("Checking tile [" + pos_x + "," + pos_z + "]. Board has been assigned: " + board[pos_x, pos_z] + ". Has object: " + IsObject(pos_x, pos_z, interactable_objects));
             //the if condition makes sure not to assign a map piece twice
             // and iterates only through those tiles that contain objects
             if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
@@ -211,15 +153,11 @@ public class GameManager : MonoBehaviour {
         tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
         tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
 
-        //Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1]);
-
         return tiles;
     }
 
     int CalculateStepNum(float pos, float length, long steps)
     {
-        //Debug.Log("Calculating step number for " + pos + ", " + length + ", " + ",  " + steps);
-        //Debug.Log("Step number is " + (int)Mathf.Floor((pos / length) * steps));
         return (int)Mathf.Floor((pos / length) * steps);
     }
 
@@ -248,67 +186,13 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     private void nextTurn()
     {
-        lastPlayer = currentPlayer; //update last player
+        currentPlayer++;
 
-        //check if the turn order is depleted
-        if (count < playerCount-1) //turn order is not depleted
-        {
-            count++; //increase turn counter
-            currentPlayer = turnOrder[count]; //update current player
-            print(currentPlayer);
-        }
-        else //turn order is depleted
-        {
-            print("Running else in the nextturn");
-            UpdateOrder(); //scramble order
-            currentPlayer = turnOrder[0]; //update current player
-            //Debug.LogWarning(currentPlayer);
-            count = 0; //reset turn counter
-        }
-
-        //StartCoroutine("ChangeCamera");
-        //SetSplashScreen(currentPlayer, splashType.turn);
-
-        SendLogMessageToFile(0, currentPlayer.ToString());
-        //send message to controller of next player
-        //Debug.Log("Sending message to player: " + currentPlayer + " at device ID " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
-
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
-    }
-
-    /// <summary>
-    /// Scramble turnorder
-    /// </summary>
-    void UpdateOrder()
-    {
-        System.Random random = new System.Random();
-        for (int i = playerCount -1; i>=0; i--)
-        {
-            int rnd = random.Next(i + 1);
-            int temp = turnOrder[i];
-            turnOrder[i] = turnOrder[rnd];
-            turnOrder[rnd] = temp;
-        }
-        if (lastPlayer == turnOrder[0])
-        {
-            int temp = turnOrder[0];
-            turnOrder[0] = turnOrder[1];
-            turnOrder[1] = temp;
-        }
+        if (currentPlayer == playerCount)
+            currentPlayer = 0;
         
-    }
-
-    /// <summary>
-    /// Send Action to playerobject
-    /// </summary>
-    /// <param name="player">Index of the playerObject array</param>
-    /// <param name="actions">Actions to send</param>
-    private void Action(int player, string[] actions)
-    {
-        //Actions to be executed are sent to the appropriate player object.
-        Debug.Log("Current player: " + currentPlayer);
-        Debug.Log("Actions: " + actions[0] + ", " + actions[1]);
-        playerObjects[currentPlayer].SendMessage("Action", actions);
+        //send message to controller of next player
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
 
     /// <summary>
@@ -344,18 +228,10 @@ public class GameManager : MonoBehaviour {
                 actions[1] = (string)data["action_2"];
 
                 //send actions to the player object
-                Action(currentPlayer, actions);
+                playerObjects[currentPlayer].SendMessage("Action", actions);
 
-                //so that the game knows the player has executed their turn
-                isWaiting = false;
-                isMoving = true;
-                //Debug.Log("nextturn started");
             }
-            else
-            {
-                //Debug.Log("Else statement run");
-                //wtf how did you do that!?
-            }
+            
         }
         /****COMBAT HANDLING****/
         //A player successfully pushed the correct buttons and is the first to do so
@@ -366,9 +242,16 @@ public class GameManager : MonoBehaviour {
 
             //Send loss message to appropriate player
             if (device_id != combat_player_1)
+            {
+                SendAirConsoleMessage(combat_player_2, "combat_result_won");
                 SendAirConsoleMessage(combat_player_1, "combat_result_loss");
+            }
             else
+            {
+                SendAirConsoleMessage(combat_player_1, "combat_result_won");
                 SendAirConsoleMessage(combat_player_2, "combat_result_loss");
+            }
+                
 
         }
         //A player messed up and is the first to do so. This message includes that player's map
@@ -379,36 +262,33 @@ public class GameManager : MonoBehaviour {
             //Send win message and map to appropriate player
             if (device_id != combat_player_1)
             {
-                SendAirConsoleMessage(combat_player_1, "combat_result_won", "map", data["map"]);
-                //SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_1), splashType.battle);
+                SendAirConsoleMessage(combat_player_1, "combat_result_won");
+                SendAirConsoleMessage(combat_player_2, "combat_result_loss");
             }
             else
             {
-                SendAirConsoleMessage(combat_player_2, "combat_result_won", "map", data["map"]);
-                //SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(combat_player_2), splashType.battle);
+                SendAirConsoleMessage(combat_player_2, "combat_result_won");
+                SendAirConsoleMessage(combat_player_1, "combat_result_loss");
             }
 
         }
         //Response to "combat_result_loss" message. Losing player sends their map
-        else if ((string)data["action"] == "map_piece_loss")
+/*        else if ((string)data["action"] == "map_piece_loss")
         {
             first_attack_received = false;
 
             SendAirConsoleMessage(first_attack_player, "combat_result_won", "map", data["map"]);
-        }
+        }*/
         //Final response. Resets combat variable and starts the next turn.
         else if ((string)data["action"] == "combat_result_acknowledged")
         {
             first_attack_received = false;
-            isMoving = false;
+            isNextTurn = true;
         }
         //if a player wins the game
         else if ((string)data["action"] == "overall_win")
         {
-            StartCoroutine("ChangeCamera");
-            SetSplashScreen(AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id), splashType.end);
-            Debug.Log("PLAYER NUMBER " + AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id) + " WON");
-            //TODO needs splash screen
+            //TODO:show results table
         }
     }
 
@@ -417,11 +297,9 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     void OnPlayerFinishedMoving()
     {
-
-        //Debug.Log("Player" + currentPlayer + " finished moving");
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
-            isMoving = false;   
+            isNextTurn = true;   
     }
 
     /// <summary>
@@ -446,8 +324,6 @@ public class GameManager : MonoBehaviour {
             //Compare player positions on grid. If they match, initiate combat.
             if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1]  && i != player)
             {
-                string combat_log = currentPlayer.ToString() + " " + i.ToString();
-                SendLogMessageToFile(1, combat_log);
 
                 //Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
@@ -469,20 +345,12 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     void OnPlayerInteractWithTile()
     {
-        Debug.Log("Player checking for map piece");
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
-        Debug.Log("PLAYER IS ON " + tile[0] + " " + tile[1]);
         if (HasMapPiece(tile[0], tile[1]))
         {
             //If the tile has a map piece, send it to the phone.
-            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found", "map_piece", map_piece_no);
-            Debug.Log("MAP PIECE FOUND AND SENT " + map_piece_no);
+            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found");
             board[tile[0], tile[1]] = false;
-            map_piece_no++;
-        }
-        else
-        {
-            //Debug.Log("No map piece found at " + tile);
         }
     }
 
@@ -506,6 +374,7 @@ public class GameManager : MonoBehaviour {
     {
         //Debug.Log("Device no. " + device_id + " connected");
         //If the game has started (SetActivePlayers(int) sets this number to a non-zero value. Thus, if it is 0, the game has not started
+        //TODO: Replace with start menu stuff
         if (AirConsole.instance.GetActivePlayerDeviceIds.Count == 0)
         {
             //max players is 4
@@ -535,31 +404,18 @@ public class GameManager : MonoBehaviour {
     {
         //pause
         isPaused = true;
-
+        //TODO:Stuff to let players reconnect properly
         //Debug.Log("Device no " + device_id + " disconnected");
     }
-
-    //do we need this? probably not. Not sure under what circumstances this would be called.
-    void onActivePlayersChange(int device_id)
-    {
-
-    }
-
 
     // Update is called once per frame
     void Update()
     {
 
-        //isMoving == false, means active player is not moving,
-        //isWaiting == false, means active player has executed their turn
-        //isPaused == false, because we don't want to continue if paused
-
-       // Debug.Log(isWaiting + ", " + isMoving);
-
-        if (!isMoving && !isWaiting && !isPaused && isStarted)
+        if (isNextTurn && !isPaused && isStarted)
         {
             nextTurn();
-            isWaiting = true;
+            isNextTurn = false;
         }
     }
 
@@ -621,63 +477,5 @@ public class GameManager : MonoBehaviour {
 
         AirConsole.instance.Message(device_id, message);
     }
-
-   
-    /// <summary>
-    /// Sends log message to text file
-    /// </summary>
-    /// <param name="ind">determines what message to send, either turn_changed, or combat_started</param>
-    /// <param name="add_message">if turnorder changed, then insert current player index, if combat started, then write who participates in it</param>
-    void SendLogMessageToFile(int ind, string add_message)
-    {
-        //get current time
-        DateTime currDate = DateTime.Now;
-        //store current time in ceparate string
-        string time_log = currDate.ToString("hh:mm:ss");
-        string ev;
-        switch (ind){
-            case 0:
-                ev = "turn_changed";
-                break;
-            case 1:
-                ev = "combat_started";
-                break;
-            default:
-                ev = "case_not_specified";
-                break;
-        }
-        string message = time_log + "\t" + ev + "\t" + add_message;
-        // This text is always added, making the file longer over time
-        // if it is not deleted.
-        using (StreamWriter sw = File.AppendText(log_path))
-        {
-            sw.WriteLine(message);
-        }
-    }
-
-    void SetSplashScreen(int player, splashType splash)
-    {
-        switch (splash)
-        {
-            case splashType.battle:
-                imageToChange.sprite = combat[player];
-                break;
-            case splashType.turn:
-                imageToChange.sprite = players[player];
-                break;
-            case splashType.end:
-                imageToChange.sprite = endGame[player];
-                break;
-        }
-   }
-
-    IEnumerator ChangeCamera()
-    {
-        mainCamera.enabled = !mainCamera.enabled;
-        splashCamera.enabled = !splashCamera.enabled;
-        yield return new WaitForSecondsRealtime(3);
-        mainCamera.enabled = !mainCamera.enabled;
-        splashCamera.enabled = !splashCamera.enabled;
-    }
-    
+  
 }
