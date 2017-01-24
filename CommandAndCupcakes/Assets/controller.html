@@ -130,7 +130,7 @@
     <div id="combat_result_lost" class="view">
 		<div id="you_lost_message">YOU LOST</div>
 	</div>
-	
+
     <script type="text/javascript">
 
         //airconsole stuff
@@ -179,6 +179,7 @@
                         case 'turn':
                             //your turn
                             clearTimeout();
+                            navigator.vibrate(200);
                             vm.show('planning');
                             //start timer for the turn
                             your_turn = true;
@@ -187,8 +188,9 @@
                         case 'attack':
                             //initiate combat
                             console.log("attack message received");
-							
+
 							resetButtons();
+                            navigator.vibrate(200);
                             //place random buttons
                             randomPosition("3", 0);
                             randomPosition("2", 1);
