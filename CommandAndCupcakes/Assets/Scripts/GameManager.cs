@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour {
     //width/length of the arena, tile-wise
     private long num_tiles = 5;
 
-    //2d array to manage which tiles have map pieces
+    //2d array to manage which tiles have booty
     private bool[,] board;
 
     //for combat code
@@ -100,19 +100,19 @@ public class GameManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Randomly add some tile map pieces
+    /// Add booty to a random tile
     /// </summary>
     void RandomiseTiles()
     {
         int i = 0;
 
-        //number of tiles with a map piece/pieces 
+        //number of tiles with a booty
         int true_pos = 9;
 
         //find interactable objects on the board
         GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("interactable");
 
-        //checks if there is not enough tiles with objects to assign map pieces to
+        //checks if there is not enough tiles with objects to assign booty to
         if (true_pos > interactable_objects.Length)
         {
             true_pos = interactable_objects.Length;
@@ -126,11 +126,11 @@ public class GameManager : MonoBehaviour {
             //gets the random position for the z direction
             int pos_z = rnd.Next(0, board.GetLength(1));
 
-            //the if condition makes sure not to assign a map piece twice
+            //the if condition makes sure not to assign a booty twice
             // and iterates only through those tiles that contain objects
             if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
             {
-                Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
+                Debug.Log("Assigning booty piece to " + pos_x + ", " + pos_z);
                 board[pos_x, pos_z] = true;
                 i++;
             }
@@ -254,12 +254,12 @@ public class GameManager : MonoBehaviour {
                 
 
         }
-        //A player messed up and is the first to do so. This message includes that player's map
+        //A player messed up and is the first to do so
         else if((string)data["action"] == "attack_response_failure" && !first_attack_received)
         {
             first_attack_received = true;
 
-            //Send win message and map to appropriate player
+            //Send win message
             if (device_id != combat_player_1)
             {
                 SendAirConsoleMessage(combat_player_1, "combat_result_won");
@@ -272,13 +272,6 @@ public class GameManager : MonoBehaviour {
             }
 
         }
-        //Response to "combat_result_loss" message. Losing player sends their map
-/*        else if ((string)data["action"] == "map_piece_loss")
-        {
-            first_attack_received = false;
-
-            SendAirConsoleMessage(first_attack_player, "combat_result_won", "map", data["map"]);
-        }*/
         //Final response. Resets combat variable and starts the next turn.
         else if ((string)data["action"] == "combat_result_acknowledged")
         {
@@ -346,23 +339,23 @@ public class GameManager : MonoBehaviour {
     void OnPlayerInteractWithTile()
     {
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
-        if (HasMapPiece(tile[0], tile[1]))
+        if (HasBooty(tile[0], tile[1]))
         {
-            //If the tile has a map piece, send it to the phone.
-            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found");
+            //If the tile has a booty, send it to the phone.
+            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "booty_found");
             board[tile[0], tile[1]] = false;
         }
     }
 
     /// <summary>
-    /// Check whether given tile has a map piece
+    /// Check whether given tile has a booty
     /// </summary>
     /// <param name="tile_x">x-coordinate of tile</param>
     /// <param name="tile_z">z-coordinate of tile</param>
     /// <returns>boolean value of 2D position of tile in board array</returns>
-    bool HasMapPiece(int tile_x, int tile_z)
+    bool HasBooty(int tile_x, int tile_z)
     {
-        //check if the player is on the tile that contains a map piece
+        //check if the player is on the tile that contains a booty 
         return board[tile_x, tile_z];
     }
 

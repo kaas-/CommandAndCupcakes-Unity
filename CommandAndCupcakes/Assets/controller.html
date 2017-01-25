@@ -228,14 +228,7 @@
                                 vm.show('waiting');
                             }, 2500);
                             break;
-                        case 'map_piece_found':
-                            //acquire map piece from arena
-                            var map_piece = data['map_piece'];
-                            console.log('map_piece: ' + map_piece);
-
-                            //place map piece in the correct position of the string
-                            whole_map = whole_map.replaceAt(map_piece, '1');
-                            console.log('whole_map: ' + whole_map);
+                        case 'booty_found':
                             //increases the number of map pieces on the screen
                             increaceCurrentMapPiece();
                             break;
