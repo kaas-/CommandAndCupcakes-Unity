@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour {
 
     //for combat code
     private bool first_attack_received;
-    private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
     //used for various random assignments
@@ -238,7 +237,7 @@ public class GameManager : MonoBehaviour {
         else if ((string)data["action"] == "attack_response_success" && !first_attack_received)
         {
             first_attack_received = true;
-            first_attack_player = device_id;
+            
 
             //Send loss message to appropriate player
             if (device_id != combat_player_1)
