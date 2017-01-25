@@ -20,9 +20,9 @@
 
     <!--PLANNING SCREEN-->  
 	<div id="planning" class="view">
-        <div id="map_switch" class="button map_button">
-			<span id="map_current" class="map_text">0 </span>
-			<span id="map_max" class="map_text">/ 9</span>
+        <div id="booty_switch" class="button booty_button">
+			<span id="booty_current" class="booty_text">0 </span>
+			<span id="booty_max" class="booty_text">/ 9</span>
 		</div>
 
         
@@ -65,10 +65,10 @@
    
     <!--WAITING FOR TURN SCREEN-->
 	<div id="waiting" class="view default-view">
-        <div id="waiting_map_switch" class="button map_button">
-			<div class="map_amount">
-				<span id="map_current_wait" class="map_text">0</span>
-				<span id="map_max_wait" class="map_text">/ 9</span>
+        <div id="waiting_booty_switch" class="button booty_button">
+			<div class="booty_amount">
+				<span id="booty_current_wait" class="booty_text">0</span>
+				<span id="booty_max_wait" class="booty_text">/ 9</span>
 			</div>
 		</div>
 		<div id="planned_actions_area_wait" class="planning_area" style="left: 20%">
@@ -144,11 +144,9 @@
         var action_selector = 0;
         var planned_action_buttons = [document.getElementById("planned_action_1"), document.getElementById("planned_action_2")];
 
-        //for handling map
-        var map_element = document.getElementById("map_current");
-        var map_element_wait = document.getElementById("map_current_wait");
-        var total_map_pieces = 0;
-        var all_map_pieces = 9;
+        //for handling booty
+        var total_booty = 0;
+        var all_booty = 9;
 
         /*COMBAT BUTTONS*/
         //determines the number of buttons present
@@ -204,13 +202,10 @@
                             }, 2500);
                             break;
                         case 'combat_result_won':
-                            //you won combat
-                            //show victory screen
+                            //you won combat, show victory screen
                             vm.show('combat_result_won');
 
-                            //compare your map to other player's map, and retrieve a map piece of theirs,
-                            //that you don't have
-                            getOtherMapPiece(data.map);
+                            increaceCurrentBooty();
 
                             //respond to screen
                             setTimeout(function () {
@@ -222,25 +217,27 @@
                             //show loss screen
                             vm.show('combat_result_lost');
 
-                            //send map to screen
-                            sendMessage(AirConsole.SCREEN, "map_piece_loss", "map", whole_map);
+                            //if there is no booty to steal
+                            if (total_booty == 0) {
+                                sendMessage(AirConsole.SCREEN, 'no_booty_to_steal');
+                            }
+                            else {
+                                decreaceCurrentBooty();
+                            }
                             setTimeout(function () {
                                 vm.show('waiting');
                             }, 2500);
                             break;
-                        case 'map_piece_found':
-                            //acquire map piece from arena
-                            var map_piece = data['map_piece'];
-                            console.log('map_piece: ' + map_piece);
-
-                            //place map piece in the correct position of the string
-                            whole_map = whole_map.replaceAt(map_piece, '1');
-                            console.log('whole_map: ' + whole_map);
-                            //increases the number of map pieces on the screen
-                            increaceCurrentMapPiece();
+                        case 'booty_found':
+                            //increases the amount of booty on the screen
+                            increaceCurrentBooty();
                             break;
                         case 'player_color':
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
+                            break;
+                        case 'no_booty':
+                            decreaceCurrentBooty();
+                            break;
                             
                     }
                 }
@@ -278,19 +275,28 @@
         
         /*****END OF TIMER CODE*****/
 
-        function increaceCurrentMapPiece() {
-            total_map_pieces++;
-            var value = GetElementInsideContainer("waiting", "map_current_wait");
-            value.textContent = total_map_pieces.toString();
-            var current_value = GetElementInsideContainer("map_switch", "map_current");
-            current_value.textContent = total_map_pieces.toString();
-            
+        function increaceCurrentBooty() {
+            total_booty++;
+           
+            changeBooty(total_booty);
             //checks if the player won the game
             checkOverallWin();
         }
 
+        function decreaceCurrentBooty() {
+            total_booty--;
+            changeBooty(total_booty);
+        }
+
+        function changeBooty(current_booty) {
+            var value = GetElementInsideContainer("waiting", "booty_current_wait");
+            value.textContent = current_booty.toString();
+            var current_value = GetElementInsideContainer("booty_switch", "booty_current");
+            current_value.textContent = current_booty.toString();
+        }
+
         function checkOverallWin() {
-            if (total_map_pieces == all_map_pieces) {
+            if (total_booty == all_booty) {
                 sendMessage(AirConsole.SCREEN, 'overall_win');
             }
         }
@@ -408,7 +414,7 @@
                 next_combat_button++;
             }
             else {
-                sendMessage(AirConsole.SCREEN, "attack_response_failure", "map", whole_map);
+                sendMessage(AirConsole.SCREEN, "attack_response_failure");
                 vm.show('combat_result_lost');
                 setTimeout(function () {
                     vm.show('waiting')
@@ -429,23 +435,6 @@
                 next_combat_button = 1;
             }
         }
-
-        //checks other player map pieces and "steals" one of them
-        function getOtherMapPiece(mapPieces) {
-            
-            //go through other player map pieces
-            for (var i = 0; i < mapPieces.length; i++) {
-                //if other player has a map piece this player does not have, then steal it
-                if (mapPieces[i] == '1' && whole_map[i] == '0') {
-                    whole_map = whole_map.replaceAt(i, '1');
-                    console.log('map piece inserted at ' + i);
-                    console.log('new map: ' + whole_map);
-                    increaceCurrentMapPiece();
-                    break;
-                }
-            }
-        }
-		
 
         //send generic messages to screen
 		function sendMessage(device, action, param_1_name, param_1, param_2_name, param_2)

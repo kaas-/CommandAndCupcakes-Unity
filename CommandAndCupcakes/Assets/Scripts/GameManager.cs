@@ -283,6 +283,17 @@ public class GameManager : MonoBehaviour {
         {
             //TODO:show results table
         }
+        else if ((string)data["action"] == "no_booty_to_steal")
+        {
+            if (device_id == combat_player_1)
+            {
+                SendAirConsoleMessage(combat_player_2, "no_booty");
+            }
+            else 
+            {
+                SendAirConsoleMessage(combat_player_1, "no_booty");
+            }
+        }
     }
 
     /// <summary>
