@@ -5,6 +5,8 @@ using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Timers;
+
 
 public class GameManager : MonoBehaviour {
 
@@ -13,7 +15,11 @@ public class GameManager : MonoBehaviour {
 
     static GameObject[] playerObjects = new GameObject[4];
 
+    //UI text for turn change and combat
     public Text notifications;
+
+    //UI text for timer
+    public Text text_timer;
 
     private int currentPlayer;
     private int[] turnOrder;
@@ -42,8 +48,16 @@ public class GameManager : MonoBehaviour {
     //used for various random assignments
     private System.Random rnd;
 
+    //initialize the timer
+    private Timer timer;
+
+    //set how much time is left (in seconds)
+    private int timeLeft = 300;
+
     // Use this for initialization
     void Start () {
+
+        
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -74,8 +88,8 @@ public class GameManager : MonoBehaviour {
 
         currentPlayer = 0;
 
-       // Debug.Log("Start log");
-        
+        //sets the timer with an interval of 1 second
+        timer = new Timer(1000);
     }
 
     //<summary
@@ -98,6 +112,12 @@ public class GameManager : MonoBehaviour {
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
         SetUITextTurn(currentPlayer);
         isNextTurn = false;
+
+        // Hook up the Elapsed event for the timer. 
+        timer.Elapsed += OnTimedEvent;
+
+        // Have the timer fire repeated events (true is the default)
+        timer.AutoReset = true;
 
     }
 
@@ -321,7 +341,6 @@ public class GameManager : MonoBehaviour {
         
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        //Debug.Log("Current player position: " + currentPlayerPosition);
 
         //for each player
         for (int i = 0; i < playerCount; i++)
@@ -422,6 +441,19 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+       
+        setTimer();
+
+        // "Resets" the timer
+        timer.Enabled = true;
+
+        //if no more time is left
+        if (timeLeft == 0)
+        {
+            text_timer.text = "Time's up!";
+
+            //TODO show resolution screen
+        }
 
         if (isNextTurn && !isPaused && isStarted)
         {
@@ -489,6 +521,11 @@ public class GameManager : MonoBehaviour {
         AirConsole.instance.Message(device_id, message);
     }
 
+    /// <summary>
+    /// gets the colour of a player to later show in UI text
+    /// </summary>
+    /// <param name="dev_id">device ID</param>
+    /// <returns></returns>
     string ConvertDeviceIDtoColour(int dev_id)
     {
         switch (dev_id)
@@ -525,4 +562,25 @@ public class GameManager : MonoBehaviour {
         notifications.text = ConvertDeviceIDtoColour(pl_1) + " and " + ConvertDeviceIDtoColour(pl_2) + "\npirates are in combat";
     }
 
+    private void OnTimedEvent(System.Object source, System.Timers.ElapsedEventArgs e)
+    {
+        if (timeLeft > 0)
+        {
+            // Display the new time left by updating the Time Left label.
+            timeLeft = timeLeft - 1;
+        }
+        else
+        {
+            // If the user ran out of time, stop the timer
+            timer.Stop();
+        }
+    }
+
+    /// <summary>
+    /// Sets the UI text for the timer when the timer is running
+    /// </summary>
+    private void setTimer()
+    {
+        text_timer.text = "Time left: " + timeLeft.ToString();
+    }
 }
