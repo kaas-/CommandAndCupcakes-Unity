@@ -277,11 +277,12 @@ public class GameManager : MonoBehaviour {
             first_attack_received = false;
             isNextTurn = true;
         }
-        //if a player wins the game
+        //if a player wins the game, has 9 out of 9 booty
         else if ((string)data["action"] == "overall_win")
         {
             //TODO:show results table
         }
+        //if the loosing side (in combat) has no booty to steal
         else if ((string)data["action"] == "no_booty_to_steal")
         {
             if (device_id == combat_player_1)
