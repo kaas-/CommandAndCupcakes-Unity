@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour {
     [Range(2, 4)][SerializeField] int playerCount = 4;
 
     static GameObject[] playerObjects = new GameObject[4];
+
+    public Text notifications;
 
     private int currentPlayer;
     private int[] turnOrder;
@@ -94,6 +96,7 @@ public class GameManager : MonoBehaviour {
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
         
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        SetUITextTurn(currentPlayer);
         isNextTurn = false;
 
     }
@@ -189,7 +192,8 @@ public class GameManager : MonoBehaviour {
 
         if (currentPlayer == playerCount)
             currentPlayer = 0;
-        
+
+        SetUITextTurn(currentPlayer);
         //send message to controller of next player
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
@@ -481,5 +485,32 @@ public class GameManager : MonoBehaviour {
 
         AirConsole.instance.Message(device_id, message);
     }
-  
+
+    string ConvertDeviceIDtoColour(int dev_id)
+    {
+        switch (dev_id)
+        {
+            case 0:
+                return "RED";
+            case 1:
+                return "BLUE";
+            case 2:
+                return "GREEN";
+            case 3:
+                return "YELLOW";
+            default:
+                return "GRAY";
+        }
+    }
+
+    void SetUITextTurn(int dev_id)
+    {
+        notifications.text = " It is " + ConvertDeviceIDtoColour(dev_id) + "\n pirate's turn";
+    }
+
+    void SetUITextCombat(int pl_1, int pl_2)
+    {
+        notifications.text = ConvertDeviceIDtoColour(pl_1) + " and " + ConvertDeviceIDtoColour(pl_2) + " pirates are in combat";
+    }
+
 }

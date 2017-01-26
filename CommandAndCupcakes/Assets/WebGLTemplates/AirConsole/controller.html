@@ -95,9 +95,6 @@
                 
             </div>
             
-            <!-- <div id="dig_button_wait" class="button action_button" style="left: 74%"> -->
-               
-            <!-- </div> -->
             <div id="interact_button_wait" class="button action_button" style="left: 74%">
                 
             </div>
@@ -205,6 +202,7 @@
                             //you won combat, show victory screen
                             vm.show('combat_result_won');
 
+                            //increace the amount of booty by 1
                             increaceCurrentBooty();
 
                             //respond to screen
@@ -222,6 +220,7 @@
                                 sendMessage(AirConsole.SCREEN, 'no_booty_to_steal');
                             }
                             else {
+                                //decreace the amount of booty by 1
                                 decreaceCurrentBooty();
                             }
                             setTimeout(function () {
@@ -229,13 +228,14 @@
                             }, 2500);
                             break;
                         case 'booty_found':
-                            //increases the amount of booty on the screen
+                            //after interactiong with object, 1 booty gained
                             increaceCurrentBooty();
                             break;
                         case 'player_color':
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
                             break;
                         case 'no_booty':
+                            //if the loosing side (in combat) has no booty to steal
                             decreaceCurrentBooty();
                             break;
                             
@@ -288,6 +288,7 @@
             changeBooty(total_booty);
         }
 
+        //changes booty amount on controller screen
         function changeBooty(current_booty) {
             var value = GetElementInsideContainer("waiting", "booty_current_wait");
             value.textContent = current_booty.toString();
