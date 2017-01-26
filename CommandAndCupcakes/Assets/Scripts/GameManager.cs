@@ -337,6 +337,9 @@ public class GameManager : MonoBehaviour {
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
                 combat_player_2 = AirConsole.instance.ConvertPlayerNumberToDeviceId(player);
 
+                //changes the UI text to who is in combat
+                SetUITextCombat(player, i);
+
                // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
                 SendAirConsoleMessage(combat_player_2, "attack");
@@ -503,14 +506,23 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Changes the UI text to indicate whose turn it is
+    /// </summary>
+    /// <param name="dev_id">pirate ID</param>
     void SetUITextTurn(int dev_id)
     {
-        notifications.text = " It is " + ConvertDeviceIDtoColour(dev_id) + "\n pirate's turn";
+        notifications.text = "It is " + ConvertDeviceIDtoColour(dev_id) + "\npirate's turn";
     }
 
+    /// <summary>
+    /// Changes UI text to indicate which pirates are in combat
+    /// </summary>
+    /// <param name="pl_1">ID of attacking pirate in combat</param>
+    /// <param name="pl_2">ID of second pirate in combat</param>
     void SetUITextCombat(int pl_1, int pl_2)
     {
-        notifications.text = ConvertDeviceIDtoColour(pl_1) + " and " + ConvertDeviceIDtoColour(pl_2) + " pirates are in combat";
+        notifications.text = ConvertDeviceIDtoColour(pl_1) + " and " + ConvertDeviceIDtoColour(pl_2) + "\npirates are in combat";
     }
 
 }
