@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using UnityEngine.UI;
+using System.Timers;
+
 
 public class GameManager : MonoBehaviour {
 
@@ -12,6 +14,12 @@ public class GameManager : MonoBehaviour {
     [Range(2, 4)][SerializeField] int playerCount = 4;
 
     static GameObject[] playerObjects = new GameObject[4];
+
+    //UI text for turn change and combat
+    public Text notifications;
+
+    //UI text for timer
+    public Text text_timer;
 
     private int currentPlayer;
     private int[] turnOrder;
@@ -30,19 +38,26 @@ public class GameManager : MonoBehaviour {
     //width/length of the arena, tile-wise
     private long num_tiles = 5;
 
-    //2d array to manage which tiles have map pieces
+    //2d array to manage which tiles have booty
     private bool[,] board;
 
     //for combat code
     private bool first_attack_received;
-    private int first_attack_player;
     private int combat_player_1, combat_player_2;
 
     //used for various random assignments
     private System.Random rnd;
 
+    //initialize the timer
+    private Timer timer;
+
+    //set how much time is left (in seconds)
+    private int timeLeft = 300;
+
     // Use this for initialization
     void Start () {
+
+        
 
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
@@ -73,8 +88,8 @@ public class GameManager : MonoBehaviour {
 
         currentPlayer = 0;
 
-       // Debug.Log("Start log");
-        
+        //sets the timer with an interval of 1 second
+        timer = new Timer(1000);
     }
 
     //<summary
@@ -95,24 +110,31 @@ public class GameManager : MonoBehaviour {
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
         
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        SetUITextTurn(currentPlayer);
         isNextTurn = false;
+
+        // Hook up the Elapsed event for the timer. 
+        timer.Elapsed += OnTimedEvent;
+
+        // Have the timer fire repeated events (true is the default)
+        timer.AutoReset = true;
 
     }
 
     /// <summary>
-    /// Randomly add some tile map pieces
+    /// Add booty to a random tile
     /// </summary>
     void RandomiseTiles()
     {
         int i = 0;
 
-        //number of tiles with a map piece/pieces 
+        //number of tiles with a booty
         int true_pos = 9;
 
         //find interactable objects on the board
         GameObject[] interactable_objects = GameObject.FindGameObjectsWithTag("interactable");
 
-        //checks if there is not enough tiles with objects to assign map pieces to
+        //checks if there is not enough tiles with objects to assign booty to
         if (true_pos > interactable_objects.Length)
         {
             true_pos = interactable_objects.Length;
@@ -126,11 +148,11 @@ public class GameManager : MonoBehaviour {
             //gets the random position for the z direction
             int pos_z = rnd.Next(0, board.GetLength(1));
 
-            //the if condition makes sure not to assign a map piece twice
+            //the if condition makes sure not to assign a booty twice
             // and iterates only through those tiles that contain objects
             if (!board[pos_x, pos_z] && IsObject(pos_x, pos_z, interactable_objects))
             {
-                Debug.Log("Assigning map piece to " + pos_x + ", " + pos_z);
+                Debug.Log("Assigning booty piece to " + pos_x + ", " + pos_z);
                 board[pos_x, pos_z] = true;
                 i++;
             }
@@ -190,7 +212,8 @@ public class GameManager : MonoBehaviour {
 
         if (currentPlayer == playerCount)
             currentPlayer = 0;
-        
+
+        SetUITextTurn(currentPlayer);
         //send message to controller of next player
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
     }
@@ -238,7 +261,7 @@ public class GameManager : MonoBehaviour {
         else if ((string)data["action"] == "attack_response_success" && !first_attack_received)
         {
             first_attack_received = true;
-            first_attack_player = device_id;
+            
 
             //Send loss message to appropriate player
             if (device_id != combat_player_1)
@@ -254,12 +277,12 @@ public class GameManager : MonoBehaviour {
                 
 
         }
-        //A player messed up and is the first to do so. This message includes that player's map
+        //A player messed up and is the first to do so
         else if((string)data["action"] == "attack_response_failure" && !first_attack_received)
         {
             first_attack_received = true;
 
-            //Send win message and map to appropriate player
+            //Send win message
             if (device_id != combat_player_1)
             {
                 SendAirConsoleMessage(combat_player_1, "combat_result_won");
@@ -272,23 +295,28 @@ public class GameManager : MonoBehaviour {
             }
 
         }
-        //Response to "combat_result_loss" message. Losing player sends their map
-/*        else if ((string)data["action"] == "map_piece_loss")
-        {
-            first_attack_received = false;
-
-            SendAirConsoleMessage(first_attack_player, "combat_result_won", "map", data["map"]);
-        }*/
         //Final response. Resets combat variable and starts the next turn.
         else if ((string)data["action"] == "combat_result_acknowledged")
         {
             first_attack_received = false;
             isNextTurn = true;
         }
-        //if a player wins the game
+        //if a player wins the game, has 9 out of 9 booty
         else if ((string)data["action"] == "overall_win")
         {
             //TODO:show results table
+        }
+        //if the loosing side (in combat) has no booty to steal
+        else if ((string)data["action"] == "no_booty_to_steal")
+        {
+            if (device_id == combat_player_1)
+            {
+                SendAirConsoleMessage(combat_player_2, "no_booty");
+            }
+            else 
+            {
+                SendAirConsoleMessage(combat_player_1, "no_booty");
+            }
         }
     }
 
@@ -313,7 +341,6 @@ public class GameManager : MonoBehaviour {
         
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
-        //Debug.Log("Current player position: " + currentPlayerPosition);
 
         //for each player
         for (int i = 0; i < playerCount; i++)
@@ -328,6 +355,9 @@ public class GameManager : MonoBehaviour {
                 //Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
                 combat_player_2 = AirConsole.instance.ConvertPlayerNumberToDeviceId(player);
+
+                //changes the UI text to who is in combat
+                SetUITextCombat(player, i);
 
                // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
@@ -346,23 +376,23 @@ public class GameManager : MonoBehaviour {
     void OnPlayerInteractWithTile()
     {
         int[] tile = CalculateTile(playerObjects[currentPlayer]);
-        if (HasMapPiece(tile[0], tile[1]))
+        if (HasBooty(tile[0], tile[1]))
         {
-            //If the tile has a map piece, send it to the phone.
-            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "map_piece_found");
+            //If the tile has a booty, send it to the phone.
+            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "booty_found");
             board[tile[0], tile[1]] = false;
         }
     }
 
     /// <summary>
-    /// Check whether given tile has a map piece
+    /// Check whether given tile has a booty
     /// </summary>
     /// <param name="tile_x">x-coordinate of tile</param>
     /// <param name="tile_z">z-coordinate of tile</param>
     /// <returns>boolean value of 2D position of tile in board array</returns>
-    bool HasMapPiece(int tile_x, int tile_z)
+    bool HasBooty(int tile_x, int tile_z)
     {
-        //check if the player is on the tile that contains a map piece
+        //check if the player is on the tile that contains a booty 
         return board[tile_x, tile_z];
     }
 
@@ -411,6 +441,19 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+       
+        setTimer();
+
+        // "Resets" the timer
+        timer.Enabled = true;
+
+        //if no more time is left
+        if (timeLeft == 0)
+        {
+            text_timer.text = "Time's up!";
+
+            //TODO show resolution screen
+        }
 
         if (isNextTurn && !isPaused && isStarted)
         {
@@ -477,5 +520,67 @@ public class GameManager : MonoBehaviour {
 
         AirConsole.instance.Message(device_id, message);
     }
-  
+
+    /// <summary>
+    /// gets the colour of a player to later show in UI text
+    /// </summary>
+    /// <param name="dev_id">device ID</param>
+    /// <returns></returns>
+    string ConvertDeviceIDtoColour(int dev_id)
+    {
+        switch (dev_id)
+        {
+            case 0:
+                return "RED";
+            case 1:
+                return "BLUE";
+            case 2:
+                return "GREEN";
+            case 3:
+                return "YELLOW";
+            default:
+                return "GRAY";
+        }
+    }
+
+    /// <summary>
+    /// Changes the UI text to indicate whose turn it is
+    /// </summary>
+    /// <param name="dev_id">pirate ID</param>
+    void SetUITextTurn(int dev_id)
+    {
+        notifications.text = "It is " + ConvertDeviceIDtoColour(dev_id) + "\npirate's turn";
+    }
+
+    /// <summary>
+    /// Changes UI text to indicate which pirates are in combat
+    /// </summary>
+    /// <param name="pl_1">ID of attacking pirate in combat</param>
+    /// <param name="pl_2">ID of second pirate in combat</param>
+    void SetUITextCombat(int pl_1, int pl_2)
+    {
+        notifications.text = ConvertDeviceIDtoColour(pl_1) + " and " + ConvertDeviceIDtoColour(pl_2) + "\npirates are in combat";
+    }
+
+    private void OnTimedEvent(System.Object source, System.Timers.ElapsedEventArgs e)
+    {
+        if (timeLeft > 0)
+        {
+            // Display the new time left by updating the Time Left label.
+            timeLeft = timeLeft - 1;
+        }
+        else
+        {
+            // If the user ran out of time, stop the timer
+            timer.Stop();
+        }
+    }
+
+    /// <summary>
+    /// Sets the UI text for the timer when the timer is running
+    /// </summary>
+    private void setTimer()
+    {
+        text_timer.text = "Time left: " + timeLeft.ToString();
+    }
 }
