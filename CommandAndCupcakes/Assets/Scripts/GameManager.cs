@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Timers;
+using System.Collections.Generic;
 
 
 public class GameManager : MonoBehaviour {
@@ -20,6 +21,12 @@ public class GameManager : MonoBehaviour {
 
     //UI text for timer
     public Text text_timer;
+
+    //text for score board
+    public Text final_score;
+
+    //background image for score board
+    public Image final_score_image;
 
     private int currentPlayer;
     private int[] turnOrder;
@@ -54,11 +61,18 @@ public class GameManager : MonoBehaviour {
     //set how much time is left (in seconds)
     private int timeLeft = 300;
 
+    //when time for the overall game runs out it sets to false
+    private bool getFinalBooty = true;
+
+    //stores the color of the player (key) and the total amount of booty that player has
+    //is used for scoreboard
+    private List<KeyValuePair<string, int>> final_score_list = new List<KeyValuePair<string, int>>();
+
+    //counts how many players have send their final amount of booty
+    private int finalCount = 0;
+
     // Use this for initialization
     void Start () {
-
-        
-
         //This is important for reasons. I guess we don't receive messages unless we do this.
         AirConsole.instance.onMessage += OnMessage;
         AirConsole.instance.onConnect += OnConnect;
@@ -68,15 +82,10 @@ public class GameManager : MonoBehaviour {
         plane_length_x = this.GetComponent<Renderer>().bounds.size.x;
         plane_length_z = this.GetComponent<Renderer>().bounds.size.z;
 
-        //Debug.Log("bound.size.x: " + plane_length_x);
-        //Debug.Log("bound.size.z: " + plane_length_z);
-
         //define length and width of board array
         board = new bool[num_tiles, num_tiles];
         rnd = new System.Random();
         RandomiseTiles();
-
-        //Debug.Log(GameObject.FindGameObjectsWithTag("Player") + " Player objects");
 
         //Add all players to an array
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
@@ -90,6 +99,8 @@ public class GameManager : MonoBehaviour {
 
         //sets the timer with an interval of 1 second
         timer = new Timer(1000);
+
+        
     }
 
     //<summary
@@ -225,10 +236,6 @@ public class GameManager : MonoBehaviour {
     /// <param name="data">whatever it did</param>
     void OnMessage(int device_id, JToken data)
     {
-        //data gets logged to console for dev reasons
-       // Debug.Log("Received data: " + data + " from device: " + device_id);
-        //Debug.Log("Message type is: " + data["action"]);
-
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
         {
@@ -316,6 +323,26 @@ public class GameManager : MonoBehaviour {
             else 
             {
                 SendAirConsoleMessage(combat_player_1, "no_booty");
+            }
+        }
+        //if a player has send their final booty amount
+        else if ((string)data["action"] == "final_score")
+        {
+            finalCount++;
+            string s = (string)data["color"];
+            s = s.ToUpper();
+
+            //store each players color and their final amount of booty
+            final_score_list.Add(new KeyValuePair<string, int> (s, (int)data["total_booty"]));
+
+            //if all players have send their final booty amount
+            if (finalCount == playerCount)
+            {
+                //sort the values from the highest to the lowest value
+                final_score_list.Sort((x, y) => y.Value.CompareTo(x.Value));
+
+                //show scoreboard on main screen
+                ShowResolutionScreen();
             }
         }
     }
@@ -441,19 +468,8 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-       
-        setTimer();
-
-        // "Resets" the timer
-        timer.Enabled = true;
-
-        //if no more time is left
-        if (timeLeft == 0)
-        {
-            text_timer.text = "Time's up!";
-
-            //TODO show resolution screen
-        }
+        //updates the timer
+        SetTimer();
 
         if (isNextTurn && !isPaused && isStarted)
         {
@@ -543,6 +559,12 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+
+    void ClearUIText()
+    {
+        notifications.text = "";
+    }
+
     /// <summary>
     /// Changes the UI text to indicate whose turn it is
     /// </summary>
@@ -579,8 +601,72 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// Sets the UI text for the timer when the timer is running
     /// </summary>
-    private void setTimer()
+    private void SetTimer()
     {
         text_timer.text = "Time left: " + timeLeft.ToString();
+        
+        // "Resets" the timer
+        timer.Enabled = true;
+
+        if (timeLeft == 0)
+        {
+            text_timer.text = "Time's up!";
+            ClearUIText();
+            if (getFinalBooty)
+            {
+                getFinalScore();
+                getFinalBooty = false;
+                isPaused = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// sends out a message to all controllers to reveal their final booty amount
+    /// </summary>
+    private void getFinalScore()
+    {
+        for (int i = 0; i < playerCount; i++)
+        {
+            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(i), "game_over");
+        }
+    }
+
+    
+
+    /// <summary>
+    /// shows scoreboard on main screen
+    /// </summary>
+    private void ShowResolutionScreen()
+    {
+        string final_message = "FINAL SCORE\n";
+        foreach (KeyValuePair<string, int> kv in final_score_list)
+        {
+            string col = kv.Key;
+            string p = "\t\tpirate:\t\t";
+            if (col == "RED")
+            {
+                p = "\t\t\tpirate:\t\t";
+            }
+            else if (col == "YELLOW")
+            {
+                p = "\tpirate:\t\t";
+            }
+
+            string b = " booty items!\n";
+            if (kv.Value == 1)
+            {
+                b = " booty item!\n";
+            }
+
+            final_message += col + p + kv.Value.ToString() + b;
+        }
+
+        //makes the background image for the scoreboard visible
+        Color c = final_score_image.color;
+        c.a = 1;
+        final_score_image.color = c;
+
+        final_score.text = final_message;
     }
 }

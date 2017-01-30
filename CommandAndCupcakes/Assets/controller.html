@@ -130,6 +130,9 @@
 
     <script type="text/javascript">
 
+        //player color
+        var player_color;
+
         //airconsole stuff
         var airconsole;
         var vm;
@@ -232,13 +235,19 @@
                             increaceCurrentBooty();
                             break;
                         case 'player_color':
+                            player_color = data.color;
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
                             break;
                         case 'no_booty':
                             //if the loosing side (in combat) has no booty to steal
                             decreaceCurrentBooty();
                             break;
-                            
+                        case 'game_over':
+                            vm.show('waiting');
+
+                            //send the final amount of booty a player has
+                            sendMessage(AirConsole.SCREEN, 'final_score', 'total_booty', total_booty, 'color', player_color);
+                            break;
                     }
                 }
             }
