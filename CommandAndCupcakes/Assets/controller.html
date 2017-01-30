@@ -268,6 +268,8 @@
                 clearTimeout(t);
                 seconds = 11;
                 time.textContent = "TIME\nLEFT\n" + (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00");
+                actions[0] = "";
+                actions[1] = "";
                 executeTurn();
             }
         }
