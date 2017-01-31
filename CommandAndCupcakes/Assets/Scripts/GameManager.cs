@@ -206,6 +206,7 @@ public class GameManager : MonoBehaviour {
         foreach (GameObject inter_obj in int_objects)
         {
             int[] obj_tiles = CalculateTile(inter_obj);
+            Debug.Log("Object tiles: " + obj_tiles[0] + ", " + obj_tiles[1]);
 
             if (obj_tiles[0] == tile_x && obj_tiles[1] == tile_z)
             {
@@ -311,7 +312,8 @@ public class GameManager : MonoBehaviour {
         //if a player wins the game, has 9 out of 9 booty
         else if ((string)data["action"] == "overall_win")
         {
-            //TODO:show results table
+            timeLeft = 0;
+            getFinalScore();
         }
         //if the loosing side (in combat) has no booty to steal
         else if ((string)data["action"] == "no_booty_to_steal")
@@ -406,6 +408,7 @@ public class GameManager : MonoBehaviour {
         if (HasBooty(tile[0], tile[1]))
         {
             //If the tile has a booty, send it to the phone.
+            Debug.Log("Booty gained at " + tile[0] +  tile[1]);
             SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "booty_found");
             board[tile[0], tile[1]] = false;
         }
@@ -419,6 +422,7 @@ public class GameManager : MonoBehaviour {
     /// <returns>boolean value of 2D position of tile in board array</returns>
     bool HasBooty(int tile_x, int tile_z)
     {
+
         //check if the player is on the tile that contains a booty 
         return board[tile_x, tile_z];
     }
