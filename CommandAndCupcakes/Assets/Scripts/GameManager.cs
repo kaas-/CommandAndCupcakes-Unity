@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour {
     private int[] turnOrder;
 
     //Variables used to control the game state
-    //IsNextTurn; go to next turn
     private bool isNextTurn = false;
     //isStarted; game has started
     private bool isStarted = false;
@@ -51,6 +50,7 @@ public class GameManager : MonoBehaviour {
     //for combat code
     private bool first_attack_received;
     private int combat_player_1, combat_player_2;
+    private int combat_player_1_local, combat_player_2_local;
 
     //used for various random assignments
     private System.Random rnd;
@@ -70,6 +70,12 @@ public class GameManager : MonoBehaviour {
 
     //counts how many players have send their final amount of booty
     private int finalCount = 0;
+
+    //MAYBE will be used for knockback 
+    public class MultiDimList : List<List<int>> { }
+    MultiDimList otherPlayerPositions = new MultiDimList();
+
+    private bool isInKnockback = false;
 
     // Use this for initialization
     void Start () {
@@ -101,35 +107,6 @@ public class GameManager : MonoBehaviour {
         timer = new Timer(1000);
 
         
-    }
-
-    //<summary
-    //Starts the game
-    //</summary>
-    void StartGame()
-    {
-        //Start the game with a certain amount of players. playerCount defines the amount of players.
-        //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
-
-        playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-        AirConsole.instance.SetActivePlayers(playerCount);
-        isStarted = true;
-
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(2), "player_color", "color", "green");
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
-        
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
-        SetUITextTurn(currentPlayer);
-        isNextTurn = false;
-
-        // Hook up the Elapsed event for the timer. 
-        timer.Elapsed += OnTimedEvent;
-
-        // Have the timer fire repeated events (true is the default)
-        timer.AutoReset = true;
-
     }
 
     /// <summary>
@@ -167,7 +144,7 @@ public class GameManager : MonoBehaviour {
                 board[pos_x, pos_z] = true;
                 i++;
             }
-            
+
         }
     }
 
@@ -185,6 +162,8 @@ public class GameManager : MonoBehaviour {
 
         tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
         tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
+
+        //Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1] + ". Object " + g.ToString());
 
         return tiles;
     }
@@ -215,19 +194,79 @@ public class GameManager : MonoBehaviour {
         }
         return false;
     }
+
     /// <summary>
-    /// Switches turn to next player. Update turn order if needed
+    /// When a device connects to the game
     /// </summary>
-    private void nextTurn()
+    /// <param name="device_id"></param>
+    void OnConnect(int device_id)
     {
-        currentPlayer++;
+        //Debug.Log("Device no. " + device_id + " connected");
+        //If the game has started (SetActivePlayers(int) sets this number to a non-zero value. Thus, if it is 0, the game has not started
+        //TODO: Replace with start menu stuff
+        if (AirConsole.instance.GetActivePlayerDeviceIds.Count == 0)
+        {
+            //max players is 4
+            if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
+            {
+                //too many players
+            }
+            //Start the game at 4 players
+            else if (AirConsole.instance.GetControllerDeviceIds().Count == 4)
+            {
+                StartGame();
+            }
+            else
+            {
+                //set the playerCount to the amount of devices connected
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+            }
+        }
+        else if (AirConsole.instance.GetControllerDeviceIds().Count == playerCount)
+        {
+            isPaused = false;
+        }
+    }
 
-        if (currentPlayer == playerCount)
-            currentPlayer = 0;
+    //device disconnects
+    void OnDisconnect(int device_id)
+    {
 
-        SetUITextTurn(currentPlayer);
-        //send message to controller of next player
+        Debug.Log("DISCONNECTED");
+        //pause
+        isPaused = true;
+        //TODO:Stuff to let players reconnect properly
+        //Debug.Log("Device no " + device_id + " disconnected");
+    }
+
+    //<summary
+    //Starts the game
+    //</summary>
+    void StartGame()
+    {
+        //Start the game with a certain amount of players. playerCount defines the amount of players.
+        //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
+
+        playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+        AirConsole.instance.SetActivePlayers(playerCount);
+        isStarted = true;
+
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(2), "player_color", "color", "green");
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
+        
         SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+        SetUITextTurn(currentPlayer);
+        isNextTurn = false;
+
+
+        // Hook up the Elapsed event for the timer. 
+        timer.Elapsed += OnTimedEvent;
+
+        // Have the timer fire repeated events (true is the default)
+        timer.AutoReset = true;
+
     }
 
     /// <summary>
@@ -240,66 +279,56 @@ public class GameManager : MonoBehaviour {
         //has game started? if no, and the message says start game, start the game
         if (!isStarted)
         {
-            if ((string)data["action"] =="start_game")
+            if ((string)data["action"] == "start_game")
             {
                 StartGame();
             }
         }
         //if the game has started, the message will be actions for turns
-        else if ((string)data["action"] == "turn_action") 
+        else if ((string)data["action"] == "turn_action")
         {
             //Debug.Log("Turn action received from " + device_id + ". Current player is " + AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer));
             //If the controller that sent the message corresponds to active player
             if (device_id == AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer))
             {
-
-                //execute turn
-                string[] actions = new string[2];
-                actions[0] = (string)data["action_1"];
-                actions[1] = (string)data["action_2"];
-
-                //send actions to the player object
-                playerObjects[currentPlayer].SendMessage("Action", actions);
+                ExcuteTurnActions((string)data["action_1"], (string)data["action_2"], currentPlayer, "Action");
 
             }
-            
+
         }
         /****COMBAT HANDLING****/
         //A player successfully pushed the correct buttons and is the first to do so
         else if ((string)data["action"] == "attack_response_success" && !first_attack_received)
         {
             first_attack_received = true;
-            
+            OtherPlayerPositionsAfterCombat(combat_player_1_local, combat_player_2_local);
 
-            //Send loss message to appropriate player
-            if (device_id != combat_player_1)
+            //Send win and loss message to appropriate player
+            if (device_id == combat_player_1)
             {
-                SendAirConsoleMessage(combat_player_2, "combat_result_won");
-                SendAirConsoleMessage(combat_player_1, "combat_result_loss");
+                HandleCombatResult(combat_player_1, combat_player_2);
             }
             else
             {
-                SendAirConsoleMessage(combat_player_1, "combat_result_won");
-                SendAirConsoleMessage(combat_player_2, "combat_result_loss");
+                HandleCombatResult(combat_player_2, combat_player_1);
             }
-                
+
 
         }
         //A player messed up and is the first to do so
-        else if((string)data["action"] == "attack_response_failure" && !first_attack_received)
+        else if ((string)data["action"] == "attack_response_failure" && !first_attack_received)
         {
             first_attack_received = true;
+            OtherPlayerPositionsAfterCombat(combat_player_1_local, combat_player_2_local);
 
-            //Send win message
-            if (device_id != combat_player_1)
+            //Send win and loss message to appropriate player
+            if (device_id == combat_player_1)
             {
-                SendAirConsoleMessage(combat_player_1, "combat_result_won");
-                SendAirConsoleMessage(combat_player_2, "combat_result_loss");
+                HandleCombatResult(combat_player_2, combat_player_1);
             }
             else
             {
-                SendAirConsoleMessage(combat_player_2, "combat_result_won");
-                SendAirConsoleMessage(combat_player_1, "combat_result_loss");
+                HandleCombatResult(combat_player_1, combat_player_2);
             }
 
         }
@@ -322,7 +351,7 @@ public class GameManager : MonoBehaviour {
             {
                 SendAirConsoleMessage(combat_player_2, "no_booty");
             }
-            else 
+            else
             {
                 SendAirConsoleMessage(combat_player_1, "no_booty");
             }
@@ -335,7 +364,7 @@ public class GameManager : MonoBehaviour {
             s = s.ToUpper();
 
             //store each players color and their final amount of booty
-            final_score_list.Add(new KeyValuePair<string, int> (s, (int)data["total_booty"]));
+            final_score_list.Add(new KeyValuePair<string, int>(s, (int)data["total_booty"]));
 
             //if all players have send their final booty amount
             if (finalCount == playerCount)
@@ -349,14 +378,93 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    private void HandleCombatResult(int winner, int looser)
+    {
+
+        int looser_local_ID;
+
+        if (looser == combat_player_1)
+        {
+            looser_local_ID = combat_player_1_local;
+        }
+        else
+        {
+            looser_local_ID = combat_player_2_local;
+        }
+
+        SendAirConsoleMessage(winner, "combat_result_won");
+        SendAirConsoleMessage(looser, "combat_result_loss");
+        SearchAvailableTile(looser_local_ID);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //updates the timer
+        SetTimer();
+
+        if (isNextTurn && !isPaused && isStarted && !isInKnockback)
+        {
+            nextTurn();
+
+            isNextTurn = false;
+        }
+    }
+
+    /// <summary>
+    /// Switches turn to next player. Update turn order if needed
+    /// </summary>
+    private void nextTurn()
+    {
+        currentPlayer++;
+
+        if (currentPlayer == playerCount)
+            currentPlayer = 0;
+
+        SetUITextTurn(currentPlayer);
+
+        //send message to controller of next player
+        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+    }
+
+    
+    /// <summary>
+    /// Sends actions to player object (pirate)
+    /// </summary>
+    /// <param name="action_one">first action</param>
+    /// <param name="action_two">second action</param>
+    /// <param name="p">index of the player, who receives the message</param>
+    /// <param name="actionType">can be either a regular action, or a concequence of a knockback (when loosing combat)</param>
+    private void ExcuteTurnActions(string action_one, string action_two, int p, string actionType)
+    {
+        //execute turn
+        string[] actions = new string[2];
+        actions[0] = action_one;
+        actions[1] = action_two;
+
+        //Debug.Log("TEST executing " + actionType + " actions of player " + p + ": " + action_one + " " + action_two);
+        //send actions to the player object
+        playerObjects[p].SendMessage(actionType, actions);
+    }
+
     /// <summary>
     /// Playerobject calls this method when they have finished moving.
     /// </summary>
     void OnPlayerFinishedMoving()
     {
+        //wait for the knockback to be over, them continue
+        Debug.Log("Player " + currentPlayer + " has finished moving");
         //Check whether a combat is initiated
         if (!checkAttackAction(currentPlayer))
-            isNextTurn = true;   
+        {
+            Debug.Log("Assigning next turn");
+            isNextTurn = true;
+        }
+        else
+        {
+            isInKnockback = true;
+        }
+             
     }
 
     /// <summary>
@@ -367,7 +475,7 @@ public class GameManager : MonoBehaviour {
     bool checkAttackAction(int player)
     {
         //Debug.Log("Checking for combat");
-        
+
         //Get the position of the current player
         int[] currentPlayerPosition = CalculateTile(playerObjects[player]);
 
@@ -378,8 +486,10 @@ public class GameManager : MonoBehaviour {
             int[] otherPlayerPosition = CalculateTile(playerObjects[i]);
 
             //Compare player positions on grid. If they match, initiate combat.
-            if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1]  && i != player)
+            if (currentPlayerPosition[0] == otherPlayerPosition[0] && currentPlayerPosition[1] == otherPlayerPosition[1] && i != player)
             {
+                combat_player_1_local = i;
+                combat_player_2_local = player;
 
                 //Debug.Log("Combat!");
                 combat_player_1 = AirConsole.instance.ConvertPlayerNumberToDeviceId(i);
@@ -388,7 +498,7 @@ public class GameManager : MonoBehaviour {
                 //changes the UI text to who is in combat
                 SetUITextCombat(player, i);
 
-               // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
+                // Debug.Log("Combat action to: " + combat_player_1 + " and " + combat_player_2); 
                 SendAirConsoleMessage(combat_player_1, "attack");
                 SendAirConsoleMessage(combat_player_2, "attack");
 
@@ -397,6 +507,17 @@ public class GameManager : MonoBehaviour {
         }
         return false;
     }
+
+    /// <summary>
+    /// Player object calls this method when a player is finished executing actions after knockback
+    /// </summary>
+    void OnPlayerFinishedMovingKnockback()
+    {
+       // Debug.Log("Finished knockback of pirate");
+        isInKnockback = false;
+    }
+
+   
 
 
     /// <summary>
@@ -422,64 +543,8 @@ public class GameManager : MonoBehaviour {
     /// <returns>boolean value of 2D position of tile in board array</returns>
     bool HasBooty(int tile_x, int tile_z)
     {
-
         //check if the player is on the tile that contains a booty 
         return board[tile_x, tile_z];
-    }
-
-    /// <summary>
-    /// When a device connects to the game
-    /// </summary>
-    /// <param name="device_id"></param>
-    void OnConnect(int device_id)
-    {
-        //Debug.Log("Device no. " + device_id + " connected");
-        //If the game has started (SetActivePlayers(int) sets this number to a non-zero value. Thus, if it is 0, the game has not started
-        //TODO: Replace with start menu stuff
-        if (AirConsole.instance.GetActivePlayerDeviceIds.Count == 0)
-        {
-            //max players is 4
-            if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
-            {
-                //too many players
-            }
-            //Start the game at 4 players
-            else if(AirConsole.instance.GetControllerDeviceIds().Count == 4)
-            {
-                StartGame();
-            }
-            else
-            {
-                //set the playerCount to the amount of devices connected
-                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-            }
-        }
-        else if (AirConsole.instance.GetControllerDeviceIds().Count == playerCount)
-        {
-            isPaused = false;
-        }
-    }
-
-    //device disconnects
-    void OnDisconnect(int device_id)
-    {
-        //pause
-        isPaused = true;
-        //TODO:Stuff to let players reconnect properly
-        //Debug.Log("Device no " + device_id + " disconnected");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //updates the timer
-        SetTimer();
-
-        if (isNextTurn && !isPaused && isStarted)
-        {
-            nextTurn();
-            isNextTurn = false;
-        }
     }
 
     /// <summary>
@@ -673,4 +738,126 @@ public class GameManager : MonoBehaviour {
 
         final_score.text = final_message;
     }
+
+
+
+    /// <summary>
+    /// Goes through all the player objects and stores positions of players that were NOT participating in combat
+    /// </summary>
+    /// <param name="player_1">player participating in combat</param>
+    /// <param name="player_2">player participating in combat</param>
+    private void OtherPlayerPositionsAfterCombat(int player_1, int player_2)
+    {
+        for (int pl = 0; pl < playerCount; pl++)
+        {
+            if (pl != player_1 && pl != player_2)
+            {
+                int[] pl_pos = CalculateTile(playerObjects[pl]);
+                List<int> lst = new List<int>();
+                lst.Add(pl_pos[0]);
+                lst.Add(pl_pos[1]);
+                otherPlayerPositions.Add(lst);
+                //Debug.Log("TEST Added another player position to list: " + pl_pos[0] + ", " + pl_pos[1]);
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Checks whether there are player objects on a tile that were NOT participating in combat
+    /// </summary>
+    /// <param name="x">tile position in the x direction</param>
+    /// <param name="z">tile position in the z direction</param>
+    /// <returns></returns>
+    private bool IsAvailableTile(int x, int z)
+    {
+        foreach (List<int> pl_pos in otherPlayerPositions)
+        {
+            if (pl_pos[0] == x && pl_pos[1] == z)
+            {
+                //there is a player at that tile
+                return false;
+            }
+        }
+        //there isn't a player at that tile
+        return true;
+    }
+   
+
+    
+    /// <summary>
+    /// Goes through the nearby tiles to see where to relocate the player that had lost in combat
+    /// </summary>
+    /// <param name="loosing_player">the local ID of the loosing player</param>
+    private void SearchAvailableTile(int loosing_player)
+    {
+        //location of the player that had lost
+        int[] lost_pl_pos = CalculateTile(playerObjects[loosing_player]);
+        int x_position = lost_pl_pos[0];
+        int z_position = lost_pl_pos[1];
+
+        //possible offsets from the original position of the player that had lost
+        int positive_x = lost_pl_pos[0] + 1;
+        int negative_x = lost_pl_pos[0] - 1;
+        int positive_z = lost_pl_pos[1] + 1;
+        int negative_z = lost_pl_pos[1] - 1;
+
+        //the if-else statement determines how to offset the player that had lost
+        //in the positive x direction
+        if (positive_x < num_tiles && IsAvailableTile(positive_x, z_position))
+        {
+            ExcuteTurnActions("right_down", "", loosing_player, "Knockback");
+        }
+        //in the negative x direction
+        else if (negative_x >= 0 && IsAvailableTile(negative_x, z_position))
+        {
+            ExcuteTurnActions("left_up", "", loosing_player, "Knockback");
+        }
+        //in the positive z direction
+        else if (positive_z < num_tiles && IsAvailableTile(x_position, positive_z))
+        {
+            ExcuteTurnActions("right_up", "", loosing_player, "Knockback");
+        }
+        //in the negative z direction
+        else if (negative_z >= 0 && IsAvailableTile(x_position, negative_z))
+        {
+            ExcuteTurnActions("left_down", "", loosing_player, "Knockback");
+        }
+    
+ 
+        //if stuck in a corner and surrounded by other pirates, move diagonally
+        //positive x, positive z direction
+        else if (positive_x < num_tiles && positive_z < num_tiles)
+        {
+            ExcuteTurnActions("right_down", "right_up", loosing_player, "Knockback");
+        }
+        
+        //positive x, negative z direction
+        else if (positive_x < num_tiles && negative_z >= 0)
+        {
+            ExcuteTurnActions("right_down", "left_down", loosing_player, "Knockback");
+        }
+
+        //negative x, negative z direction
+        else if (negative_x >= 0 && negative_z >= 0)
+        {
+            ExcuteTurnActions("left_up", "left_down", loosing_player, "Knockback");
+        }
+
+        //negative x, positive z direction
+        else if (negative_x >= 0 && positive_z < num_tiles)
+        {
+            ExcuteTurnActions("left_up", "right_up", loosing_player, "Knockback");
+        }
+
+        //something is wrong with knockback
+        else 
+        {
+            Debug.Log("KNOCKBACK Something is wrong");
+        }
+
+        //clear the positions of players that had not participated in combat
+        otherPlayerPositions.Clear(); 
+    }
+
 }

@@ -22,6 +22,7 @@ class GridMove : MonoBehaviour
     private float t;
     private int actionIterator = 2;
     private string[] actions;
+    private bool checkKnockback = false;
 
     public int boundary;
 
@@ -82,17 +83,6 @@ class GridMove : MonoBehaviour
         startPosition = transform.position;
         t = 0;
 
-        /*
-        if (input.x != 0 || input.y != 0)
-        {
-            this.SendMessage("setMove", 1);
-        }
-        else
-        {
-            this.SendMessage("setMove", 0);
-        }
-        */
-
         if (gridOrientation == Orientation.Horizontal)
         {
             endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
@@ -119,8 +109,20 @@ class GridMove : MonoBehaviour
         }
 
         isMoving = false;
-        if (actionIterator == 2)
+
+        //regular player action 
+        if (actionIterator == 2 && !checkKnockback)
+        {
             gameManager.SendMessage("OnPlayerFinishedMoving");
+        }
+        
+        //knockback action
+        else if (actionIterator == 2 && checkKnockback)
+        {
+            checkKnockback = false;
+            gameManager.SendMessage("OnPlayerFinishedMovingKnockback");
+        }
+           
 
         yield return 0;
     }
@@ -130,6 +132,14 @@ class GridMove : MonoBehaviour
         Debug.Log(gameObject + " received Action");
         actionIterator = 0;
         this.actions = actions;
+    }
+
+    void Knockback(string[] actions)
+    {
+        Debug.Log(gameObject + " received Knockback");
+        actionIterator = 0;
+        this.actions = actions;
+        checkKnockback = true;
     }
 
     void setBoundary (int boundary)
