@@ -708,7 +708,20 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     private void ShowResolutionScreen()
     {
-        string final_message = "FINAL SCORE\n";
+        string final_message = "";
+
+        //reveal the winner, if any
+        if (final_score_list[0].Value == final_score_list[1].Value)
+        {
+            final_message += "IT'S A DRAW!\n\n";
+        }
+        else
+        {
+            final_message += final_score_list[0].Key + " PIRATE WINS!\n\n";
+        }
+
+        //show scoreboard
+        final_message += "FINAL SCORE\n";
         foreach (KeyValuePair<string, int> kv in final_score_list)
         {
             string col = kv.Key;
@@ -736,6 +749,7 @@ public class GameManager : MonoBehaviour {
         c.a = 1;
         final_score_image.color = c;
 
+        //put the scoreboard into UI text
         final_score.text = final_message;
     }
 
