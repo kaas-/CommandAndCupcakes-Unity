@@ -14,14 +14,12 @@ public class GameManager : MonoBehaviour {
 
     [Range(2, 4)][SerializeField] int playerCount = 4;
 
-    static GameObject[] playerObjects = new GameObject[4];
+    private GameObject[] playerObjects;
 
     //UI text for turn change and combat
     public Text notifications;
-
     //UI text for timer
     public Text text_timer;
-
     //text for score board
     public Text final_score;
 
@@ -71,11 +69,18 @@ public class GameManager : MonoBehaviour {
     //counts how many players have send their final amount of booty
     private int finalCount = 0;
 
-    //MAYBE will be used for knockback 
+    //stores the positions of other players on board that are not participating in combat
     public class MultiDimList : List<List<int>> { }
     MultiDimList otherPlayerPositions = new MultiDimList();
 
+    //states whether the pirate has finished knockback actions
     private bool isInKnockback = false;
+
+    //activates if a player disconnected
+    private bool isDisconnected = false;
+
+    //number (local) of the disconnected player
+    private int disconnected_player;
 
     // Use this for initialization
     void Start () {
@@ -93,6 +98,8 @@ public class GameManager : MonoBehaviour {
         rnd = new System.Random();
         RandomiseTiles();
 
+
+        playerObjects = new GameObject[playerCount];
         //Add all players to an array
         playerObjects = GameObject.FindGameObjectsWithTag("Player"); 
 
@@ -105,8 +112,8 @@ public class GameManager : MonoBehaviour {
 
         //sets the timer with an interval of 1 second
         timer = new Timer(1000);
-
         
+
     }
 
     /// <summary>
@@ -231,12 +238,9 @@ public class GameManager : MonoBehaviour {
     //device disconnects
     void OnDisconnect(int device_id)
     {
-
-        Debug.Log("DISCONNECTED");
-        //pause
-        isPaused = true;
         //TODO:Stuff to let players reconnect properly
-        //Debug.Log("Device no " + device_id + " disconnected");
+        disconnected_player = AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id);
+        isDisconnected = true;
     }
 
     //<summary
@@ -367,7 +371,7 @@ public class GameManager : MonoBehaviour {
             final_score_list.Add(new KeyValuePair<string, int>(s, (int)data["total_booty"]));
 
             //if all players have send their final booty amount
-            if (finalCount == playerCount)
+            if (finalCount == AirConsole.instance.GetControllerDeviceIds().Count)
             {
                 //sort the values from the highest to the lowest value
                 final_score_list.Sort((x, y) => y.Value.CompareTo(x.Value));
@@ -403,10 +407,30 @@ public class GameManager : MonoBehaviour {
         //updates the timer
         SetTimer();
 
+        //a player disconnected
+        if (isDisconnected)
+        {
+            //erases the pirate from the field
+            Destroy(playerObjects[disconnected_player]);
+
+            if (disconnected_player == currentPlayer)
+            {
+                isNextTurn = true;
+            }
+
+            //get final result if there are less than 2 players on the field
+            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
+            {
+                timeLeft = 0;
+                getFinalScore();
+            }
+
+            isDisconnected = false;
+        }
+
         if (isNextTurn && !isPaused && isStarted && !isInKnockback)
         {
             nextTurn();
-
             isNextTurn = false;
         }
     }
@@ -417,9 +441,17 @@ public class GameManager : MonoBehaviour {
     private void nextTurn()
     {
         currentPlayer++;
-
         if (currentPlayer == playerCount)
             currentPlayer = 0;
+
+        //if player has disconnected
+        while (playerObjects[currentPlayer] == null)
+        {
+            //Debug.Log("Skipping over disconnected player");
+            currentPlayer++;
+            if (currentPlayer == playerCount)
+                currentPlayer = 0;
+        }
 
         SetUITextTurn(currentPlayer);
 
@@ -482,7 +514,14 @@ public class GameManager : MonoBehaviour {
         //for each player
         for (int i = 0; i < playerCount; i++)
         {
-            //Debug.Log("Other player position: " + CalculateTile(playerObjects[i]));
+            if (playerObjects[i] == null)
+            {
+                //Debug.Log("Disconnected player is null");
+                continue;
+            }
+
+            //Debug.Log("Checking attack action for player number " + i);
+
             int[] otherPlayerPosition = CalculateTile(playerObjects[i]);
 
             //Compare player positions on grid. If they match, initiate combat.
@@ -711,7 +750,7 @@ public class GameManager : MonoBehaviour {
         string final_message = "";
 
         //reveal the winner, if any
-        if (final_score_list[0].Value == final_score_list[1].Value)
+        if (final_score_list.Count > 1 && final_score_list[0].Value == final_score_list[1].Value)
         {
             final_message += "IT'S A DRAW!\n\n";
         }
@@ -766,6 +805,11 @@ public class GameManager : MonoBehaviour {
         {
             if (pl != player_1 && pl != player_2)
             {
+                if (playerObjects[pl] == null)
+                {
+                    continue;
+                }
+
                 int[] pl_pos = CalculateTile(playerObjects[pl]);
                 List<int> lst = new List<int>();
                 lst.Add(pl_pos[0]);
