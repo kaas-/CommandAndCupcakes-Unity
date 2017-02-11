@@ -83,15 +83,33 @@
 			top					: 12vmax;
 		}
 		
-		
+		.startbutton {
+			background-color	: cornsilk;
+			border-radius		: 25px; 
+			width				: 80vmax;
+			height				: 18vmax; 
+			font-family			: pirate;
+			font-size			: 12vmax;
+			text-align          : center;
+		}
 		
         /*START SCREEN*/    
-        #start_button {
-            padding : 10px, 20px;
-            display : block;
-            width   : 60%;
-            height  : 10%;
+		#start {
+			position 			: absolute;
+			top					: 10vmax;
+			left				: 10%;
+			width				: 80%;
+			height				: 30%;
+		}
+        #start_game_button {
+			position			: absolute;
+			
+            
         }
+		#start_tutorial {
+			position			: absolute;
+			top					: 25vmax; 
+		}
 
       
 		/*PLANNING SCREEN*/
