@@ -130,9 +130,6 @@
 
     <script type="text/javascript">
 
-        //player color
-        var player_color;
-
         //airconsole stuff
         var airconsole;
         var vm;
@@ -226,6 +223,8 @@
                                 //decreace the amount of booty by 1
                                 decreaceCurrentBooty();
                             }
+                         
+                            
                             setTimeout(function () {
                                 vm.show('waiting');
                             }, 2500);
@@ -235,18 +234,21 @@
                             increaceCurrentBooty();
                             break;
                         case 'player_color':
-                            player_color = data.color;
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
                             break;
                         case 'no_booty':
                             //if the loosing side (in combat) has no booty to steal
                             decreaceCurrentBooty();
                             break;
+                        case 'disconnected_opponent_in_combat':
+                            //if the opponent (in combat) disconnected 
+                            vm.show('waiting');
+                            break;
                         case 'game_over':
                             vm.show('waiting');
 
                             //send the final amount of booty a player has
-                            sendMessage(AirConsole.SCREEN, 'final_score', 'total_booty', total_booty, 'color', player_color);
+                            sendMessage(AirConsole.SCREEN, 'final_score', 'total_booty', total_booty);
                             break;
                     }
                 }
