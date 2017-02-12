@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviour {
     public Text final_score;
     //text for start menu on the main screen
     public Text start_text;
-
     //background image for start text and score board
     public Image board_image;
 
@@ -59,12 +58,12 @@ public class GameManager : MonoBehaviour {
     private Timer timer;
 
     //set how much time is left (in seconds)
-    private int timeLeft = 100;
+    private int timeLeft = 300;
 
     //when time for the overall game runs out it sets to false
     private bool getFinalBooty = true;
 
-    //stores the color of the player (key) and the total amount of booty that player has
+    //stores the color of the player (key) and the total amount of booty that player has (value)
     //is used for scoreboard
     private List<KeyValuePair<string, int>> final_score_list = new List<KeyValuePair<string, int>>();
 
@@ -77,13 +76,6 @@ public class GameManager : MonoBehaviour {
 
     //states whether the pirate has finished knockback actions
     private bool isInCombat = false;
-
-    //activates if a player disconnected
-    private bool isDisconnected = false;
-
-    //number (local) of the disconnected player
-    //TODO change to array, maybe, to account for >1 players disconnecting
-    private int disconnected_player;
 
     //number of players that pressed "start game" on their phones
     private int ready_players = 0;
@@ -224,24 +216,33 @@ public class GameManager : MonoBehaviour {
     /// <param name="device_id"></param>
     void OnConnect(int device_id)
     {
-         if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
-         {
-             //output to main screen that there are too many players connected
-             ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" + 
+        if (AirConsole.instance.GetControllerDeviceIds().Count > 0)
+        {
+            ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                             "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+            playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+        }
+
+        if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
+        {
+            //output to main screen that there are too many players connected
+            ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" + 
                              "Maximum number of players allowed: 4\n\nThere are more than 4 players connected to the game");
 
             //set the playerCount to the amount of devices connected
             playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-         }
-         else if (AirConsole.instance.GetControllerDeviceIds().Count >= 2 && AirConsole.instance.GetControllerDeviceIds().Count <= 4)
-         {
+        }
+
+        if (AirConsole.instance.GetControllerDeviceIds().Count >= 2 && AirConsole.instance.GetControllerDeviceIds().Count <= 4)
+        {
             
-             ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+            ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
                              "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
 
-             //set the playerCount to the amount of devices connected
-             playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-         }
+            //set the playerCount to the amount of devices connected
+            playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+        }
     }
 
     //device disconnects
@@ -249,16 +250,23 @@ public class GameManager : MonoBehaviour {
     {
         Debug.Log("DISCONNECTED");
         //TODO:Stuff to let players reconnect properly
-        if (playerCount > 4)
+        if (!isStarted)
         {
-            Debug.Log("EXTRA player disconnected");
-            playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-            Debug.Log("EXTRA player disconnected, current number of players: " + playerCount);
-
-            if (playerCount >= 2 && playerCount <= 4)
+            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
             {
                 ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
-                                "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+                                 "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+            }
+
+            if (AirConsole.instance.GetControllerDeviceIds().Count >= 2 && AirConsole.instance.GetControllerDeviceIds().Count <= 4)
+            {
+                ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                                 "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+                //set the playerCount to the amount of devices connected
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
 
                 //if all of the connected players want to start the game
                 if (ready_players == playerCount)
@@ -266,12 +274,60 @@ public class GameManager : MonoBehaviour {
                     StartGame();
                 }
             }
+
+            if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
+            {
+                //output to main screen that there are too many players connected
+                ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                                 "Maximum number of players allowed: 4\n\nThere are more than 4 players connected to the game");
+
+                //set the playerCount to the amount of devices connected
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+            }
         }
-        else if (playerCount < 4)
+
+
+        else if (isStarted)
         {
-            disconnected_player = AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id);
+            int disconnected_player = AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id);
             Debug.Log("DISCONNECTED player " + disconnected_player);
-            isDisconnected = true;
+
+            //erases the pirate from the field
+            Destroy(playerObjects[disconnected_player]);
+            playerObjects[disconnected_player] = null;
+
+
+            //if disconnected player is in combat
+            if ((disconnected_player == combat_player_1_local || disconnected_player == combat_player_2_local) && isInCombat)
+            {
+                Debug.Log("The player disconnected is in battle");
+                isNextTurn = true;
+                isInCombat = false;
+
+                //if one of the combat players disconnected, the remaining player automatically goes to waiting state
+                if (disconnected_player == combat_player_1_local)
+                {
+                    SendAirConsoleMessage(combat_player_2, "disconnected_opponent_in_combat");
+                }
+                else if (disconnected_player == combat_player_2_local)
+                {
+                    SendAirConsoleMessage(combat_player_1, "disconnected_opponent_in_combat");
+                }
+            }
+
+            //if disconnected player is the current player, who is not in combat
+            if (disconnected_player == currentPlayer && !isNextTurn)
+            {
+                Debug.Log("NEXT TURN because the player disconnected is the current player");
+                isNextTurn = true;
+            }
+
+            //get final result if there are less than 2 players on the field
+            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
+            {
+                timeLeft = 0;
+                getFinalScore();
+            }
         }
         
     }
@@ -341,7 +397,7 @@ public class GameManager : MonoBehaviour {
             ready_players++;
 
             //if all of the connected players want to start the game
-            if (ready_players == playerCount && playerCount <= 4)
+            if (ready_players == playerCount && playerCount <= 4 && playerCount >= 2)
             {
                 StartGame();
             }
@@ -458,51 +514,6 @@ public class GameManager : MonoBehaviour {
         //updates the timer
         SetTimer();
 
-        //a player disconnected
-        if (isDisconnected)
-        {
-            Debug.Log("Disconnecting player " + disconnected_player);
-
-            //erases the pirate from the field
-            Destroy(playerObjects[disconnected_player]);
-            playerObjects[disconnected_player] = null;
-            
-
-            //if disconnected player is in combat
-            if ((disconnected_player == combat_player_1_local || disconnected_player == combat_player_2_local) && isInCombat)
-            {
-                Debug.Log("The player disconnected is in battle");
-                isNextTurn = true;
-                isInCombat = false;
-
-                //if one of the combat players disconnected, the remaining player automatically goes to waiting state
-                if (disconnected_player == combat_player_1_local)
-                {
-                    SendAirConsoleMessage(combat_player_2, "disconnected_opponent_in_combat");
-                }
-                else if (disconnected_player == combat_player_2_local)
-                {
-                    SendAirConsoleMessage(combat_player_1, "disconnected_opponent_in_combat");
-                }
-            }
-
-            //if disconnected player is the current player, who is not in combat
-            if (disconnected_player == currentPlayer && !isNextTurn)
-            {
-                Debug.Log("NEXT TURN because the player disconnected is the current player");
-                isNextTurn = true;
-            }
-
-            //get final result if there are less than 2 players on the field
-            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
-            {
-                timeLeft = 0;
-                getFinalScore();
-            }
-
-            isDisconnected = false;
-        }
-
         if (isNextTurn && !isPaused && isStarted && !isInCombat)
         {
             Debug.Log("Updating to next turn");
@@ -551,13 +562,14 @@ public class GameManager : MonoBehaviour {
         actions[1] = action_two;
 
         //Debug.Log("TEST executing " + actionType + " actions of player " + p + ": " + action_one + " " + action_two);
-        //send actions to the player object
+        
         if (playerObjects[p] == null)
         {
-            isNextTurn = true;
+            return;
         }
         else
         {
+            //send actions to the player object
             playerObjects[p].SendMessage(actionType, actions);
         }
         
