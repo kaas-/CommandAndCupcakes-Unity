@@ -13,7 +13,7 @@
 <body onload="setup()">
 	<!--START GAME SCREEN-->
     <div id="start" class="view default-view">
-        <div id="start_game_button" class="startbutton">   START GAME     </div>
+        <div id="start_game_button" class="startbutton" onclick="sendStartMessage()">   START GAME     </div>
 		<div id="start_tutorial" class="startbutton">  TUTORIAL </div>
     </div>
 
@@ -255,6 +255,11 @@
 
             
         };
+
+        function sendStartMessage() {
+            sendMessage(AirConsole.SCREEN, 'start_game');
+            vm.show('waiting');
+        }
 
         /*****TIMER CODE*****/
         //right now a player has 11 seconds to complete the turn

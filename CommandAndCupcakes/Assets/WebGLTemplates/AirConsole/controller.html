@@ -12,10 +12,9 @@
 
 <body onload="setup()">
 	<!--START GAME SCREEN-->
-    <div id="start" class="view">
-        <div id="next_combat_button" class="startbutton">
-            Start game!
-        </div>
+    <div id="start" class="view default-view">
+        <div id="start_game_button" class="startbutton" onclick="sendStartMessage()">   START GAME     </div>
+		<div id="start_tutorial" class="startbutton">  TUTORIAL </div>
     </div>
 
     <!--PLANNING SCREEN-->  
@@ -64,7 +63,7 @@
     </div>
    
     <!--WAITING FOR TURN SCREEN-->
-	<div id="waiting" class="view default-view">
+	<div id="waiting" class="view ">
         <div id="waiting_booty_switch" class="button booty_button">
 			<div class="booty_amount">
 				<span id="booty_current_wait" class="booty_text">0</span>
@@ -256,6 +255,11 @@
 
             
         };
+
+        function sendStartMessage() {
+            sendMessage(AirConsole.SCREEN, 'start_game');
+            vm.show('waiting');
+        }
 
         /*****TIMER CODE*****/
         //right now a player has 11 seconds to complete the turn
