@@ -67,16 +67,16 @@
 
         }
 		
-		.map_button{
+		.booty_button{
 			width           	: 12vmax;
             height          	: 12vmax;
-			background-image 	: url('/img/map.png');
+			background-image 	: url('/img/booty.png');
 			top					: 1.5%;
 			z-index				: 2;
 			
 
 		}
-		.map_text{
+		.booty_text{
 			font-family			: pirate;
 			font-size			: 4vmax;
 			position			: absolute;
@@ -113,7 +113,11 @@
 
       
 		/*PLANNING SCREEN*/
-      
+		#time {
+			text-align			: center;
+			font-family			: pirate;
+			font-size			: 3.vmax;
+		}
 		
 		#planned_actions_area {
             
@@ -137,11 +141,11 @@
 			left				: 66%;
         }
 		
-		#map_current{
+		#booty_current{
 			left				: 2vmax;
 		
 		}
-		#map_max{
+		#booty_max{
 			left				:5vmax;
 		}
 
@@ -255,11 +259,11 @@
         }
 
       
-		#map_current_wait{
+		#booty_current_wait{
 			left				: 2vmax;
 		
 		}
-		#map_max_wait{
+		#booty_max_wait{
 			left				:5vmax;
 		}
 		
