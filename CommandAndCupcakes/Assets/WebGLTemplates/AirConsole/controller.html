@@ -12,8 +12,13 @@
 
 <body onload="setup()">
 	<!--START GAME SCREEN-->
+<<<<<<< HEAD
     <div id="start" class="view ">
         <div id="start_game_button" class="startbutton">   START GAME     </div>
+=======
+    <div id="start" class="view default-view">
+        <div id="start_game_button" class="startbutton" onclick="sendStartMessage()">   START GAME     </div>
+>>>>>>> afea1c195ec6cce84b5f1862004ba895bc80c6c1
 		<div id="start_tutorial" class="startbutton">  TUTORIAL </div>
     </div>
 
@@ -129,9 +134,6 @@
 
     <script type="text/javascript">
 
-        //player color
-        var player_color;
-
         //airconsole stuff
         var airconsole;
         var vm;
@@ -176,7 +178,7 @@
                         case 'turn':
                             //your turn
                             clearTimeout();
-                            navigator.vibrate(200);
+                            navigator.vibrate(450);
                             vm.show('planning');
                             //start timer for the turn
                             your_turn = true;
@@ -187,7 +189,7 @@
                             console.log("attack message received");
 
 							resetButtons();
-                            navigator.vibrate(200);
+							navigator.vibrate(450);
                             //place random buttons
                             randomPosition("3", 0);
                             randomPosition("2", 1);
@@ -225,6 +227,8 @@
                                 //decreace the amount of booty by 1
                                 decreaceCurrentBooty();
                             }
+                         
+                            
                             setTimeout(function () {
                                 vm.show('waiting');
                             }, 2500);
@@ -234,18 +238,21 @@
                             increaceCurrentBooty();
                             break;
                         case 'player_color':
-                            player_color = data.color;
                             document.body.style.backgroundImage = "url('/img/backgroundtexture_" + data.color + ".png')";
                             break;
                         case 'no_booty':
                             //if the loosing side (in combat) has no booty to steal
                             decreaceCurrentBooty();
                             break;
+                        case 'disconnected_opponent_in_combat':
+                            //if the opponent (in combat) disconnected 
+                            vm.show('waiting');
+                            break;
                         case 'game_over':
                             vm.show('waiting');
 
                             //send the final amount of booty a player has
-                            sendMessage(AirConsole.SCREEN, 'final_score', 'total_booty', total_booty, 'color', player_color);
+                            sendMessage(AirConsole.SCREEN, 'final_score', 'total_booty', total_booty);
                             break;
                     }
                 }
@@ -253,6 +260,11 @@
 
             
         };
+
+        function sendStartMessage() {
+            sendMessage(AirConsole.SCREEN, 'start_game');
+            vm.show('waiting');
+        }
 
         /*****TIMER CODE*****/
         //right now a player has 11 seconds to complete the turn

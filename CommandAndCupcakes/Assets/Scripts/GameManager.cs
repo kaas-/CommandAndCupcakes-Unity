@@ -22,9 +22,10 @@ public class GameManager : MonoBehaviour {
     public Text text_timer;
     //text for score board
     public Text final_score;
-
-    //background image for score board
-    public Image final_score_image;
+    //text for start menu on the main screen
+    public Text start_text;
+    //background image for start text and score board
+    public Image board_image;
 
     private int currentPlayer;
     private int[] turnOrder;
@@ -62,7 +63,7 @@ public class GameManager : MonoBehaviour {
     //when time for the overall game runs out it sets to false
     private bool getFinalBooty = true;
 
-    //stores the color of the player (key) and the total amount of booty that player has
+    //stores the color of the player (key) and the total amount of booty that player has (value)
     //is used for scoreboard
     private List<KeyValuePair<string, int>> final_score_list = new List<KeyValuePair<string, int>>();
 
@@ -74,13 +75,10 @@ public class GameManager : MonoBehaviour {
     MultiDimList otherPlayerPositions = new MultiDimList();
 
     //states whether the pirate has finished knockback actions
-    private bool isInKnockback = false;
+    private bool isInCombat = false;
 
-    //activates if a player disconnected
-    private bool isDisconnected = false;
-
-    //number (local) of the disconnected player
-    private int disconnected_player;
+    //number of players that pressed "start game" on their phones
+    private int ready_players = 0;
 
     // Use this for initialization
     void Start () {
@@ -112,7 +110,10 @@ public class GameManager : MonoBehaviour {
 
         //sets the timer with an interval of 1 second
         timer = new Timer(1000);
-        
+
+        //show welcome board (instructions how to start the game)
+        ChangeBoardVisibility(1);
+        ChangeStartText("WELCOME!\nNumber of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
 
     }
 
@@ -161,16 +162,23 @@ public class GameManager : MonoBehaviour {
     /// <param name="g">GameObject we find the position of.</param>
     int[] CalculateTile(GameObject g)
     {
-        //Debug.Log("Calculating tile: " + g);
-        float pirate_x = g.transform.position.x;
-        float pirate_z = g.transform.position.z;
-
         int[] tiles = new int[2];
 
-        tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
-        tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
+        if (g == null)
+        {
+            tiles[0] = -1;
+            tiles[1] = -1;
+        }
 
-        //Debug.Log("Tiles: " + tiles[0] + ", " + tiles[1] + ". Object " + g.ToString());
+        else
+        {
+            //Debug.Log("Calculating tile: " + g);
+            float pirate_x = g.transform.position.x;
+            float pirate_z = g.transform.position.z;
+
+            tiles[0] = CalculateStepNum(pirate_x, plane_length_x, num_tiles);
+            tiles[1] = CalculateStepNum(pirate_z, plane_length_z, num_tiles);
+        }
 
         return tiles;
     }
@@ -208,39 +216,120 @@ public class GameManager : MonoBehaviour {
     /// <param name="device_id"></param>
     void OnConnect(int device_id)
     {
-        //Debug.Log("Device no. " + device_id + " connected");
-        //If the game has started (SetActivePlayers(int) sets this number to a non-zero value. Thus, if it is 0, the game has not started
-        //TODO: Replace with start menu stuff
-        if (AirConsole.instance.GetActivePlayerDeviceIds.Count == 0)
+        if (AirConsole.instance.GetControllerDeviceIds().Count > 0)
         {
-            //max players is 4
-            if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
-            {
-                //too many players
-            }
-            //Start the game at 4 players
-            else if (AirConsole.instance.GetControllerDeviceIds().Count == 4)
-            {
-                StartGame();
-            }
-            else
-            {
-                //set the playerCount to the amount of devices connected
-                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-            }
+            ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                             "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+            playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         }
-        else if (AirConsole.instance.GetControllerDeviceIds().Count == playerCount)
+
+        if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
         {
-            isPaused = false;
+            //output to main screen that there are too many players connected
+            ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" + 
+                             "Maximum number of players allowed: 4\n\nThere are more than 4 players connected to the game");
+
+            //set the playerCount to the amount of devices connected
+            playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+        }
+
+        if (AirConsole.instance.GetControllerDeviceIds().Count >= 2 && AirConsole.instance.GetControllerDeviceIds().Count <= 4)
+        {
+            
+            ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                             "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+            //set the playerCount to the amount of devices connected
+            playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
         }
     }
 
     //device disconnects
     void OnDisconnect(int device_id)
     {
+        Debug.Log("DISCONNECTED");
         //TODO:Stuff to let players reconnect properly
-        disconnected_player = AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id);
-        isDisconnected = true;
+        if (!isStarted)
+        {
+            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
+            {
+                ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                                 "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+            }
+
+            if (AirConsole.instance.GetControllerDeviceIds().Count >= 2 && AirConsole.instance.GetControllerDeviceIds().Count <= 4)
+            {
+                ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                                 "Number of players allowed: 2 - 4\n\nWhen ready to start the game,\n press \"START GAME\" on the phone screen");
+
+                //set the playerCount to the amount of devices connected
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+
+                //if all of the connected players want to start the game
+                if (ready_players == playerCount)
+                {
+                    StartGame();
+                }
+            }
+
+            if (AirConsole.instance.GetControllerDeviceIds().Count > 4)
+            {
+                //output to main screen that there are too many players connected
+                ChangeStartText("Number of connected players: " + AirConsole.instance.GetControllerDeviceIds().Count.ToString() + "\n" +
+                                 "Maximum number of players allowed: 4\n\nThere are more than 4 players connected to the game");
+
+                //set the playerCount to the amount of devices connected
+                playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
+            }
+        }
+
+
+        else if (isStarted)
+        {
+            int disconnected_player = AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id);
+            Debug.Log("DISCONNECTED player " + disconnected_player);
+
+            //erases the pirate from the field
+            Destroy(playerObjects[disconnected_player]);
+            playerObjects[disconnected_player] = null;
+
+
+            //if disconnected player is in combat
+            if ((disconnected_player == combat_player_1_local || disconnected_player == combat_player_2_local) && isInCombat)
+            {
+                Debug.Log("The player disconnected is in battle");
+                isNextTurn = true;
+                isInCombat = false;
+
+                //if one of the combat players disconnected, the remaining player automatically goes to waiting state
+                if (disconnected_player == combat_player_1_local)
+                {
+                    SendAirConsoleMessage(combat_player_2, "disconnected_opponent_in_combat");
+                }
+                else if (disconnected_player == combat_player_2_local)
+                {
+                    SendAirConsoleMessage(combat_player_1, "disconnected_opponent_in_combat");
+                }
+            }
+
+            //if disconnected player is the current player, who is not in combat
+            if (disconnected_player == currentPlayer && !isNextTurn)
+            {
+                Debug.Log("NEXT TURN because the player disconnected is the current player");
+                isNextTurn = true;
+            }
+
+            //get final result if there are less than 2 players on the field
+            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
+            {
+                timeLeft = 0;
+                getFinalScore();
+            }
+        }
+        
     }
 
     //<summary
@@ -248,29 +337,50 @@ public class GameManager : MonoBehaviour {
     //</summary>
     void StartGame()
     {
-        //Start the game with a certain amount of players. playerCount defines the amount of players.
-        //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
+        if (!isStarted)
+        {
+            isStarted = true;
 
-        playerCount = AirConsole.instance.GetControllerDeviceIds().Count;
-        AirConsole.instance.SetActivePlayers(playerCount);
-        isStarted = true;
+            //"remove" the welcome board
+            ChangeBoardVisibility(0);
+            ChangeStartText("");
 
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(0), "player_color", "color", "red");
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(1), "player_color", "color", "blue");
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(2), "player_color", "color", "green");
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(3), "player_color", "color", "yellow");
-        
-        SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
-        SetUITextTurn(currentPlayer);
-        isNextTurn = false;
+            //Start the game with a certain amount of players. playerCount defines the amount of players.
+            //A number of devices corresponding to playerCount is each designated a player number from 0 to playerCount-1
+
+            AirConsole.instance.SetActivePlayers(playerCount);
+
+            //if there are more pirate objects on the island, than there are players, destroy unnecessary pirate objects
+            if (playerCount < 4)
+            {
+                //TODO skip magic numbers
+                for (int i = 3; i >= playerCount; i--)
+                {
+                    Debug.Log("Destroying pirate number " + i + " because he is not needed");
+                    Destroy(playerObjects[i]);
+                }
+            }
+
+            //send to each player the corresponding color
+            for (int i = 0; i < playerCount; i++)
+            {
+                string color = ConvertPlayerNoToColour(i);
+                color = color.ToLower();
+                Debug.Log("Local player number " + i + " is assigned color " + color);
+                SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(i), "player_color", "color", color);
+            }
+
+            SendAirConsoleMessage(AirConsole.instance.ConvertPlayerNumberToDeviceId(currentPlayer), "turn");
+            SetUITextTurn(currentPlayer);
+            isNextTurn = false;
 
 
-        // Hook up the Elapsed event for the timer. 
-        timer.Elapsed += OnTimedEvent;
+            // Hook up the Elapsed event for the timer. 
+            timer.Elapsed += OnTimedEvent;
 
-        // Have the timer fire repeated events (true is the default)
-        timer.AutoReset = true;
-
+            // Have the timer fire repeated events (true is the default)
+            timer.AutoReset = true;
+        }
     }
 
     /// <summary>
@@ -280,14 +390,19 @@ public class GameManager : MonoBehaviour {
     /// <param name="data">whatever it did</param>
     void OnMessage(int device_id, JToken data)
     {
-        //has game started? if no, and the message says start game, start the game
-        if (!isStarted)
+        //a player is ready to start the game
+        if ((string)data["action"] == "start_game")
         {
-            if ((string)data["action"] == "start_game")
+            Debug.Log("Start message received");
+            ready_players++;
+
+            //if all of the connected players want to start the game
+            if (ready_players == playerCount && playerCount <= 4 && playerCount >= 2)
             {
                 StartGame();
             }
         }
+        
         //if the game has started, the message will be actions for turns
         else if ((string)data["action"] == "turn_action")
         {
@@ -351,21 +466,25 @@ public class GameManager : MonoBehaviour {
         //if the loosing side (in combat) has no booty to steal
         else if ((string)data["action"] == "no_booty_to_steal")
         {
-            if (device_id == combat_player_1)
+
+            if (device_id == combat_player_1 && playerObjects[combat_player_2_local] != null)
             {
                 SendAirConsoleMessage(combat_player_2, "no_booty");
             }
-            else
+            else if (device_id == combat_player_2 && playerObjects[combat_player_1_local] != null)
             {
                 SendAirConsoleMessage(combat_player_1, "no_booty");
             }
+
+            
         }
         //if a player has send their final booty amount
         else if ((string)data["action"] == "final_score")
         {
             finalCount++;
-            string s = (string)data["color"];
-            s = s.ToUpper();
+
+            //get the player color
+            string s = ConvertPlayerNoToColour(AirConsole.instance.ConvertDeviceIdToPlayerNumber(device_id));
 
             //store each players color and their final amount of booty
             final_score_list.Add(new KeyValuePair<string, int>(s, (int)data["total_booty"]));
@@ -384,21 +503,9 @@ public class GameManager : MonoBehaviour {
 
     private void HandleCombatResult(int winner, int looser)
     {
-
-        int looser_local_ID;
-
-        if (looser == combat_player_1)
-        {
-            looser_local_ID = combat_player_1_local;
-        }
-        else
-        {
-            looser_local_ID = combat_player_2_local;
-        }
-
         SendAirConsoleMessage(winner, "combat_result_won");
         SendAirConsoleMessage(looser, "combat_result_loss");
-        SearchAvailableTile(looser_local_ID);
+        SearchAvailableTile(looser);
     }
 
     // Update is called once per frame
@@ -407,29 +514,9 @@ public class GameManager : MonoBehaviour {
         //updates the timer
         SetTimer();
 
-        //a player disconnected
-        if (isDisconnected)
+        if (isNextTurn && !isPaused && isStarted && !isInCombat)
         {
-            //erases the pirate from the field
-            Destroy(playerObjects[disconnected_player]);
-
-            if (disconnected_player == currentPlayer)
-            {
-                isNextTurn = true;
-            }
-
-            //get final result if there are less than 2 players on the field
-            if (AirConsole.instance.GetControllerDeviceIds().Count < 2)
-            {
-                timeLeft = 0;
-                getFinalScore();
-            }
-
-            isDisconnected = false;
-        }
-
-        if (isNextTurn && !isPaused && isStarted && !isInKnockback)
-        {
+            Debug.Log("Updating to next turn");
             nextTurn();
             isNextTurn = false;
         }
@@ -447,7 +534,7 @@ public class GameManager : MonoBehaviour {
         //if player has disconnected
         while (playerObjects[currentPlayer] == null)
         {
-            //Debug.Log("Skipping over disconnected player");
+            Debug.Log("SKIPPING over disconnected player " + ConvertPlayerNoToColour(currentPlayer));
             currentPlayer++;
             if (currentPlayer == playerCount)
                 currentPlayer = 0;
@@ -475,8 +562,17 @@ public class GameManager : MonoBehaviour {
         actions[1] = action_two;
 
         //Debug.Log("TEST executing " + actionType + " actions of player " + p + ": " + action_one + " " + action_two);
-        //send actions to the player object
-        playerObjects[p].SendMessage(actionType, actions);
+        
+        if (playerObjects[p] == null)
+        {
+            return;
+        }
+        else
+        {
+            //send actions to the player object
+            playerObjects[p].SendMessage(actionType, actions);
+        }
+        
     }
 
     /// <summary>
@@ -494,7 +590,7 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
-            isInKnockback = true;
+            isInCombat = true;
         }
              
     }
@@ -553,7 +649,7 @@ public class GameManager : MonoBehaviour {
     void OnPlayerFinishedMovingKnockback()
     {
        // Debug.Log("Finished knockback of pirate");
-        isInKnockback = false;
+        isInCombat = false;
     }
 
    
@@ -650,7 +746,7 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <param name="dev_id">device ID</param>
     /// <returns></returns>
-    string ConvertDeviceIDtoColour(int dev_id)
+    string ConvertPlayerNoToColour(int dev_id)
     {
         switch (dev_id)
         {
@@ -668,7 +764,7 @@ public class GameManager : MonoBehaviour {
     }
 
 
-    void ClearUIText()
+    void ClearNotificationsUIText()
     {
         notifications.text = "";
     }
@@ -679,7 +775,7 @@ public class GameManager : MonoBehaviour {
     /// <param name="dev_id">pirate ID</param>
     void SetUITextTurn(int dev_id)
     {
-        notifications.text = "It is " + ConvertDeviceIDtoColour(dev_id) + "\npirate's turn";
+        notifications.text = "It is " + ConvertPlayerNoToColour(dev_id) + "\npirate's turn";
     }
 
     /// <summary>
@@ -689,7 +785,7 @@ public class GameManager : MonoBehaviour {
     /// <param name="pl_2">ID of second pirate in combat</param>
     void SetUITextCombat(int pl_1, int pl_2)
     {
-        notifications.text = ConvertDeviceIDtoColour(pl_1) + " and " + ConvertDeviceIDtoColour(pl_2) + "\npirates are in combat";
+        notifications.text = ConvertPlayerNoToColour(pl_1) + " and " + ConvertPlayerNoToColour(pl_2) + "\npirates are in combat";
     }
 
     private void OnTimedEvent(System.Object source, System.Timers.ElapsedEventArgs e)
@@ -711,7 +807,17 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     private void SetTimer()
     {
-        text_timer.text = "Time left: " + timeLeft.ToString();
+        string time_text = "Time left: ";
+
+        if (timeLeft <= 99)
+        {
+            time_text = "Time left: 0";
+        }
+        if (timeLeft <= 9)
+        {
+            time_text = "Time left: 00";
+        }
+        text_timer.text = time_text + timeLeft.ToString();
         
         // "Resets" the timer
         timer.Enabled = true;
@@ -719,12 +825,13 @@ public class GameManager : MonoBehaviour {
         if (timeLeft == 0)
         {
             text_timer.text = "Time's up!";
-            ClearUIText();
+            ClearNotificationsUIText();
             if (getFinalBooty)
             {
                 getFinalScore();
                 getFinalBooty = false;
                 isPaused = true;
+                timer.Enabled = false;
             }
         }
     }
@@ -784,15 +891,23 @@ public class GameManager : MonoBehaviour {
         }
 
         //makes the background image for the scoreboard visible
-        Color c = final_score_image.color;
-        c.a = 1;
-        final_score_image.color = c;
+        ChangeBoardVisibility(1);
 
         //put the scoreboard into UI text
         final_score.text = final_message;
     }
 
+    private void ChangeStartText(string t)
+    {
+        start_text.text = t;
+    }
 
+    private void ChangeBoardVisibility(float visibility)
+    {
+        Color c = board_image.color;
+        c.a = visibility;
+        board_image.color = c;
+    }
 
     /// <summary>
     /// Goes through all the player objects and stores positions of players that were NOT participating in combat
@@ -847,8 +962,17 @@ public class GameManager : MonoBehaviour {
     /// Goes through the nearby tiles to see where to relocate the player that had lost in combat
     /// </summary>
     /// <param name="loosing_player">the local ID of the loosing player</param>
-    private void SearchAvailableTile(int loosing_player)
+    private void SearchAvailableTile(int l_player)
     {
+
+        //TODO check if written correctly
+        int loosing_player = AirConsole.instance.ConvertDeviceIdToPlayerNumber(l_player);
+
+        if (playerObjects[loosing_player] == null)
+        {
+            return;
+        }
+
         //location of the player that had lost
         int[] lost_pl_pos = CalculateTile(playerObjects[loosing_player]);
         int x_position = lost_pl_pos[0];
